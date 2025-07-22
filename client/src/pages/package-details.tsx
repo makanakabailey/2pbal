@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useRoute } from 'wouter';
+import { useRoute, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, CheckCircle, TrendingUp, Users, Zap, Target } from 'lucide-react';
+import { ArrowRight, CheckCircle, TrendingUp, Users, Zap, Target, ArrowLeft } from 'lucide-react';
 import { PACKAGES } from '@/lib/constants';
 
 interface PackageDetailsProps {
@@ -204,22 +204,34 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
     <div className="pt-16">
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-teal-primary to-blue-700">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-lime-primary w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <IconComponent className="text-white h-10 w-10" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back to Home Button */}
+          <div className="mb-8">
+            <Link href="/">
+              <Button variant="ghost" className="text-white hover:text-lime-primary hover:bg-white/10">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Home
+              </Button>
+            </Link>
           </div>
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-white">
-            {details.hero.title}
-          </h1>
-          <h2 className="text-2xl font-semibold mb-6 text-lime-primary">
-            {details.hero.subtitle}
-          </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-            {details.hero.description}
-          </p>
-          <Badge variant="secondary" className="bg-white text-teal-primary text-lg px-6 py-2">
-            Ideal for: {details.hero.audience}
-          </Badge>
+          
+          <div className="text-center">
+            <div className="bg-lime-primary w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <IconComponent className="text-white h-10 w-10" />
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-white">
+              {details.hero.title}
+            </h1>
+            <h2 className="text-2xl font-semibold mb-6 text-lime-primary">
+              {details.hero.subtitle}
+            </h2>
+            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+              {details.hero.description}
+            </p>
+            <Badge variant="secondary" className="bg-white text-teal-primary text-lg px-6 py-2">
+              Ideal for: {details.hero.audience}
+            </Badge>
+          </div>
         </div>
       </section>
 

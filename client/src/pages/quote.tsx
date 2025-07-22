@@ -314,7 +314,7 @@ export default function Quote() {
                     className="bg-lime-primary text-white hover:bg-green-500"
                     disabled={!formData.name || !formData.email}
                   >
-                    Submit Request
+                    Get Custom Proposal
                   </Button>
                 )}
               </div>
