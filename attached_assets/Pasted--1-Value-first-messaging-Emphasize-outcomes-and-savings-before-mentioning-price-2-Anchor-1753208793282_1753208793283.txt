@@ -1,0 +1,166 @@
+ 1. **Value-first messaging**: Emphasize outcomes and savings before mentioning price.
+ 2. **Anchoring**: Show the "original" price crossed out next to the discounted price to create perception of value.
+ 3. **Scarcity and Urgency**: Highlight limited-time offers or limited availability without being pushy.
+ 4. **Social Proof**: Use testimonials and case studies to validate the value.
+ 5. **Visual Hierarchy**: Design the page so that the user sees benefits first, then the packages, and finally the pricing (if they scroll).
+ We'll restructure the wireframe to:
+ Homepage:
+   - Hero: Focus on the transformation and savings.
+   - Problem/Solution: Reinforce the pain points and how 2Pbal saves money and time.
+   - Service Packages: Show packages with emphasis on value, then show discounted prices.
+   - How It Works: Build trust in the process.
+   - Testimonials: Social proof of savings and results.
+   - Final CTA: Value-driven call to action.
+ Service Packages Page:
+   - Comparison table with value-focused descriptions and then show the discounted price with original price crossed out.
+   - Detailed package breakdowns that focus on ROI and savings.
+ All Services Page:
+   - Focus on the value of each service and how it contributes to savings.
+ Custom Quote Page:
+   - Focus on the value of a custom solution and the savings it can bring.
+ Let's go step by step.
+---
+### **Page 1: Homepage - Value-First Approach**
+**1. Header (Global)**
+   - Same as before, but add a subtle tagline next to the logo: "Enterprise Results, Without Enterprise Costs"
+**2. Hero Section**
+   - **Headline**: "Stop Overpaying for Digital Solutions. Start Scaling."
+   - **Sub-headline**: "Get a dedicated team of experts for less than the cost of one in-house hire. Save up to 70% vs. traditional agencies."
+   - **Primary CTA Buttons**:
+        - **"See How Much You Can Save"** (links to a savings calculator or a case study)
+        - **"Explore Our Cost-Effective Packages"**
+   - **Visual**: A split image showing:
+        - Left: A messy desk (representing freelance chaos) with a red "X"
+        - Right: A clean dashboard with growth charts and a green checkmark
+**3. Trust Bar**
+   - "Trusted by innovative companies to deliver ROI-driven results:"
+   - Logos of clients with a small stat: "Avg. 3.5x ROI in first year"
+**4. Problem & Solution Section (Value-Focused)**
+   - **Headline**: "The Hidden Costs of Getting Digital Wrong"
+   - **Two Columns**:
+        - **Left (Costs of Alternatives)**:
+            - "Agencies: Paying premium prices for junior talent?"
+            - "Freelancers: Wasting hours managing 10+ specialists?"
+            - "In-House: Spending $120k+/year per developer + benefits?"
+        - **Right (2Pbal Savings)**:
+            - "Fixed monthly cost: No surprises, no overhead"
+            - "One dedicated team lead: Save 15+ hours/week"
+            - "Pay only for what you need: Scale up or down"
+**5. Service Packages Overview (Value Anchoring)**
+   - **Headline**: "All-Inclusive Packages, Not All-Inclusive Prices"
+   - **Package Cards** (4 in a row) - Each card:
+        - Package Name
+        - Tagline: e.g., "For Startups: Look Professional, Attract Customers"
+        - **Value Proposition**: 3-4 bullet points of key outcomes (e.g., "5-page lead-generating website")
+        - **Pricing**:
+            - Original Price: ~~$X,XXX~~ (crossed out)
+            - **Your Price: $X,XXX** (bold and highlighted)
+            - Small text: "Save $X,XXX vs. agency pricing"
+        - **CTA**: "See Full Value Breakdown"
+**6. "How It Works" Section**
+   - **Headline**: "Transparent Process, Predictable Savings"
+   - Steps (with icons) emphasizing cost control:
+        1. **Consult**: "Free discovery session to align on goals & budget"
+        2. **Plan**: "Fixed-price proposal - no hourly billing surprises"
+        3. **Execute**: "Track progress & costs in real-time dashboard"
+        4. **Grow**: "Ongoing optimization to maximize your ROI"
+**7. Social Proof / Case Studies**
+   - **Headline**: "See The Savings In Action"
+   - **Case Study Cards** (2-3):
+        - Client Logo
+        - Challenge: "Was spending $15k/month with agency for minimal leads"
+        - Solution: "Switched to 2Pbal's Market Accelerator package"
+        - Results: "Generated 240 leads in 3 months while saving 35%"
+**8. Final CTA Block**
+   - **Headline**: "Ready to Stop Wasting Your Budget?"
+   - **Sub-headline**: "Join hundreds of smart businesses that scaled efficiently."
+   - **CTA Button**: **"Get Your Free Savings Estimate"**
+---
+### **Page 2: Service Packages - Value-Driven Pricing**
+**1. Hero Section**
+   - **Headline**: "Package Value That Fits Your Growth Stage"
+   - **Sub-headline**: "Choose your package below and see exactly how much you'll save versus agency or in-house solutions."
+**2. Comparison Table (Value-First, Then Price)**
+   - **Columns**: Features | Digital Foundation | Market Accelerator | AI-Powered Efficiency | Full Suite Advantage
+   - **Rows**: Focus on outcomes (e.g., "Website Pages", "Lead Gen Funnel", "Ongoing Support")
+   - **Bottom Row**: 
+        - **Value Summary**: e.g., "Typical Agency Cost: $12,000" (small, grey text)
+        - **2Pbal Price**: 
+            - ~~$8,000~~ **$5,500** (for Digital Foundation, with crossed out original and bold discount)
+        - **Savings**: "Save $2,500 (31%)" (green text)
+**3. Detailed Package Breakdown**
+   - For each package:
+        - **Headline**: e.g., "Digital Foundation: Your Professional Launchpad"
+        - **Target Audience**: "Ideal for: Startups and small businesses"
+        - **Value Proposition Paragraph**: "Get everything you need to establish a credible online presence without overspending. Typically delivered in 4-6 weeks."
+        - **Included Services**: List with icons
+        - **Pricing Box**:
+            - "Agency Comparison: ~~$8,000 - $12,000~~"
+            - "2Pbal Investment: **$5,500**"
+            - "You Save: **$2,500+**"
+            - CTA: "Start Saving Now"
+**4. "Not Sure? Calculate Your Savings" Widget**
+   - **Headline**: "How Much Could You Save?"
+   - Interactive calculator:
+        - "What services do you currently use?" [Checkboxes: Agency, Freelancers, In-House, None]
+        - "What's your approximate monthly spend?" [Slider: $0-$20k+]
+        - **Output**: "By switching to 2Pbal, you could save approximately **$X,XXX/month**. That's **$XX,XXX/year**!"
+        - CTA: "See Personalized Package Recommendations"
+---
+### **Page 3: All Services - Value Per Service**
+**1. Hero Section**
+   - **Headline**: "Only Pay for Exactly What You Need"
+   - **Sub-headline**: "Mix and match services to build your perfect solution. Every service delivers measurable ROI."
+**2. Service Grid (Value-Anchored)**
+   - **Filters**: Same as before (categories, search)
+   - **Service Cards**:
+        - Service Name
+        - 1-sentence value statement: e.g., "SEO: Rank higher to attract organic leads 24/7"
+        - **Pricing Hint**: "Typically $X,XXX with agencies" (grey, small)
+        - **2Pbal Price**: "From **$XXX**" (bold)
+        - "Add to Solution" button
+**3. "Build Your Bundle" Section**
+   - **Headline**: "Create Your Custom Package & Save"
+   - **Value Proposition**: "Bundle 3+ services and save up to 20%"
+   - Interactive widget:
+        - Drag-and-drop service tiles into a "Your Bundle" box
+        - Auto-calculator shows:
+            - "Total Agency Price: ~~$X,XXX~~"
+            - "Your 2Pbal Price: **$X,XXX**"
+            - "Savings: **$XXX**"
+        - CTA: "Get Your Custom Proposal"
+---
+### **Page 4: Get a Custom Quote - Value-Focused Inquiry**
+**1. Hero Section**
+   - **Headline**: "Maximize Your ROI With a Tailored Solution"
+   - **Sub-headline**: "Tell us about your goals and we'll show you exactly how to achieve them efficiently."
+**2. Multi-Step Form (Value-Driven)**
+   - **Step 1**: "What are your top business goals?" [Checkboxes: Increase Sales, Reduce Costs, Automate Tasks, etc.]
+   - **Step 2**: "Where are you currently overspending?" [Checkboxes: Agency Fees, Freelancer Management, In-House Salaries, etc.]
+   - **Step 3**: "Which outcomes matter most?" [Checkboxes: More Leads, Faster Execution, Predictable Budget, etc.]
+   - **Step 4**: Project details (description, timeline)
+   - **Step 5**: Contact info
+**3. Post-Submission**
+   - **Immediate Value**: Download "5 Strategies to Reduce Digital Costs by 40%" (PDF)
+   - **Confirmation**: "We're building your personalized savings proposal now. You'll receive it within 24 hours."
+---
+### **New: Savings Calculator Popup**
+   - Accessible from "See How Much You Can Save" CTAs
+   - Inputs: 
+        - Current solution (agency/freelancer/in-house)
+        - Monthly spend
+        - Services needed
+   - Outputs:
+        - "Your current annual spend: $XX,XXX"
+        - "Estimated 2Pbal cost: $XX,XXX"
+        - "Annual savings: **$X,XXX**"
+        - "That's like getting [Service] for FREE!"
+   - CTA: "Unlock Your Savings"
+---
+This wireframe redesign focuses on:
+- Front-loading value and savings
+- Deferring detailed pricing until after establishing value
+- Using anchoring (showing crossed-out higher prices)
+- Emphasizing outcomes over features
+- Providing tools (calculator, bundle builder) to visualize savings
+Every page reinforces the core message: "Enterprise results without enterprise costs."
