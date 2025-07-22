@@ -10,8 +10,7 @@ interface HomeProps {
 
 export default function Home({ onOpenCalculator }: HomeProps) {
   const handlePackageSelect = (packageId: string) => {
-    // Navigate to package details or open contact form
-    console.log('Selected package:', packageId);
+    window.location.href = `/package/${packageId}`;
   };
 
   const scrollToPackages = () => {

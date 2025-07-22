@@ -9,6 +9,7 @@ import Footer from "@/components/layout/footer";
 import SavingsCalculator from "@/components/ui/savings-calculator";
 import Home from "@/pages/home";
 import Packages from "@/pages/packages";
+import PackageDetails from "@/pages/package-details";
 import Services from "@/pages/services";
 import Quote from "@/pages/quote";
 import NotFound from "@/pages/not-found";
@@ -23,6 +24,7 @@ function Router() {
         <Switch>
           <Route path="/" component={() => <Home onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/packages" component={() => <Packages onOpenCalculator={() => setCalculatorOpen(true)} />} />
+          <Route path="/package/:id" component={() => <PackageDetails onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/services" component={Services} />
           <Route path="/quote" component={Quote} />
           <Route component={NotFound} />

@@ -32,7 +32,7 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
   const { monthlySavings, annualSavings } = calculateSavings();
 
   const handlePackageSelect = (packageId: string) => {
-    console.log('Selected package:', packageId);
+    window.location.href = `/package/${packageId}`;
   };
 
   const handleSolutionToggle = (solutionId: string) => {

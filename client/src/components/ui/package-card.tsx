@@ -58,7 +58,7 @@ export default function PackageCard({ package: pkg, onSelect }: PackageCardProps
           Save ${pkg.savings.toLocaleString()} ({pkg.savingsPercent}%)
         </div>
         <Button
-          onClick={() => onSelect(pkg.id)}
+          onClick={() => window.location.href = `/package/${pkg.id}`}
           className={`w-full font-semibold transition-colors ${
             pkg.popular
               ? 'bg-lime-primary text-white hover:bg-green-500'
