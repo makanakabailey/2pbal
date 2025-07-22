@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, ArrowLeft, ArrowRight, Download } from 'lucide-react';
+import { CheckCircle, ArrowLeft, ArrowRight, Download, Upload, X, File, Image, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface FormData {
@@ -19,6 +19,7 @@ interface FormData {
   email: string;
   company: string;
   phone: string;
+  attachments: File[];
 }
 
 export default function Quote() {
@@ -35,7 +36,8 @@ export default function Quote() {
     name: '',
     email: '',
     company: '',
-    phone: ''
+    phone: '',
+    attachments: []
   });
 
   const totalSteps = 5;
@@ -94,6 +96,69 @@ export default function Quote() {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newFiles = Array.from(files).filter(file => {
+        // Check file size (max 10MB per file)
+        if (file.size > 10 * 1024 * 1024) {
+          toast({
+            title: "File too large",
+            description: `${file.name} is larger than 10MB. Please choose a smaller file.`,
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        // Check file type
+        const allowedTypes = [
+          'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+          'video/mp4', 'video/webm', 'video/quicktime',
+          'application/pdf', 'application/msword', 
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/plain', 'application/zip'
+        ];
+        
+        if (!allowedTypes.includes(file.type)) {
+          toast({
+            title: "Invalid file type",
+            description: `${file.name} is not a supported file type.`,
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        return true;
+      });
+      
+      setFormData(prev => ({
+        ...prev,
+        attachments: [...prev.attachments, ...newFiles]
+      }));
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index)
+    }));
+  };
+
+  const getFileIcon = (file: File) => {
+    if (file.type.startsWith('image/')) return Image;
+    if (file.type.startsWith('video/')) return Video;
+    return File;
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const handleSubmit = async () => {
@@ -224,7 +289,7 @@ export default function Quote() {
 
               {/* Step 4: Project Details */}
               {currentStep === 4 && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
                     <Label htmlFor="description">Project Description</Label>
                     <Textarea
@@ -235,6 +300,7 @@ export default function Quote() {
                       rows={4}
                     />
                   </div>
+                  
                   <div>
                     <Label htmlFor="timeline">Desired Timeline</Label>
                     <Input
@@ -243,6 +309,65 @@ export default function Quote() {
                       value={formData.timeline}
                       onChange={(e) => handleInputChange('timeline', e.target.value)}
                     />
+                  </div>
+
+                  {/* File Upload Section */}
+                  <div>
+                    <Label className="text-base font-medium mb-3 block">Attach Files (Optional)</Label>
+                    <p className="text-sm text-gray-medium mb-4">
+                      Share images, videos, documents, or other files to help us understand your project better. 
+                      Max 10MB per file. Supported: Images, Videos, PDFs, Documents.
+                    </p>
+                    
+                    {/* Upload Button */}
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-teal-primary transition-colors">
+                      <input
+                        type="file"
+                        id="file-upload"
+                        multiple
+                        accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <label htmlFor="file-upload" className="cursor-pointer">
+                        <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <div className="text-lg font-medium text-gray-dark mb-2">
+                          Drop files here or click to upload
+                        </div>
+                        <div className="text-sm text-gray-medium">
+                          Images, videos, documents up to 10MB each
+                        </div>
+                      </label>
+                    </div>
+
+                    {/* Uploaded Files List */}
+                    {formData.attachments.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        <Label className="text-sm font-medium">Uploaded Files:</Label>
+                        {formData.attachments.map((file, index) => {
+                          const FileIcon = getFileIcon(file);
+                          return (
+                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div className="flex items-center space-x-3">
+                                <FileIcon className="h-5 w-5 text-teal-primary" />
+                                <div>
+                                  <div className="text-sm font-medium text-gray-dark">{file.name}</div>
+                                  <div className="text-xs text-gray-medium">{formatFileSize(file.size)}</div>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFile(index)}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

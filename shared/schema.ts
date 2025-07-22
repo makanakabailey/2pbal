@@ -19,6 +19,7 @@ export const quotes = pgTable("quotes", {
   outcomes: json("outcomes").$type<string[]>().notNull(),
   projectDescription: text("project_description").notNull(),
   timeline: text("timeline").notNull(),
+  attachments: json("attachments").$type<{filename: string, mimetype: string, size: number, data: string}[]>().default([]),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
