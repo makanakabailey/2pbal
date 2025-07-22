@@ -20,14 +20,14 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
   ];
 
   return (
-    <header className="bg-white shadow-sm fixed w-full top-0 z-50">
+    <header className="bg-teal-primary shadow-sm fixed w-full top-0 z-50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/">
               <img src={logoPath} alt="2Pbal Logo" className="h-8 w-auto" />
             </Link>
-            <span className="ml-3 text-sm text-gray-medium font-medium hidden lg:block">
+            <span className="ml-3 text-sm text-white font-medium hidden lg:block">
               Enterprise Results, Without Enterprise Costs
             </span>
           </div>
@@ -39,8 +39,8 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
                 href={item.href}
                 className={`font-medium transition-colors ${
                   location === item.href 
-                    ? 'text-teal-primary' 
-                    : 'text-gray-dark hover:text-teal-primary'
+                    ? 'text-lime-primary' 
+                    : 'text-white hover:text-lime-primary'
                 }`}
               >
                 {item.name}
@@ -58,7 +58,7 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6 text-gray-dark" />
+                  <Menu className="h-6 w-6 text-white" />
                 </Button>
               </SheetTrigger>
               <SheetContent>
