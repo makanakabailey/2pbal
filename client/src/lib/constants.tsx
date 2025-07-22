@@ -77,7 +77,24 @@ export const SERVICES = [
     name: 'Custom Website Development',
     description: 'Professional, mobile-first websites that convert visitors into customers',
     price: 'From $2,500',
-    agencyPrice: 'Typically $8,000'
+    agencyPrice: 'Typically $8,000',
+    image: (
+      <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
+        <rect width="400" height="200" fill="url(#webGrad)" />
+        <rect x="30" y="40" width="340" height="120" fill="white" rx="8" />
+        <rect x="45" y="55" width="50" height="8" fill="#0D9488" rx="4" />
+        <rect x="45" y="70" width="200" height="4" fill="#D1D5DB" rx="2" />
+        <rect x="45" y="80" width="150" height="4" fill="#D1D5DB" rx="2" />
+        <rect x="270" y="55" width="85" height="25" fill="#84CC16" rx="4" />
+        <rect x="45" y="100" width="310" height="45" fill="#F3F4F6" rx="4" />
+        <defs>
+          <linearGradient id="webGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#0D9488" />
+            <stop offset="100%" stopColor="#84CC16" />
+          </linearGradient>
+        </defs>
+      </svg>
+    )
   },
   {
     id: 'ecommerce',
@@ -85,7 +102,28 @@ export const SERVICES = [
     name: 'E-Commerce Solutions',
     description: 'Full-featured online stores with payment integration and inventory management',
     price: 'From $5,000',
-    agencyPrice: 'Typically $15,000'
+    agencyPrice: 'Typically $15,000',
+    image: (
+      <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
+        <rect width="400" height="200" fill="url(#ecomGrad)" />
+        <rect x="50" y="30" width="300" height="140" fill="white" rx="8" />
+        <circle cx="100" cy="80" r="25" fill="#F3F4F6" />
+        <rect x="140" y="60" width="80" height="6" fill="#0D9488" rx="3" />
+        <rect x="140" y="75" width="120" height="4" fill="#D1D5DB" rx="2" />
+        <rect x="140" y="85" width="60" height="8" fill="#84CC16" rx="4" />
+        <rect x="280" y="55" width="60" height="40" fill="#84CC16" rx="6" />
+        <path d="M290 70 L295 75 L305 65" stroke="white" strokeWidth="3" fill="none" />
+        <rect x="70" y="120" width="50" height="30" fill="#F3F4F6" rx="4" />
+        <rect x="130" y="120" width="50" height="30" fill="#F3F4F6" rx="4" />
+        <rect x="190" y="120" width="50" height="30" fill="#F3F4F6" rx="4" />
+        <defs>
+          <linearGradient id="ecomGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#84CC16" />
+            <stop offset="100%" stopColor="#0D9488" />
+          </linearGradient>
+        </defs>
+      </svg>
+    )
   },
   {
     id: 'web-app',
@@ -133,7 +171,29 @@ export const SERVICES = [
     name: 'AI Customer Chatbot',
     description: '24/7 intelligent customer support and lead qualification',
     price: 'From $1,500',
-    agencyPrice: 'Typically $5,000'
+    agencyPrice: 'Typically $5,000',
+    image: (
+      <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
+        <rect width="400" height="200" fill="url(#aiGrad)" />
+        <circle cx="200" cy="100" r="50" fill="white" />
+        <circle cx="185" cy="90" r="8" fill="#0D9488" />
+        <circle cx="215" cy="90" r="8" fill="#0D9488" />
+        <path d="M175 110 Q200 125 225 110" stroke="#84CC16" strokeWidth="4" fill="none" />
+        <rect x="120" y="50" width="40" height="20" fill="white" rx="10" />
+        <rect x="240" y="130" width="40" height="20" fill="white" rx="10" />
+        <rect x="100" y="160" width="60" height="20" fill="white" rx="10" />
+        <circle cx="140" cy="60" r="2" fill="#0D9488" />
+        <circle cx="260" cy="140" r="2" fill="#0D9488" />
+        <circle cx="130" cy="170" r="2" fill="#0D9488" />
+        <defs>
+          <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1E40AF" />
+            <stop offset="50%" stopColor="#0D9488" />
+            <stop offset="100%" stopColor="#84CC16" />
+          </linearGradient>
+        </defs>
+      </svg>
+    )
   },
   {
     id: 'process-automation',

@@ -39,12 +39,20 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                   See How Much You Can Save
                 </Button>
                 <Button 
-                  onClick={scrollToPackages}
+                  onClick={() => window.location.href = '/client-portal/package/accelerator'}
                   variant="outline"
                   size="lg"
                   className="border-2 border-white text-white hover:bg-white hover:text-teal-primary text-lg px-8 py-4"
                 >
-                  Explore Cost-Effective Packages
+                  View Client Portal Demo
+                </Button>
+                <Button 
+                  onClick={scrollToPackages}
+                  variant="ghost"
+                  size="lg"
+                  className="text-blue-100 hover:text-white hover:bg-white/10 text-lg px-8 py-4"
+                >
+                  Explore Packages
                 </Button>
               </div>
             </div>

@@ -8,6 +8,7 @@ interface Service {
   description: string;
   price: string;
   agencyPrice: string;
+  image?: React.ReactNode;
 }
 
 interface ServiceCardProps {
@@ -18,22 +19,41 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ service, onAddToBundle, isInBundle }: ServiceCardProps) {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all">
-      <div className="mb-4">
-        <h3 className="text-lg font-bold text-gray-dark mb-2">{service.name}</h3>
-        <p className="text-gray-medium text-sm mb-3">{service.description}</p>
-        <div className="text-xs text-gray-400 mb-2">{service.agencyPrice}</div>
-        <div className="text-xl font-bold text-teal-primary">{service.price}</div>
-      </div>
+    <div className="bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all overflow-hidden">
+      {/* Service Image */}
+      {service.image && (
+        <div className="w-full h-48 bg-gradient-to-br from-teal-primary to-lime-primary">
+          {service.image}
+        </div>
+      )}
       
-      <Button
-        onClick={() => onAddToBundle(service.id)}
-        variant={isInBundle ? "secondary" : "outline"}
-        className={`w-full ${isInBundle ? 'bg-lime-primary text-white hover:bg-green-500' : ''}`}
-      >
-        <Plus className="h-4 w-4 mr-2" />
-        {isInBundle ? 'Added to Bundle' : 'Add to Solution'}
-      </Button>
+      <div className="p-6">
+        <div className="mb-4">
+          <h3 className="text-lg font-bold text-gray-dark mb-2">{service.name}</h3>
+          <p className="text-gray-medium text-sm mb-3">{service.description}</p>
+          <div className="text-xs text-gray-400 mb-2 line-through">{service.agencyPrice}</div>
+          <div className="text-xl font-bold text-teal-primary">{service.price}</div>
+        </div>
+        
+        <div className="space-y-2">
+          <Button
+            onClick={() => onAddToBundle(service.id)}
+            variant={isInBundle ? "secondary" : "outline"}
+            className={`w-full ${isInBundle ? 'bg-lime-primary text-white hover:bg-green-500' : ''}`}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {isInBundle ? 'Added to Bundle' : 'Add to Solution'}
+          </Button>
+          
+          <Button
+            onClick={() => window.location.href = `/client-portal/service/${service.id}`}
+            variant="ghost"
+            className="w-full text-teal-primary hover:text-teal-600 hover:bg-teal-50"
+          >
+            View Service Details
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

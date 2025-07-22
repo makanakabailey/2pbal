@@ -12,6 +12,7 @@ import Packages from "@/pages/packages";
 import PackageDetails from "@/pages/package-details";
 import Services from "@/pages/services";
 import Quote from "@/pages/quote";
+import ClientPortal from "@/pages/client-portal";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
           <Route path="/package/:id" component={() => <PackageDetails onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/services" component={Services} />
           <Route path="/quote" component={Quote} />
+          <Route path="/client-portal/:type/:id" component={() => <ClientPortal onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route component={NotFound} />
         </Switch>
       </main>

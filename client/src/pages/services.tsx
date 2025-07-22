@@ -41,7 +41,9 @@ export default function Services() {
   };
 
   const handleGetProposal = () => {
-    console.log('Getting proposal for services:', bundledServices);
+    // In a real app, this would create a new project and redirect to the client portal
+    const firstServiceId = bundledServices[0] || 'web-development';
+    window.location.href = `/client-portal/service/${firstServiceId}`;
   };
 
   return (

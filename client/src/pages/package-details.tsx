@@ -335,12 +335,12 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
                   Calculate Your Savings
                 </Button>
                 <Button 
-                  onClick={() => window.location.href = '/quote'}
+                  onClick={() => window.location.href = `/client-portal/package/${packageId}`}
                   variant="outline"
                   size="lg"
                   className="border-2 border-teal-primary text-teal-primary hover:bg-teal-primary hover:text-white text-lg px-8 py-4"
                 >
-                  Get Custom Proposal
+                  View Client Portal Demo
                 </Button>
               </div>
             </CardContent>

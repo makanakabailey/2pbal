@@ -41,16 +41,19 @@ Preferred communication style: Simple, everyday language.
 
 ### UI Components
 - **Package Cards**: Displays service packages with pricing, features, and savings calculations
-- **Service Cards**: Individual service listings with bundling capability
+- **Service Cards**: Individual service listings with custom SVG images, bundling capability, and client portal integration
 - **Savings Calculator**: Interactive modal for cost calculation based on user inputs
-- **Bundle Builder**: Allows users to create custom service combinations
-- **Quote Form**: Multi-step form for collecting customer requirements
+- **Bundle Builder**: Allows users to create custom service combinations with 20% discount calculation
+- **Quote Form**: Multi-step form for collecting customer requirements with file upload support
+- **Client Portal**: Comprehensive project management interface with tabs for overview, progress, payments, and communication
+- **File Upload System**: Drag-and-drop file attachment with validation for images, videos, and documents (10MB limit)
 
 ### Pages Structure
-- **Home**: Hero section, package overview, testimonials, value proposition
-- **Packages**: Detailed package comparison with pricing tiers
-- **Services**: Comprehensive service catalog with search and filtering
-- **Quote**: Multi-step quote request form with progress tracking
+- **Home**: Hero section, package overview, testimonials, value proposition, client portal demo link
+- **Packages**: Detailed package comparison with pricing tiers, client portal integration
+- **Services**: Comprehensive service catalog with search, filtering, and bundle building
+- **Quote**: Multi-step quote request form with progress tracking and file uploads
+- **Client Portal**: Complete project management system with progress tracking, payments, and communication
 - **404**: Error handling for undefined routes
 
 ## Data Flow
