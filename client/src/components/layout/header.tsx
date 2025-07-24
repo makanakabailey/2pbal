@@ -3,7 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Menu, User, LogOut, Settings, BarChart3 } from 'lucide-react';
+import { Menu, User, LogOut, Settings, BarChart3, Home } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import logoPath from '@assets/logo_1753208911294.png';
@@ -46,7 +46,8 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link href="/">
+            <Link href="/" className="flex items-center space-x-2 group">
+              <Home className="h-6 w-6 text-white group-hover:text-lime-primary transition-colors" />
               <img src={logoPath} alt="2Pbal Logo" className="h-8 w-auto" />
             </Link>
             <span className="ml-3 text-sm text-white font-medium hidden lg:block">
@@ -128,6 +129,14 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
               </SheetTrigger>
               <SheetContent>
                 <div className="flex flex-col space-y-4 mt-6">
+                  <Link
+                    href="/"
+                    className="flex items-center space-x-2 font-medium text-lg text-gray-dark hover:text-teal-primary transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Home className="h-5 w-5" />
+                    <span>Home</span>
+                  </Link>
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
