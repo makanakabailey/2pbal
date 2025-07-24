@@ -1,8 +1,4 @@
 import { 
-  users, 
-  userSessions, 
-  quotes, 
-  userProjects,
   type User, 
   type InsertUser, 
   type LoginData,
@@ -14,8 +10,6 @@ import {
   type UserProject,
   type InsertProject 
 } from "@shared/schema";
-import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
 
@@ -44,48 +38,74 @@ export interface IStorage {
   updateProject(id: number, data: Partial<InsertProject>): Promise<UserProject | undefined>;
 }
 
-export class DatabaseStorage implements IStorage {
+export class MemStorage implements IStorage {
+  private users: Map<number, User> = new Map();
+  private sessions: Map<string, UserSession> = new Map();
+  private quotes: Map<number, Quote> = new Map();
+  private projects: Map<number, UserProject> = new Map();
+  private nextUserId = 1;
+  private nextQuoteId = 1;
+  private nextProjectId = 1;
+
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    return this.users.get(id);
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
+    for (const user of Array.from(this.users.values())) {
+      if (user.email === email) {
+        return user;
+      }
+    }
+    return undefined;
   }
 
   async createUser(userData: SignupData): Promise<User> {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     
-    const [user] = await db
-      .insert(users)
-      .values({
-        email: userData.email,
-        password: hashedPassword,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        company: userData.company,
-        phone: userData.phone,
-        marketingConsent: userData.marketingConsent || false,
-      })
-      .returning();
+    const user: User = {
+      id: this.nextUserId++,
+      email: userData.email,
+      password: hashedPassword,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      company: userData.company || null,
+      phone: userData.phone || null,
+      jobTitle: null,
+      industry: null,
+      companySize: null,
+      website: null,
+      address: null,
+      businessGoals: null,
+      currentChallenges: null,
+      preferredBudget: null,
+      projectTimeline: null,
+      referralSource: null,
+      marketingConsent: userData.marketingConsent || false,
+      profileComplete: false,
+      isActive: true,
+      lastLogin: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
     
+    this.users.set(user.id, user);
     return user;
   }
 
   async updateUser(id: number, userData: ProfileUpdate): Promise<User | undefined> {
-    const [user] = await db
-      .update(users)
-      .set({
-        ...userData,
-        updatedAt: new Date(),
-        profileComplete: true,
-      })
-      .where(eq(users.id, id))
-      .returning();
+    const user = this.users.get(id);
+    if (!user) return undefined;
     
-    return user || undefined;
+    const updatedUser: User = {
+      ...user,
+      ...userData,
+      updatedAt: new Date(),
+      profileComplete: true,
+    };
+    
+    this.users.set(id, updatedUser);
+    return updatedUser;
   }
 
   async loginUser(credentials: LoginData): Promise<{ user: User; session: UserSession } | null> {
@@ -96,36 +116,30 @@ export class DatabaseStorage implements IStorage {
     if (!isPasswordValid) return null;
 
     // Update last login
-    await db
-      .update(users)
-      .set({ lastLogin: new Date() })
-      .where(eq(users.id, user.id));
+    const updatedUser = { ...user, lastLogin: new Date() };
+    this.users.set(user.id, updatedUser);
 
     const session = await this.createSession(user.id);
-    return { user, session };
+    return { user: updatedUser, session };
   }
 
   async createSession(userId: number): Promise<UserSession> {
     const sessionId = randomBytes(32).toString('hex');
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    const [session] = await db
-      .insert(userSessions)
-      .values({
-        id: sessionId,
-        userId,
-        expiresAt,
-      })
-      .returning();
+    const session: UserSession = {
+      id: sessionId,
+      userId,
+      expiresAt,
+      createdAt: new Date(),
+    };
     
+    this.sessions.set(sessionId, session);
     return session;
   }
 
   async getSession(sessionId: string): Promise<UserSession | undefined> {
-    const [session] = await db
-      .select()
-      .from(userSessions)
-      .where(eq(userSessions.id, sessionId));
+    const session = this.sessions.get(sessionId);
     
     if (!session || session.expiresAt < new Date()) {
       if (session) {
@@ -138,72 +152,98 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteSession(sessionId: string): Promise<void> {
-    await db.delete(userSessions).where(eq(userSessions.id, sessionId));
+    this.sessions.delete(sessionId);
   }
 
   async createQuote(quoteData: InsertQuote): Promise<Quote> {
-    const [quote] = await db
-      .insert(quotes)
-      .values(quoteData)
-      .returning();
+    const quote: Quote = {
+      id: this.nextQuoteId++,
+      userId: quoteData.userId || null,
+      name: quoteData.name,
+      email: quoteData.email,
+      company: quoteData.company || null,
+      phone: quoteData.phone || null,
+      goals: Array.isArray(quoteData.goals) ? quoteData.goals : [],
+      overspending: Array.isArray(quoteData.overspending) ? quoteData.overspending : [],
+      outcomes: Array.isArray(quoteData.outcomes) ? quoteData.outcomes : [],
+      projectDescription: quoteData.projectDescription,
+      timeline: quoteData.timeline,
+      attachments: Array.isArray(quoteData.attachments) ? quoteData.attachments : [],
+      status: quoteData.status || "pending",
+      createdAt: new Date(),
+    };
     
+    this.quotes.set(quote.id, quote);
     return quote;
   }
 
   async getQuotes(userId?: number): Promise<Quote[]> {
+    const allQuotes = Array.from(this.quotes.values());
+    
     if (userId) {
-      return await db
-        .select()
-        .from(quotes)
-        .where(eq(quotes.userId, userId))
-        .orderBy(desc(quotes.createdAt));
+      return allQuotes
+        .filter(quote => quote.userId === userId)
+        .sort((a, b) => 
+          (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0)
+        );
     }
     
-    return await db
-      .select()
-      .from(quotes)
-      .orderBy(desc(quotes.createdAt));
+    return allQuotes.sort((a, b) => 
+      (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0)
+    );
   }
 
   async getQuote(id: number): Promise<Quote | undefined> {
-    const [quote] = await db.select().from(quotes).where(eq(quotes.id, id));
-    return quote || undefined;
+    return this.quotes.get(id);
   }
 
   async createProject(projectData: InsertProject): Promise<UserProject> {
-    const [project] = await db
-      .insert(userProjects)
-      .values(projectData)
-      .returning();
+    const project: UserProject = {
+      id: this.nextProjectId++,
+      userId: projectData.userId,
+      name: projectData.name,
+      description: projectData.description || null,
+      services: projectData.services || [],
+      packageType: projectData.packageType || null,
+      totalCost: projectData.totalCost || 0,
+      paidAmount: projectData.paidAmount || 0,
+      status: projectData.status || "planning",
+      progress: projectData.progress || 0,
+      startDate: projectData.startDate || null,
+      estimatedCompletion: projectData.estimatedCompletion || null,
+      milestones: projectData.milestones || [],
+      timeline: projectData.timeline || [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
     
+    this.projects.set(project.id, project);
     return project;
   }
 
   async getUserProjects(userId: number): Promise<UserProject[]> {
-    return await db
-      .select()
-      .from(userProjects)
-      .where(eq(userProjects.userId, userId))
-      .orderBy(desc(userProjects.createdAt));
+    return Array.from(this.projects.values())
+      .filter(project => project.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
   async getProject(id: number): Promise<UserProject | undefined> {
-    const [project] = await db.select().from(userProjects).where(eq(userProjects.id, id));
-    return project || undefined;
+    return this.projects.get(id);
   }
 
   async updateProject(id: number, data: Partial<InsertProject>): Promise<UserProject | undefined> {
-    const [project] = await db
-      .update(userProjects)
-      .set({
-        ...data,
-        updatedAt: new Date(),
-      })
-      .where(eq(userProjects.id, id))
-      .returning();
+    const project = this.projects.get(id);
+    if (!project) return undefined;
     
-    return project || undefined;
+    const updatedProject: UserProject = {
+      ...project,
+      ...data,
+      updatedAt: new Date(),
+    };
+    
+    this.projects.set(id, updatedProject);
+    return updatedProject;
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new MemStorage();
