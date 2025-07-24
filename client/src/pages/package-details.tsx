@@ -225,7 +225,7 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
             <h2 className="text-2xl font-semibold mb-6 text-lime-primary">
               {details.hero.subtitle}
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-gradient-glow mb-8 max-w-3xl mx-auto">
               {details.hero.description}
             </p>
             <Badge variant="secondary" className="bg-white text-teal-primary text-lg px-6 py-2">
@@ -354,7 +354,7 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
           <h2 className="text-3xl lg:text-4xl font-bold mb-8 text-white">
             Strategic Value Continuum
           </h2>
-          <p className="text-xl text-blue-100 mb-12">
+          <p className="text-xl text-gradient-glow mb-12">
             See how our packages build upon each other for maximum impact
           </p>
           

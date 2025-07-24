@@ -27,7 +27,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
               <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
                 Stop Overpaying for Digital Solutions. <span className="text-lime-primary">Start Scaling.</span>
               </h1>
-              <p className="text-xl mb-8 text-blue-100">
+              <p className="text-xl mb-8 text-gradient-glow">
                 Get a dedicated team of experts for less than the cost of one in-house hire. Save up to 70% vs. traditional agencies.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -50,7 +50,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                   onClick={scrollToPackages}
                   variant="ghost"
                   size="lg"
-                  className="text-blue-100 hover:text-white hover:bg-white/10 text-lg px-8 py-4"
+                  className="text-gradient-glow hover:text-white hover:bg-white/10 text-lg px-8 py-4"
                 >
                   Explore Packages
                 </Button>
@@ -262,7 +262,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
           <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-white">
             Ready to Stop Wasting Your Budget?
           </h2>
-          <p className="text-xl mb-8 text-blue-100">
+          <p className="text-xl mb-8 text-gradient-glow">
             Join hundreds of smart businesses that scaled efficiently.
           </p>
           <Button 

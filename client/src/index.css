@@ -124,4 +124,48 @@
   .hover\:bg-green-500:hover {
     background-color: hsl(88, 50%, 47%);
   }
+
+  /* Glowing Gradient Text Animation */
+  .text-gradient-glow {
+    background: linear-gradient(45deg, hsl(207, 57%, 20%), hsl(88, 50%, 43%), hsl(207, 57%, 20%));
+    background-size: 200% 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: gradientGlow 3s ease-in-out infinite;
+  }
+
+  .text-typing {
+    overflow: hidden;
+    border-right: 2px solid transparent;
+    white-space: nowrap;
+    animation: typing 2s steps(40, end), blink-caret 1s step-end infinite;
+  }
+
+  @keyframes gradientGlow {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes typing {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
+  @keyframes blink-caret {
+    from, to {
+      border-color: transparent;
+    }
+    50% {
+      border-color: hsl(88, 50%, 43%);
+    }
+  }
 }
