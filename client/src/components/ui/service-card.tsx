@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { Link } from 'wouter';
 
 interface Service {
   id: string;
@@ -45,13 +46,14 @@ export default function ServiceCard({ service, onAddToBundle, isInBundle }: Serv
             {isInBundle ? 'Added to Bundle' : 'Add to Solution'}
           </Button>
           
-          <Button
-            onClick={() => window.location.href = `/client-portal/service/${service.id}`}
-            variant="ghost"
-            className="w-full text-teal-primary hover:text-teal-600 hover:bg-teal-50"
-          >
-            View Service Details
-          </Button>
+          <Link href={`/service/${service.id}`}>
+            <Button
+              variant="ghost"
+              className="w-full text-teal-primary hover:text-teal-600 hover:bg-teal-50"
+            >
+              View Service Details
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

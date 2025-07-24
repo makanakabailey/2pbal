@@ -11,6 +11,7 @@ import Home from "@/pages/home";
 import Packages from "@/pages/packages";
 import PackageDetails from "@/pages/package-details";
 import Services from "@/pages/services";
+import ServiceDetail from "@/pages/service-detail";
 import Quote from "@/pages/quote";
 import ClientPortal from "@/pages/client-portal";
 import Login from "@/pages/login";
@@ -31,6 +32,7 @@ function Router() {
           <Route path="/packages" component={() => <Packages onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/package/:id" component={() => <PackageDetails onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/services" component={Services} />
+          <Route path="/service/:serviceId" component={ServiceDetail} />
           <Route path="/quote" component={Quote} />
           <Route path="/client-portal/:type/:id" component={() => <ClientPortal onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/login" component={Login} />
