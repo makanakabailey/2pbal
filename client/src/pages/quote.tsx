@@ -6,8 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, ArrowLeft, ArrowRight, Download, Upload, X, File, Image, Video } from 'lucide-react';
+import { CheckCircle, ArrowLeft, ArrowRight, Download, Upload, X, File, Image, Video, Mic, Play, Pause, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { AudioRecorder, useAudioRecorder } from 'react-audio-voice-recorder';
 
 interface FormData {
   goals: string[];
@@ -20,6 +21,15 @@ interface FormData {
   company: string;
   phone: string;
   attachments: File[];
+  audioRecordings: AudioRecording[];
+}
+
+interface AudioRecording {
+  id: string;
+  blob: Blob;
+  duration: number;
+  name: string;
+  timestamp: Date;
 }
 
 export default function Quote() {
@@ -37,8 +47,11 @@ export default function Quote() {
     email: '',
     company: '',
     phone: '',
-    attachments: []
+    attachments: [],
+    audioRecordings: []
   });
+
+  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
 
   const totalSteps = 5;
   const progress = (currentStep / totalSteps) * 100;
@@ -116,6 +129,7 @@ export default function Quote() {
         const allowedTypes = [
           'image/jpeg', 'image/png', 'image/gif', 'image/webp',
           'video/mp4', 'video/webm', 'video/quicktime',
+          'audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/m4a', 'audio/ogg', 'audio/webm',
           'application/pdf', 'application/msword', 
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           'text/plain', 'application/zip'
@@ -150,7 +164,59 @@ export default function Quote() {
   const getFileIcon = (file: File) => {
     if (file.type.startsWith('image/')) return Image;
     if (file.type.startsWith('video/')) return Video;
+    if (file.type.startsWith('audio/')) return Mic;
     return File;
+  };
+
+  const addAudioRecording = (audioBlob: Blob) => {
+    const newRecording: AudioRecording = {
+      id: Date.now().toString(),
+      blob: audioBlob,
+      duration: 0, // We'll calculate this if needed
+      name: `Voice Recording ${formData.audioRecordings.length + 1}`,
+      timestamp: new Date()
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      audioRecordings: [...prev.audioRecordings, newRecording]
+    }));
+
+    toast({
+      title: "Audio Recorded",
+      description: "Your voice message has been added to your proposal.",
+    });
+  };
+
+  const removeAudioRecording = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      audioRecordings: prev.audioRecordings.filter(recording => recording.id !== id)
+    }));
+  };
+
+  const playAudio = (recording: AudioRecording) => {
+    if (playingAudio === recording.id) {
+      setPlayingAudio(null);
+      return;
+    }
+
+    const audioUrl = URL.createObjectURL(recording.blob);
+    const audio = new Audio(audioUrl);
+    
+    setPlayingAudio(recording.id);
+    
+    audio.play();
+    audio.addEventListener('ended', () => {
+      setPlayingAudio(null);
+      URL.revokeObjectURL(audioUrl);
+    });
+  };
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const formatFileSize = (bytes: number) => {
@@ -163,12 +229,32 @@ export default function Quote() {
 
   const handleSubmit = async () => {
     try {
+      // Convert audio recordings to a format suitable for submission
+      const audioData = formData.audioRecordings.map(recording => ({
+        id: recording.id,
+        name: recording.name,
+        timestamp: recording.timestamp,
+        // In a real implementation, you would upload the blob to your server
+        // For now, we'll just log the blob info
+        size: recording.blob.size,
+        type: recording.blob.type
+      }));
+
+      const submissionData = {
+        ...formData,
+        audioRecordings: audioData,
+        totalAudioRecordings: formData.audioRecordings.length,
+        totalAttachments: formData.attachments.length
+      };
+
       // Here you would normally submit to your API
-      console.log('Submitting form data:', formData);
+      console.log('Submitting form data:', submissionData);
+      console.log('Audio blobs:', formData.audioRecordings.map(r => r.blob));
+      
       setIsSubmitted(true);
       toast({
         title: "Quote Request Submitted!",
-        description: "We're preparing your personalized savings proposal now.",
+        description: `We're preparing your personalized savings proposal now. ${formData.audioRecordings.length > 0 ? 'Your voice recordings have been included.' : ''}`,
       });
     } catch (error) {
       toast({
@@ -311,12 +397,77 @@ export default function Quote() {
                     />
                   </div>
 
+                  {/* Voice Recording Section */}
+                  <div>
+                    <Label className="text-base font-medium mb-3 block">Record Voice Message (Optional)</Label>
+                    <p className="text-sm text-gray-medium mb-4">
+                      Record a voice message to explain your project in detail. This helps us understand your tone, urgency, and specific requirements better.
+                    </p>
+                    
+                    {/* Audio Recorder */}
+                    <div className="border rounded-lg p-4 bg-gray-50 mb-4">
+                      <div className="flex items-center justify-center">
+                        <AudioRecorder
+                          onRecordingComplete={addAudioRecording}
+                          audioTrackConstraints={{
+                            noiseSuppression: true,
+                            echoCancellation: true,
+                          }}
+                          downloadOnSavePress={false}
+                          downloadFileExtension="mp3"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Audio Recordings List */}
+                    {formData.audioRecordings.length > 0 && (
+                      <div className="space-y-2 mb-6">
+                        <Label className="text-sm font-medium">Voice Recordings:</Label>
+                        {formData.audioRecordings.map((recording) => (
+                          <div key={recording.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <Mic className="h-5 w-5 text-teal-primary" />
+                              <div>
+                                <div className="text-sm font-medium text-gray-dark">{recording.name}</div>
+                                <div className="text-xs text-gray-medium">
+                                  {new Date(recording.timestamp).toLocaleString()}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => playAudio(recording)}
+                                className="text-teal-primary hover:text-teal-700 hover:bg-teal-50"
+                              >
+                                {playingAudio === recording.id ? (
+                                  <Pause className="h-4 w-4" />
+                                ) : (
+                                  <Play className="h-4 w-4" />
+                                )}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeAudioRecording(recording.id)}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   {/* File Upload Section */}
                   <div>
                     <Label className="text-base font-medium mb-3 block">Attach Files (Optional)</Label>
                     <p className="text-sm text-gray-medium mb-4">
-                      Share images, videos, documents, or other files to help us understand your project better. 
-                      Max 10MB per file. Supported: Images, Videos, PDFs, Documents.
+                      Share images, videos, documents, audio files, or other files to help us understand your project better. 
+                      Max 10MB per file. Supported: Images, Videos, Audio, PDFs, Documents.
                     </p>
                     
                     {/* Upload Button */}
@@ -325,7 +476,7 @@ export default function Quote() {
                         type="file"
                         id="file-upload"
                         multiple
-                        accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip"
+                        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip"
                         onChange={handleFileUpload}
                         className="hidden"
                       />
@@ -335,7 +486,7 @@ export default function Quote() {
                           Drop files here or click to upload
                         </div>
                         <div className="text-sm text-gray-medium">
-                          Images, videos, documents up to 10MB each
+                          Images, videos, audio, documents up to 10MB each
                         </div>
                       </label>
                     </div>
