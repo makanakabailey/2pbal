@@ -965,11 +965,11 @@ export default function ServiceDetail() {
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <div>
                   <span className="text-sm text-gray-medium">Our Price</span>
-                  <p className="text-2xl font-bold text-teal-primary">{service.price}</p>
+                  <p className="text-2xl font-bold text-teal-primary">${service.basePrice.toLocaleString()}</p>
                 </div>
                 <div>
                   <span className="text-sm text-gray-medium">Typical Agency Cost</span>
-                  <p className="text-2xl font-bold text-red-500 line-through">{service.agencyPrice}</p>
+                  <p className="text-2xl font-bold text-red-500 line-through">${service.agencyPrice.toLocaleString()}</p>
                 </div>
               </div>
               <div className="flex gap-4">
@@ -1110,17 +1110,15 @@ export default function ServiceDetail() {
                   <CardContent className="space-y-6">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold">Our Price</span>
-                      <span className="text-2xl font-bold text-teal-primary">{service.price}</span>
+                      <span className="text-2xl font-bold text-teal-primary">${service.basePrice.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="font-semibold">Typical Agency</span>
-                      <span className="text-2xl font-bold text-red-500 line-through">{service.agencyPrice}</span>
+                      <span className="text-2xl font-bold text-red-500 line-through">${service.agencyPrice.toLocaleString()}</span>
                     </div>
                     <div className="bg-lime-50 p-4 rounded-lg">
                       <p className="font-semibold text-lime-700">
-                        You Save: {Math.round(((parseInt(service.agencyPrice.replace(/[^0-9]/g, '')) - 
-                        parseInt(service.price.replace(/[^0-9]/g, ''))) / 
-                        parseInt(service.agencyPrice.replace(/[^0-9]/g, ''))) * 100)}%
+                        You Save: {Math.round(((service.agencyPrice - service.basePrice) / service.agencyPrice) * 100)}%
                       </p>
                     </div>
                   </CardContent>

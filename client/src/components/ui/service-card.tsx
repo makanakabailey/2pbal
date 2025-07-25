@@ -1,16 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { Link } from 'wouter';
-
-interface Service {
-  id: string;
-  category: string;
-  name: string;
-  description: string;
-  price: string;
-  agencyPrice: string;
-  image?: React.ReactNode;
-}
+import { Service } from '@/lib/constants';
 
 interface ServiceCardProps {
   service: Service;
@@ -32,8 +23,8 @@ export default function ServiceCard({ service, onAddToBundle, isInBundle }: Serv
         <div className="mb-4">
           <h3 className="text-lg font-bold text-gray-dark mb-2">{service.name}</h3>
           <p className="text-gray-medium text-sm mb-3">{service.description}</p>
-          <div className="text-xs text-gray-400 mb-2 line-through">{service.agencyPrice}</div>
-          <div className="text-xl font-bold text-teal-primary">{service.price}</div>
+          <div className="text-xs text-gray-400 mb-2 line-through">Typically ${service.agencyPrice.toLocaleString()}</div>
+          <div className="text-xl font-bold text-teal-primary">From ${service.basePrice.toLocaleString()}</div>
         </div>
         
         <div className="space-y-2">

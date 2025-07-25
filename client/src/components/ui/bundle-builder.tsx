@@ -19,15 +19,13 @@ export default function BundleBuilder({
     selectedServices.includes(service.id)
   );
 
-  // Calculate bundle pricing (simplified)
+  // Calculate bundle pricing using new structure
   const totalAgencyPrice = bundledServices.reduce((sum, service) => {
-    const price = parseInt(service.agencyPrice.replace(/[^0-9]/g, ''));
-    return sum + price;
+    return sum + service.agencyPrice;
   }, 0);
 
   const totalTwoPbalPrice = bundledServices.reduce((sum, service) => {
-    const price = parseInt(service.price.replace(/[^0-9]/g, ''));
-    return sum + price;
+    return sum + service.basePrice;
   }, 0);
 
   const bundleDiscount = selectedServices.length >= 3 ? 0.2 : 0;
@@ -62,7 +60,7 @@ export default function BundleBuilder({
             <div key={service.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div>
                 <h4 className="font-medium text-gray-dark">{service.name}</h4>
-                <p className="text-sm text-gray-medium">{service.price}</p>
+                <p className="text-sm text-gray-medium">${service.basePrice.toLocaleString()}</p>
               </div>
               <Button
                 variant="ghost"
