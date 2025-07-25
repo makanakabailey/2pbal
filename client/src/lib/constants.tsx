@@ -131,7 +131,34 @@ export const SERVICES = [
     name: 'Custom Web Applications',
     description: 'Bespoke internal tools, client portals, and specialized software solutions',
     price: 'From $8,000',
-    agencyPrice: 'Typically $25,000'
+    agencyPrice: 'Typically $25,000',
+    image: (
+      <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
+        <rect width="400" height="200" fill="url(#webAppGrad)" />
+        <rect x="40" y="30" width="320" height="140" fill="white" rx="8" />
+        <rect x="60" y="50" width="60" height="40" fill="#0D9488" rx="4" />
+        <rect x="140" y="50" width="60" height="40" fill="#84CC16" rx="4" />
+        <rect x="220" y="50" width="60" height="40" fill="#0D9488" rx="4" />
+        <rect x="300" y="50" width="40" height="40" fill="#84CC16" rx="4" />
+        <rect x="60" y="110" width="280" height="45" fill="#F3F4F6" rx="4" />
+        <rect x="80" y="125" width="60" height="6" fill="#0D9488" rx="3" />
+        <rect x="80" y="135" width="40" height="4" fill="#D1D5DB" rx="2" />
+        <rect x="160" y="125" width="80" height="6" fill="#84CC16" rx="3" />
+        <rect x="160" y="135" width="60" height="4" fill="#D1D5DB" rx="2" />
+        <rect x="260" y="125" width="60" height="6" fill="#0D9488" rx="3" />
+        <rect x="260" y="135" width="50" height="4" fill="#D1D5DB" rx="2" />
+        <circle cx="90" cy="70" r="8" fill="white" />
+        <circle cx="170" cy="70" r="8" fill="white" />
+        <circle cx="250" cy="70" r="8" fill="white" />
+        <defs>
+          <linearGradient id="webAppGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1E40AF" />
+            <stop offset="50%" stopColor="#0D9488" />
+            <stop offset="100%" stopColor="#84CC16" />
+          </linearGradient>
+        </defs>
+      </svg>
+    )
   },
   {
     id: 'mobile-app',

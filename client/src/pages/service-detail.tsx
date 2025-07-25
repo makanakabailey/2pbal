@@ -316,6 +316,83 @@ const ENHANCED_SERVICE_DATA = {
       'Performance monitoring'
     ]
   },
+  'web-app': {
+    heroImage: (
+      <svg className="w-full h-64 object-cover rounded-lg" viewBox="0 0 800 400" fill="none">
+        <rect width="800" height="400" fill="url(#webAppHeroGrad)" />
+        <rect x="80" y="60" width="640" height="280" fill="white" rx="16" />
+        <rect x="120" y="100" width="120" height="80" fill="#0D9488" rx="8" />
+        <rect x="280" y="100" width="120" height="80" fill="#84CC16" rx="8" />
+        <rect x="440" y="100" width="120" height="80" fill="#0D9488" rx="8" />
+        <rect x="600" y="100" width="80" height="80" fill="#84CC16" rx="8" />
+        <rect x="120" y="220" width="560" height="90" fill="#F3F4F6" rx="8" />
+        <rect x="160" y="250" width="120" height="12" fill="#0D9488" rx="6" />
+        <rect x="160" y="270" width="80" height="8" fill="#D1D5DB" rx="4" />
+        <rect x="320" y="250" width="160" height="12" fill="#84CC16" rx="6" />
+        <rect x="320" y="270" width="120" height="8" fill="#D1D5DB" rx="4" />
+        <rect x="520" y="250" width="120" height="12" fill="#0D9488" rx="6" />
+        <rect x="520" y="270" width="100" height="8" fill="#D1D5DB" rx="4" />
+        <circle cx="180" cy="140" r="16" fill="white" />
+        <circle cx="340" cy="140" r="16" fill="white" />
+        <circle cx="500" cy="140" r="16" fill="white" />
+        <defs>
+          <linearGradient id="webAppHeroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1E40AF" />
+            <stop offset="50%" stopColor="#0D9488" />
+            <stop offset="100%" stopColor="#84CC16" />
+          </linearGradient>
+        </defs>
+      </svg>
+    ),
+    roiStats: [
+      { label: 'Productivity Gain', value: '300%', icon: TrendingUp },
+      { label: 'Process Efficiency', value: '75%', icon: Zap },
+      { label: 'Cost Reduction', value: '$50K/year', icon: DollarSign },
+      { label: 'User Satisfaction', value: '95%', icon: Users }
+    ],
+    benefits: [
+      {
+        title: 'Custom Business Logic',
+        description: 'Built specifically for your unique business processes, workflows, and requirements. No compromises or workarounds needed.',
+        impact: 'Perfectly aligned with business needs',
+        icon: Target
+      },
+      {
+        title: 'Massive Productivity Boost',
+        description: 'Automate complex workflows and eliminate manual processes. Custom applications increase team productivity by 300%.',
+        impact: 'Saves 20+ hours per week per employee',
+        icon: TrendingUp
+      },
+      {
+        title: 'Scalable Architecture',
+        description: 'Built to grow with your business. Handle increasing data, users, and complexity without performance degradation.',
+        impact: 'Supports unlimited business growth',
+        icon: Zap
+      },
+      {
+        title: 'Integration Capabilities',
+        description: 'Seamlessly connect with existing systems, APIs, and databases. Create unified workflows across all platforms.',
+        impact: 'Eliminates data silos and manual transfers',
+        icon: Shield
+      }
+    ],
+    process: [
+      { step: 'Requirements Analysis', duration: '1 week', description: 'Deep dive into business processes and technical requirements' },
+      { step: 'System Architecture', duration: '1 week', description: 'Database design, API structure, and technical planning' },
+      { step: 'Development & Testing', duration: '6-10 weeks', description: 'Agile development with regular testing and feedback' },
+      { step: 'Deployment & Training', duration: '1 week', description: 'Production deployment and team training' }
+    ],
+    features: [
+      'Custom user interfaces',
+      'Database integration',
+      'API development',
+      'User authentication',
+      'Role-based permissions',
+      'Real-time updates',
+      'Mobile responsiveness',
+      'Analytics & reporting'
+    ]
+  },
   'mobile-app': {
     heroImage: (
       <svg className="w-full h-64 object-cover rounded-lg" viewBox="0 0 800 400" fill="none">
