@@ -19,6 +19,7 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
   const { toast } = useToast();
 
   const navigation = [
+    { name: 'Home', href: '/' },
     { name: 'Packages', href: '/packages' },
     { name: 'All Services', href: '/services' },
     { name: 'Get Recommendations', href: '/recommendations' },
@@ -48,11 +49,10 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3 group">
+            <Link href="/" className="flex items-center space-x-2 group mr-6">
               <img src={logoPath} alt="2Pbal Logo" className="h-12 w-auto" />
-              <Home className="h-7 w-7 text-white group-hover:text-lime-primary transition-colors" />
             </Link>
-            <span className="ml-4 text-sm text-white font-medium hidden lg:block">
+            <span className="text-sm text-white font-medium hidden lg:block">
               Enterprise Results, Without Enterprise Costs
             </span>
           </div>
