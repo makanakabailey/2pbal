@@ -46,23 +46,27 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
 
   return (
     <header className="bg-blue-600 shadow-sm fixed w-full top-0 z-50">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2 group mr-6">
-              <img src={logoPath} alt="2Pbal Logo" className="h-12 w-auto" />
+      <nav className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="flex justify-between items-center h-16 lg:h-20">
+          <div className="flex items-center min-w-0 flex-1">
+            <Link href="/" className="flex items-center group mr-4 lg:mr-8 flex-shrink-0">
+              <img 
+                src={logoPath} 
+                alt="2Pbal Logo" 
+                className="h-10 sm:h-12 lg:h-16 w-auto object-contain max-w-none" 
+              />
             </Link>
-            <span className="text-sm text-white font-medium hidden lg:block">
+            <span className="text-xs sm:text-sm text-white font-medium hidden xl:block truncate">
               Enterprise Results, Without Enterprise Costs
             </span>
           </div>
           
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-4 xl:space-x-6 flex-shrink-0">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`font-medium transition-colors ${
+                className={`font-medium transition-colors text-sm lg:text-base whitespace-nowrap ${
                   location === item.href 
                     ? 'text-lime-primary' 
                     : 'text-white hover:text-lime-primary'
@@ -73,7 +77,8 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
             ))}
             <Button 
               onClick={onOpenCalculator}
-              className="bg-white text-blue-600 hover:bg-gray-100"
+              className="bg-white text-blue-600 hover:bg-gray-100 text-xs lg:text-sm px-2 lg:px-4 whitespace-nowrap"
+              size="sm"
             >
               Calculate Savings
             </Button>
@@ -81,9 +86,10 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="text-white hover:text-lime-primary">
-                    <User className="h-4 w-4 mr-2" />
-                    {user?.firstName || 'Account'}
+                  <Button variant="ghost" className="text-white hover:text-lime-primary text-xs lg:text-sm" size="sm">
+                    <User className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
+                    <span className="hidden lg:inline">{user?.firstName || 'Account'}</span>
+                    <span className="lg:hidden">Account</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
