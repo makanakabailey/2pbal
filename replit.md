@@ -83,9 +83,10 @@ Preferred communication style: Simple, everyday language.
 - **PostCSS**: CSS processing with Tailwind
 
 ### Brand-Specific Dependencies
-- Custom color palette with teal and lime primary colors
+- Custom color palette with blue primary color (navbar), teal and lime accent colors
 - shadcn/ui component system configured for "new-york" style
 - Custom logos and assets in attached_assets directory
+- Animations removed per user preference
 
 ## Deployment Strategy
 

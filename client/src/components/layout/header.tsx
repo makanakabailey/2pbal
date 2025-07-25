@@ -42,7 +42,7 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
   };
 
   return (
-    <header className="bg-gradient-glow shadow-sm fixed w-full top-0 z-50">
+    <header className="bg-blue-600 shadow-sm fixed w-full top-0 z-50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
@@ -71,7 +71,7 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
             ))}
             <Button 
               onClick={onOpenCalculator}
-              className="btn-gradient-glow"
+              className="bg-white text-blue-600 hover:bg-gray-100"
             >
               Calculate Savings
             </Button>

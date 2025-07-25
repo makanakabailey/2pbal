@@ -20,21 +20,21 @@ export default function Home({ onOpenCalculator }: HomeProps) {
   return (
     <div className="pt-16">
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-glow">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-white">
+            <div className="text-gray-900">
               <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
                 Stop Overpaying for Digital Solutions. <span className="text-lime-primary">Start Scaling.</span>
               </h1>
-              <p className="text-xl mb-8 text-gradient-glow">
+              <p className="text-xl mb-8 text-gray-600">
                 Get a dedicated team of experts for less than the cost of one in-house hire. Save up to 70% vs. traditional agencies.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   onClick={onOpenCalculator}
                   size="lg"
-                  className="btn-gradient-glow text-lg px-8 py-4"
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-4"
                 >
                   See How Much You Can Save
                 </Button>
@@ -42,7 +42,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                   onClick={() => window.location.href = '/client-portal/package/accelerator'}
                   variant="outline"
                   size="lg"
-                  className="border-gradient-glow text-white hover:bg-white hover:text-teal-primary text-lg px-8 py-4"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg px-8 py-4"
                 >
                   View Client Portal Demo
                 </Button>
@@ -50,7 +50,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                   onClick={scrollToPackages}
                   variant="ghost"
                   size="lg"
-                  className="text-gradient-glow hover:text-white hover:bg-white/10 text-lg px-8 py-4"
+                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-lg px-8 py-4"
                 >
                   Explore Packages
                 </Button>
