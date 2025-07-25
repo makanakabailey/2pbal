@@ -20,39 +20,32 @@ export default function ClientPortal({ onOpenCalculator }: ClientPortalProps) {
   const [, params] = useRoute('/client-portal/:type/:id');
   const { type, id } = params || {};
   
-  // Sample project data - in real app this would come from API
+  // Initial demo data - everything set at zero until account is created
   const [projectData] = useState({
-    id: 'proj_001',
-    name: 'Digital Marketing Transformation',
-    client: 'Acme Corp',
-    services: ['web-development', 'seo', 'email-marketing'],
+    id: 'demo_project',
+    name: 'Your Project',
+    client: 'Your Company',
+    services: [],
     package: type === 'package' ? id : null,
-    status: 'in-progress',
-    progress: 65,
-    startDate: '2024-12-01',
-    estimatedCompletion: '2024-02-15',
-    totalCost: 12500,
-    paidAmount: 6250,
+    status: 'not-started',
+    progress: 0,
+    startDate: null,
+    estimatedCompletion: null,
+    totalCost: 0,
+    paidAmount: 0,
     nextPayment: {
-      amount: 3125,
-      dueDate: '2024-01-15'
+      amount: 0,
+      dueDate: null
     },
     milestones: [
-      { id: 1, name: 'Project Discovery & Planning', status: 'completed', completedDate: '2024-12-05' },
-      { id: 2, name: 'Design & Development Phase', status: 'in-progress', progress: 80 },
-      { id: 3, name: 'Content Creation & SEO Setup', status: 'in-progress', progress: 45 },
-      { id: 4, name: 'Testing & Quality Assurance', status: 'pending', progress: 0 },
-      { id: 5, name: 'Launch & Go-Live', status: 'pending', progress: 0 }
+      { id: 1, name: 'Project Setup', status: 'pending', progress: 0, completedDate: null },
+      { id: 2, name: 'Discovery & Planning', status: 'pending', progress: 0, completedDate: null },
+      { id: 3, name: 'Design & Development', status: 'pending', progress: 0, completedDate: null },
+      { id: 4, name: 'Testing & Review', status: 'pending', progress: 0, completedDate: null },
+      { id: 5, name: 'Launch & Delivery', status: 'pending', progress: 0, completedDate: null }
     ],
     timeline: [
-      { date: '2024-12-01', event: 'Project Kickoff', type: 'milestone' },
-      { date: '2024-12-05', event: 'Discovery Phase Completed', type: 'completed' },
-      { date: '2024-12-15', event: 'First Payment Received', type: 'payment' },
-      { date: '2024-12-20', event: 'Design Mockups Approved', type: 'completed' },
-      { date: '2025-01-10', event: 'Development 80% Complete', type: 'update' },
-      { date: '2025-01-15', event: 'Second Payment Due', type: 'payment-due' },
-      { date: '2025-02-01', event: 'Beta Testing Begins', type: 'upcoming' },
-      { date: '2025-02-15', event: 'Project Completion', type: 'upcoming' }
+      { date: 'TBD', event: 'Awaiting project initiation', type: 'pending' }
     ]
   });
 
@@ -164,10 +157,10 @@ export default function ClientPortal({ onOpenCalculator }: ClientPortalProps) {
                       <div>
                         <p className="text-sm font-medium text-gray-dark">Timeline</p>
                         <p className="text-gray-medium">
-                          Started: {new Date(projectData.startDate).toLocaleDateString()}
+                          Started: {projectData.startDate ? new Date(projectData.startDate).toLocaleDateString() : 'Not started'}
                         </p>
                         <p className="text-gray-medium">
-                          Est. Completion: {new Date(projectData.estimatedCompletion).toLocaleDateString()}
+                          Est. Completion: {projectData.estimatedCompletion ? new Date(projectData.estimatedCompletion).toLocaleDateString() : 'TBD'}
                         </p>
                       </div>
                     </div>
@@ -209,7 +202,7 @@ export default function ClientPortal({ onOpenCalculator }: ClientPortalProps) {
                         <span className="text-gray-medium">Next Payment</span>
                         <div className="text-right">
                           <p className="font-semibold">${projectData.nextPayment.amount.toLocaleString()}</p>
-                          <p className="text-xs text-gray-medium">{new Date(projectData.nextPayment.dueDate).toLocaleDateString()}</p>
+                          <p className="text-xs text-gray-medium">{projectData.nextPayment.dueDate ? new Date(projectData.nextPayment.dueDate).toLocaleDateString() : 'TBD'}</p>
                         </div>
                       </div>
                     </div>

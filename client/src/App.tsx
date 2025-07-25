@@ -13,6 +13,7 @@ import PackageDetails from "@/pages/package-details";
 import Services from "@/pages/services";
 import ServiceDetail from "@/pages/service-detail";
 import PaymentOptions from "@/pages/payment-options";
+import Payment from "@/pages/payment";
 import ScheduleConsultation from "@/pages/schedule-consultation";
 import Checkout from "@/pages/checkout";
 import PaymentSuccess from "@/pages/payment-success";
@@ -39,12 +40,14 @@ function Router() {
           <Route path="/services" component={Services} />
           <Route path="/service/:serviceId" component={ServiceDetail} />
           <Route path="/payment-options/:serviceId" component={PaymentOptions} />
+          <Route path="/payment/:packageId" component={Payment} />
           <Route path="/schedule-consultation" component={ScheduleConsultation} />
           <Route path="/checkout" component={Checkout} />
           <Route path="/payment-success" component={PaymentSuccess} />
           <Route path="/quote" component={Quote} />
           <Route path="/recommendations" component={RecommendationPage} />
           <Route path="/client-portal/:type/:id" component={() => <ClientPortal onOpenCalculator={() => setCalculatorOpen(true)} />} />
+          <Route path="/client-portal" component={() => <ClientPortal onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
           <Route path="/dashboard" component={Dashboard} />
