@@ -70,14 +70,102 @@ export const PACKAGES = [
   }
 ];
 
-export const SERVICES = [
+// Pricing plans structure for all services
+export interface ServicePricingPlan {
+  id: string;
+  name: string;
+  duration: string;
+  totalPrice: number;
+  monthlyPrice: number;
+  setupFee?: number;
+  features: string[];
+  popular?: boolean;
+}
+
+export interface Service {
+  id: string;
+  category: string;
+  name: string;
+  description: string;
+  basePrice: number;
+  agencyPrice: number;
+  pricingPlans: ServicePricingPlan[];
+  image: JSX.Element;
+}
+
+export const SERVICES: Service[] = [
   {
     id: 'web-development',
     category: 'Web & Application Development',
     name: 'Custom Website Development',
     description: 'Professional, mobile-first websites that convert visitors into customers',
-    price: 'From $2,500',
-    agencyPrice: 'Typically $8,000',
+    basePrice: 2500,
+    agencyPrice: 8000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 2500,
+        monthlyPrice: 2500,
+        features: [
+          'Complete 5-page website',
+          'Mobile-responsive design',
+          'SEO optimization',
+          '3 months support',
+          '2 revisions included'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 2750,
+        monthlyPrice: 917,
+        setupFee: 200,
+        features: [
+          'Everything in one-time plan',
+          'Extended 6-month support',
+          'Monthly performance reports',
+          '3 revisions included',
+          'Priority email support'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 3000,
+        monthlyPrice: 500,
+        setupFee: 300,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Advanced analytics setup',
+          'Monthly optimization calls',
+          'Unlimited minor revisions',
+          'Priority phone support',
+          'Content updates included'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 3600,
+        monthlyPrice: 300,
+        setupFee: 500,
+        features: [
+          'Everything in 6-month plan',
+          'Quarterly strategy sessions',
+          'Advanced feature additions',
+          'Unlimited revisions',
+          'Dedicated account manager',
+          'Monthly content creation',
+          '1-year maintenance included'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#webGrad)" />
@@ -101,8 +189,73 @@ export const SERVICES = [
     category: 'Web & Application Development', 
     name: 'E-Commerce Solutions',
     description: 'Full-featured online stores with payment integration and inventory management',
-    price: 'From $5,000',
-    agencyPrice: 'Typically $15,000',
+    basePrice: 5000,
+    agencyPrice: 15000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 5000,
+        monthlyPrice: 5000,
+        features: [
+          'Complete e-commerce store',
+          'Payment gateway integration',
+          'Inventory management',
+          'Order management system',
+          '3 months support'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 5500,
+        monthlyPrice: 1834,
+        setupFee: 400,
+        features: [
+          'Everything in one-time plan',
+          'Advanced analytics dashboard',
+          'Email marketing integration',
+          '6 months support',
+          'Monthly sales reports'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 6200,
+        monthlyPrice: 1034,
+        setupFee: 600,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Multi-channel selling setup',
+          'Customer loyalty program',
+          'Advanced shipping options',
+          'Bi-weekly optimization calls',
+          'Product photography guidance'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 7500,
+        monthlyPrice: 625,
+        setupFee: 800,
+        features: [
+          'Everything in 6-month plan',
+          'AI-powered recommendations',
+          'Advanced marketing automation',
+          'Dedicated e-commerce strategist',
+          'Monthly conversion optimization',
+          'Seasonal campaign management',
+          '1-year technical support'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#ecomGrad)" />
@@ -130,8 +283,73 @@ export const SERVICES = [
     category: 'Web & Application Development',
     name: 'Custom Web Applications',
     description: 'Bespoke internal tools, client portals, and specialized software solutions',
-    price: 'From $8,000',
-    agencyPrice: 'Typically $25,000',
+    basePrice: 8000,
+    agencyPrice: 25000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 8000,
+        monthlyPrice: 8000,
+        features: [
+          'Custom web application',
+          'Database design & setup',
+          'User authentication system',
+          'Admin dashboard',
+          '6 months support'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 8800,
+        monthlyPrice: 2934,
+        setupFee: 600,
+        features: [
+          'Everything in one-time plan',
+          'Advanced user roles',
+          'API integrations',
+          '9 months support',
+          'Monthly feature updates'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 10000,
+        monthlyPrice: 1667,
+        setupFee: 900,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Mobile app companion',
+          'Advanced reporting system',
+          'Third-party integrations',
+          'Bi-weekly check-ins',
+          'Performance optimization'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 12500,
+        monthlyPrice: 1042,
+        setupFee: 1200,
+        features: [
+          'Everything in 6-month plan',
+          'AI/ML features integration',
+          'Advanced security features',
+          'Dedicated development team',
+          'Weekly strategy sessions',
+          'Continuous feature development',
+          '2-year maintenance included'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#webAppGrad)" />
@@ -165,8 +383,73 @@ export const SERVICES = [
     category: 'Web & Application Development',
     name: 'Mobile App Development',
     description: 'Native iOS and Android apps or cross-platform solutions',
-    price: 'From $12,000',
-    agencyPrice: 'Typically $35,000',
+    basePrice: 12000,
+    agencyPrice: 35000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 12000,
+        monthlyPrice: 12000,
+        features: [
+          'Cross-platform mobile app',
+          'iOS & Android deployment',
+          'Backend API development',
+          'App store submission',
+          '6 months support'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 13200,
+        monthlyPrice: 4400,
+        setupFee: 800,
+        features: [
+          'Everything in one-time plan',
+          'Push notifications system',
+          'In-app analytics',
+          '9 months support',
+          'Monthly performance reports'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 15000,
+        monthlyPrice: 2500,
+        setupFee: 1200,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Advanced user engagement',
+          'Social media integration',
+          'Offline functionality',
+          'Bi-weekly optimization',
+          'App store optimization'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 18000,
+        monthlyPrice: 1500,
+        setupFee: 1500,
+        features: [
+          'Everything in 6-month plan',
+          'AI-powered features',
+          'Advanced security protocols',
+          'Dedicated mobile strategist',
+          'Weekly development updates',
+          'Continuous feature rollouts',
+          '2-year maintenance plan'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#mobileGrad)" />
@@ -194,8 +477,73 @@ export const SERVICES = [
     category: 'Digital Marketing & Advertising',
     name: 'Search Engine Optimization',
     description: 'SEO: Rank higher to attract organic leads 24/7',
-    price: 'From $1,200/mo',
-    agencyPrice: 'Typically $3,000/mo',
+    basePrice: 1200,
+    agencyPrice: 3000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 1200,
+        monthlyPrice: 1200,
+        features: [
+          'Complete SEO audit',
+          'Keyword research & strategy',
+          'On-page optimization',
+          'Local SEO setup',
+          '3 months monitoring'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 1350,
+        monthlyPrice: 450,
+        setupFee: 150,
+        features: [
+          'Everything in one-time plan',
+          'Monthly content optimization',
+          'Link building campaign',
+          '6 months monitoring',
+          'Monthly ranking reports'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 1620,
+        monthlyPrice: 270,
+        setupFee: 200,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Competitor analysis',
+          'Technical SEO improvements',
+          'Content strategy development',
+          'Bi-weekly optimization calls',
+          'Advanced analytics setup'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 2100,
+        monthlyPrice: 175,
+        setupFee: 300,
+        features: [
+          'Everything in 6-month plan',
+          'Advanced local SEO',
+          'E-commerce SEO optimization',
+          'Dedicated SEO strategist',
+          'Weekly content creation',
+          'Quarterly strategy reviews',
+          '1-year ranking guarantee'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#seoGrad)" />
@@ -223,8 +571,73 @@ export const SERVICES = [
     category: 'Digital Marketing & Advertising',
     name: 'Pay-Per-Click Management',
     description: 'Strategic PPC campaigns on Google Ads and social platforms',
-    price: 'From $2,000/mo',
-    agencyPrice: 'Typically $5,000/mo',
+    basePrice: 2000,
+    agencyPrice: 5000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 2000,
+        monthlyPrice: 2000,
+        features: [
+          'Complete PPC setup',
+          'Keyword research & targeting',
+          'Ad copy creation',
+          'Landing page optimization',
+          '3 months management'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 2200,
+        monthlyPrice: 734,
+        setupFee: 300,
+        features: [
+          'Everything in one-time plan',
+          'A/B testing campaigns',
+          'Conversion tracking setup',
+          '6 months management',
+          'Monthly ROI reports'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 2600,
+        monthlyPrice: 434,
+        setupFee: 400,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Multi-platform campaigns',
+          'Remarketing campaigns',
+          'Advanced audience targeting',
+          'Bi-weekly optimization calls',
+          'Competitive analysis'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 3200,
+        monthlyPrice: 267,
+        setupFee: 600,
+        features: [
+          'Everything in 6-month plan',
+          'Shopping campaigns setup',
+          'Video advertising campaigns',
+          'Dedicated PPC specialist',
+          'Weekly campaign optimization',
+          'Quarterly strategy sessions',
+          '1-year performance guarantee'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#ppcGrad)" />
@@ -254,8 +667,73 @@ export const SERVICES = [
     category: 'Digital Marketing & Advertising',
     name: 'Email Marketing & Automation',
     description: 'Campaign strategy, design, and automated sequences',
-    price: 'From $800/mo',
-    agencyPrice: 'Typically $2,500/mo',
+    basePrice: 800,
+    agencyPrice: 2500,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 800,
+        monthlyPrice: 800,
+        features: [
+          'Email marketing setup',
+          'Template design (5 templates)',
+          'List segmentation strategy',
+          'Basic automation flows',
+          '3 months management'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 900,
+        monthlyPrice: 300,
+        setupFee: 120,
+        features: [
+          'Everything in one-time plan',
+          'Advanced automation workflows',
+          'A/B testing campaigns',
+          '6 months management',
+          'Monthly performance reports'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 1080,
+        monthlyPrice: 180,
+        setupFee: 150,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Behavioral trigger campaigns',
+          'Dynamic content personalization',
+          'Lead scoring setup',
+          'Bi-weekly strategy calls',
+          'Custom template designs'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 1400,
+        monthlyPrice: 117,
+        setupFee: 200,
+        features: [
+          'Everything in 6-month plan',
+          'Advanced analytics dashboard',
+          'CRM integration setup',
+          'Dedicated email strategist',
+          'Weekly content creation',
+          'Quarterly campaign reviews',
+          '1-year deliverability guarantee'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#emailGrad)" />
@@ -288,8 +766,73 @@ export const SERVICES = [
     category: 'AI & Automation',
     name: 'AI Customer Chatbot',
     description: '24/7 intelligent customer support and lead qualification',
-    price: 'From $1,500',
-    agencyPrice: 'Typically $5,000',
+    basePrice: 1500,
+    agencyPrice: 5000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 1500,
+        monthlyPrice: 1500,
+        features: [
+          'Custom AI chatbot development',
+          'Natural language processing',
+          'Lead qualification system',
+          'CRM integration',
+          '6 months support'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 1650,
+        monthlyPrice: 550,
+        setupFee: 200,
+        features: [
+          'Everything in one-time plan',
+          'Advanced conversation flows',
+          'Multi-language support',
+          '9 months support',
+          'Monthly optimization'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 1950,
+        monthlyPrice: 325,
+        setupFee: 300,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Voice integration capability',
+          'Advanced analytics dashboard',
+          'Third-party tool integration',
+          'Bi-weekly training sessions',
+          'Performance optimization'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 2400,
+        monthlyPrice: 200,
+        setupFee: 400,
+        features: [
+          'Everything in 6-month plan',
+          'AI learning optimization',
+          'Advanced sentiment analysis',
+          'Dedicated AI specialist',
+          'Weekly performance reviews',
+          'Continuous learning updates',
+          '2-year maintenance included'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#aiGrad)" />
@@ -318,8 +861,73 @@ export const SERVICES = [
     category: 'AI & Automation',
     name: 'Business Process Automation',
     description: 'Automate repetitive tasks in HR, finance, and operations',
-    price: 'From $3,000',
-    agencyPrice: 'Typically $10,000',
+    basePrice: 3000,
+    agencyPrice: 10000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 3000,
+        monthlyPrice: 3000,
+        features: [
+          'Process analysis & mapping',
+          'Custom automation workflows',
+          'Integration with existing tools',
+          'Staff training sessions',
+          '6 months support'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 3300,
+        monthlyPrice: 1100,
+        setupFee: 300,
+        features: [
+          'Everything in one-time plan',
+          'Advanced workflow optimization',
+          'Error handling & notifications',
+          '9 months support',
+          'Monthly process reviews'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 3900,
+        monthlyPrice: 650,
+        setupFee: 450,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Multi-department automation',
+          'Advanced reporting dashboard',
+          'API development for integrations',
+          'Bi-weekly optimization calls',
+          'Process expansion planning'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 4800,
+        monthlyPrice: 400,
+        setupFee: 600,
+        features: [
+          'Everything in 6-month plan',
+          'AI-powered process optimization',
+          'Predictive analytics integration',
+          'Dedicated automation specialist',
+          'Weekly system monitoring',
+          'Quarterly expansion planning',
+          '2-year maintenance package'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#automationGrad)" />
@@ -355,8 +963,71 @@ export const SERVICES = [
     category: 'Content & Design',
     name: 'Professional Graphic Design',
     description: 'Brand identity, marketing materials, and digital assets',
-    price: 'From $500',
-    agencyPrice: 'Typically $1,500',
+    basePrice: 500,
+    agencyPrice: 1500,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 500,
+        monthlyPrice: 500,
+        features: [
+          'Logo design (3 concepts)',
+          'Business card design',
+          'Letterhead template',
+          'Brand style guide',
+          '2 revisions included'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 550,
+        monthlyPrice: 184,
+        setupFee: 75,
+        features: [
+          'Everything in one-time plan',
+          'Social media templates',
+          'Marketing brochure design',
+          '3 revisions included',
+          'Extended support'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 650,
+        monthlyPrice: 109,
+        setupFee: 100,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Website graphics package',
+          'Trade show materials',
+          'Unlimited minor revisions',
+          'Monthly design consultations'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 800,
+        monthlyPrice: 67,
+        setupFee: 125,
+        features: [
+          'Everything in 6-month plan',
+          'Seasonal campaign materials',
+          'Product packaging design',
+          'Dedicated designer',
+          'Weekly design updates',
+          'Brand evolution planning'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#designGrad)" />
@@ -388,8 +1059,71 @@ export const SERVICES = [
     category: 'Content & Design',
     name: 'Video Production & Editing',
     description: 'Promotional videos, tutorials, and social media content',
-    price: 'From $2,000',
-    agencyPrice: 'Typically $6,000',
+    basePrice: 2000,
+    agencyPrice: 6000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 2000,
+        monthlyPrice: 2000,
+        features: [
+          'Professional video production',
+          'Script writing assistance',
+          'Video editing & post-production',
+          'Basic motion graphics',
+          '2 revisions included'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 2200,
+        monthlyPrice: 734,
+        setupFee: 200,
+        features: [
+          'Everything in one-time plan',
+          'Social media video variants',
+          'Advanced motion graphics',
+          '3 revisions included',
+          'Extended support'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 2600,
+        monthlyPrice: 434,
+        setupFee: 300,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Multi-camera production',
+          'Professional voiceover',
+          'Unlimited minor revisions',
+          'Monthly video consultations'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 3200,
+        monthlyPrice: 267,
+        setupFee: 400,
+        features: [
+          'Everything in 6-month plan',
+          'Monthly video series',
+          'Advanced 3D animations',
+          'Dedicated video team',
+          'Weekly content planning',
+          'Video strategy development'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#videoGrad)" />
@@ -421,8 +1155,73 @@ export const SERVICES = [
     category: 'Business & Strategy',
     name: 'Digital Transformation Consulting',
     description: 'Strategic roadmap for digital-first transformation',
-    price: 'From $5,000',
-    agencyPrice: 'Typically $15,000',
+    basePrice: 5000,
+    agencyPrice: 15000,
+    pricingPlans: [
+      {
+        id: 'one-time',
+        name: 'One-Time Payment',
+        duration: 'Pay in Full',
+        totalPrice: 5000,
+        monthlyPrice: 5000,
+        features: [
+          'Complete digital audit',
+          'Strategic transformation roadmap',
+          'Technology recommendations',
+          'Implementation timeline',
+          '3 months follow-up'
+        ]
+      },
+      {
+        id: '3-month',
+        name: '3-Month Plan',
+        duration: '3 Monthly Payments',
+        totalPrice: 5500,
+        monthlyPrice: 1834,
+        setupFee: 400,
+        features: [
+          'Everything in one-time plan',
+          'Process optimization analysis',
+          'Change management strategy',
+          '6 months follow-up',
+          'Monthly strategy sessions'
+        ]
+      },
+      {
+        id: '6-month',
+        name: '6-Month Plan',
+        duration: '6 Monthly Payments',
+        totalPrice: 6500,
+        monthlyPrice: 1084,
+        setupFee: 600,
+        popular: true,
+        features: [
+          'Everything in 3-month plan',
+          'Implementation oversight',
+          'Staff training programs',
+          'Performance metrics setup',
+          'Bi-weekly strategy calls',
+          'Vendor evaluation assistance'
+        ]
+      },
+      {
+        id: '12-month',
+        name: '12-Month Plan',
+        duration: '12 Monthly Payments',
+        totalPrice: 8000,
+        monthlyPrice: 667,
+        setupFee: 800,
+        features: [
+          'Everything in 6-month plan',
+          'Continuous optimization',
+          'Advanced analytics setup',
+          'Dedicated strategist',
+          'Weekly implementation reviews',
+          'Quarterly transformation updates',
+          '2-year strategic planning'
+        ]
+      }
+    ],
     image: (
       <svg className="w-full h-48 object-cover" viewBox="0 0 400 200" fill="none">
         <rect width="400" height="200" fill="url(#consultGrad)" />
@@ -477,3 +1276,169 @@ export const CASE_STUDIES = [
     results: 'Launched in 6 weeks, 10x faster than expected'
   }
 ];
+
+// Business assessment questions for personalized recommendations
+export interface BusinessAssessment {
+  companySize: 'startup' | 'small' | 'medium' | 'large';
+  budget: 'under-5k' | '5k-15k' | '15k-35k' | '35k-plus';
+  currentStage: 'idea' | 'mvp' | 'growth' | 'scale';
+  primaryGoal: 'visibility' | 'leads' | 'automation' | 'efficiency';
+  timeframe: 'asap' | '1-3months' | '3-6months' | '6-12months';
+  techSavviness: 'basic' | 'intermediate' | 'advanced';
+}
+
+// Personalized package recommendation engine
+export function getPersonalizedRecommendation(assessment: BusinessAssessment): {
+  recommended: string;
+  reasons: string[];
+  alternatives: string[];
+} {
+  const { companySize, budget, currentStage, primaryGoal, timeframe, techSavviness } = assessment;
+  
+  // Score each package based on assessment
+  const packageScores = {
+    'digital-foundation': 0,
+    'market-accelerator': 0,
+    'ai-powered-efficiency': 0,
+    'full-suite-advantage': 0
+  };
+
+  // Company size scoring
+  if (companySize === 'startup') {
+    packageScores['digital-foundation'] += 3;
+    packageScores['market-accelerator'] += 2;
+  } else if (companySize === 'small') {
+    packageScores['digital-foundation'] += 2;
+    packageScores['market-accelerator'] += 3;
+    packageScores['ai-powered-efficiency'] += 1;
+  } else if (companySize === 'medium') {
+    packageScores['market-accelerator'] += 2;
+    packageScores['ai-powered-efficiency'] += 3;
+    packageScores['full-suite-advantage'] += 1;
+  } else if (companySize === 'large') {
+    packageScores['ai-powered-efficiency'] += 2;
+    packageScores['full-suite-advantage'] += 3;
+  }
+
+  // Budget scoring
+  if (budget === 'under-5k') {
+    packageScores['digital-foundation'] += 3;
+  } else if (budget === '5k-15k') {
+    packageScores['digital-foundation'] += 1;
+    packageScores['market-accelerator'] += 3;
+  } else if (budget === '15k-35k') {
+    packageScores['market-accelerator'] += 2;
+    packageScores['ai-powered-efficiency'] += 3;
+  } else if (budget === '35k-plus') {
+    packageScores['ai-powered-efficiency'] += 2;
+    packageScores['full-suite-advantage'] += 3;
+  }
+
+  // Current stage scoring
+  if (currentStage === 'idea') {
+    packageScores['digital-foundation'] += 3;
+  } else if (currentStage === 'mvp') {
+    packageScores['digital-foundation'] += 2;
+    packageScores['market-accelerator'] += 2;
+  } else if (currentStage === 'growth') {
+    packageScores['market-accelerator'] += 3;
+    packageScores['ai-powered-efficiency'] += 2;
+  } else if (currentStage === 'scale') {
+    packageScores['ai-powered-efficiency'] += 3;
+    packageScores['full-suite-advantage'] += 2;
+  }
+
+  // Primary goal scoring
+  if (primaryGoal === 'visibility') {
+    packageScores['digital-foundation'] += 3;
+    packageScores['market-accelerator'] += 2;
+  } else if (primaryGoal === 'leads') {
+    packageScores['market-accelerator'] += 3;
+    packageScores['ai-powered-efficiency'] += 1;
+  } else if (primaryGoal === 'automation') {
+    packageScores['ai-powered-efficiency'] += 3;
+    packageScores['full-suite-advantage'] += 2;
+  } else if (primaryGoal === 'efficiency') {
+    packageScores['ai-powered-efficiency'] += 2;
+    packageScores['full-suite-advantage'] += 3;
+  }
+
+  // Find recommended package
+  const sortedPackages = Object.entries(packageScores)
+    .sort(([,a], [,b]) => b - a)
+    .map(([pkg]) => pkg);
+
+  const recommended = sortedPackages[0];
+  const alternatives = sortedPackages.slice(1, 3);
+
+  // Generate reasons based on assessment
+  const reasons = [];
+  if (companySize === 'startup' && recommended === 'digital-foundation') {
+    reasons.push('Perfect foundation for startups to establish credibility');
+  }
+  if (currentStage === 'growth' && recommended === 'market-accelerator') {
+    reasons.push('Optimized for businesses ready for aggressive growth');
+  }
+  if (primaryGoal === 'automation' && recommended === 'ai-powered-efficiency') {
+    reasons.push('AI-powered features align with your automation goals');
+  }
+  if (budget === '35k-plus' && recommended === 'full-suite-advantage') {
+    reasons.push('Enterprise-level solution matching your budget range');
+  }
+
+  // Default reasons if none matched
+  if (reasons.length === 0) {
+    const pkg = PACKAGES.find(p => p.id === recommended);
+    if (pkg) {
+      reasons.push(`Best fit based on your business profile and ${pkg.target.toLowerCase()}`);
+    }
+  }
+
+  return {
+    recommended,
+    reasons,
+    alternatives
+  };
+}
+
+// Service recommendation based on business needs
+export function getServiceRecommendations(assessment: BusinessAssessment): Service[] {
+  const { primaryGoal, currentStage, techSavviness, budget } = assessment;
+  
+  let recommendedServices: Service[] = [];
+
+  // Base recommendations for all businesses
+  const webDev = SERVICES.find(s => s.id === 'web-development');
+  if (webDev) recommendedServices.push(webDev);
+
+  // Stage-based recommendations
+  if (currentStage === 'idea' || currentStage === 'mvp') {
+    const graphicDesign = SERVICES.find(s => s.id === 'graphic-design');
+    if (graphicDesign) recommendedServices.push(graphicDesign);
+  }
+
+  if (currentStage === 'growth' || currentStage === 'scale') {
+    const seo = SERVICES.find(s => s.id === 'seo');
+    const ppc = SERVICES.find(s => s.id === 'ppc');
+    if (seo && primaryGoal === 'leads') recommendedServices.push(seo);
+    if (ppc && budget !== 'under-5k') recommendedServices.push(ppc);
+  }
+
+  // Goal-based recommendations
+  if (primaryGoal === 'automation' || primaryGoal === 'efficiency') {
+    const aiChatbot = SERVICES.find(s => s.id === 'ai-chatbot');
+    const processAutomation = SERVICES.find(s => s.id === 'process-automation');
+    if (aiChatbot && techSavviness !== 'basic') recommendedServices.push(aiChatbot);
+    if (processAutomation && budget === '35k-plus') recommendedServices.push(processAutomation);
+  }
+
+  if (primaryGoal === 'visibility') {
+    const emailMarketing = SERVICES.find(s => s.id === 'email-marketing');
+    const videoProduction = SERVICES.find(s => s.id === 'video-production');
+    if (emailMarketing) recommendedServices.push(emailMarketing);
+    if (videoProduction && budget !== 'under-5k') recommendedServices.push(videoProduction);
+  }
+
+  // Limit to top 4 recommendations
+  return recommendedServices.slice(0, 4);
+}

@@ -30,74 +30,20 @@ export default function PaymentOptions() {
     return <div>Service not found</div>;
   }
 
-  // Extract base price from service.price string (e.g., "$2,500" -> 2500)
-  const basePrice = parseInt(service.price.replace(/[$,]/g, ''));
+  // Get base price from service
+  const basePrice = service.basePrice;
 
-  const paymentPlans: PaymentPlan[] = [
-    {
-      id: 'one-time',
-      name: 'One-Time Payment',
-      duration: 'Pay in Full',
-      totalPrice: basePrice,
-      monthlyPrice: basePrice,
-      discount: 0,
-      features: [
-        'Complete service delivery',
-        'Full access to all features',
-        'Priority support',
-        '90-day warranty'
-      ]
-    },
-    {
-      id: '3-month',
-      name: '3-Month Plan',
-      duration: '3 Monthly Payments',
-      totalPrice: Math.round(basePrice * 1.05),
-      monthlyPrice: Math.round(basePrice * 1.05 / 3),
-      discount: 0,
-      features: [
-        'Complete service delivery',
-        'Full access to all features',
-        'Standard support',
-        '60-day warranty',
-        'No setup fees'
-      ]
-    },
-    {
-      id: '6-month',
-      name: '6-Month Plan',
-      duration: '6 Monthly Payments',
-      totalPrice: Math.round(basePrice * 1.15),
-      monthlyPrice: Math.round(basePrice * 1.15 / 6),
-      discount: 0,
-      popular: true,
-      features: [
-        'Complete service delivery',
-        'Full access to all features',
-        'Priority support',
-        '90-day warranty',
-        'Free consultation calls',
-        'Progress tracking dashboard'
-      ]
-    },
-    {
-      id: '12-month',
-      name: '12-Month Plan',
-      duration: '12 Monthly Payments',
-      totalPrice: Math.round(basePrice * 1.25),
-      monthlyPrice: Math.round(basePrice * 1.25 / 12),
-      discount: 0,
-      features: [
-        'Complete service delivery',
-        'Full access to all features',
-        'Premium support',
-        '1-year warranty',
-        'Monthly consultation calls',
-        'Progress tracking dashboard',
-        'Additional revisions included'
-      ]
-    }
-  ];
+  // Use service's predefined pricing plans
+  const paymentPlans: PaymentPlan[] = service.pricingPlans.map(plan => ({
+    id: plan.id,
+    name: plan.name,
+    duration: plan.duration,
+    totalPrice: plan.totalPrice,
+    monthlyPrice: plan.monthlyPrice,
+    discount: 0,
+    popular: plan.popular,
+    features: plan.features
+  }));
 
   const paymentMethods = [
     { id: 'card', name: 'Credit/Debit Card', icon: <CreditCard className="h-5 w-5" /> },

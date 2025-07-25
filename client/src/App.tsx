@@ -18,6 +18,7 @@ import Checkout from "@/pages/checkout";
 import PaymentSuccess from "@/pages/payment-success";
 import Quote from "@/pages/quote";
 import ClientPortal from "@/pages/client-portal";
+import RecommendationPage from "@/pages/recommendation";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
@@ -42,6 +43,7 @@ function Router() {
           <Route path="/checkout" component={Checkout} />
           <Route path="/payment-success" component={PaymentSuccess} />
           <Route path="/quote" component={Quote} />
+          <Route path="/recommendations" component={RecommendationPage} />
           <Route path="/client-portal/:type/:id" component={() => <ClientPortal onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />

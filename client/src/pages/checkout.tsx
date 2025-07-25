@@ -157,33 +157,16 @@ export default function Checkout() {
       return;
     }
 
-    // Calculate order details
-    const basePrice = parseInt(service.price.replace(/[$,]/g, ''));
-    let totalPrice = basePrice;
-    let monthlyPrice = 0;
-    let planName = '';
-
-    switch (planId) {
-      case 'one-time':
-        planName = 'One-Time Payment';
-        totalPrice = basePrice;
-        break;
-      case '3-month':
-        planName = '3-Month Plan';
-        totalPrice = Math.round(basePrice * 1.05);
-        monthlyPrice = Math.round(totalPrice / 3);
-        break;
-      case '6-month':
-        planName = '6-Month Plan';
-        totalPrice = Math.round(basePrice * 1.15);
-        monthlyPrice = Math.round(totalPrice / 6);
-        break;
-      case '12-month':
-        planName = '12-Month Plan';
-        totalPrice = Math.round(basePrice * 1.25);
-        monthlyPrice = Math.round(totalPrice / 12);
-        break;
+    // Calculate order details using service pricing plans
+    const selectedPlan = service.pricingPlans.find(plan => plan.id === planId);
+    if (!selectedPlan) {
+      setLocation('/services');
+      return;
     }
+
+    const planName = selectedPlan.name;
+    const totalPrice = selectedPlan.totalPrice;
+    const monthlyPrice = selectedPlan.monthlyPrice;
 
     const details = {
       serviceName: service.name,
