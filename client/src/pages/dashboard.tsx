@@ -59,8 +59,8 @@ export default function Dashboard() {
     return null;
   }
 
-  const quotes = quotesData?.quotes || [];
-  const userProjects = projects || [];
+  const quotes = Array.isArray(quotesData?.quotes) ? quotesData.quotes : [];
+  const userProjects = Array.isArray(projects) ? projects : [];
   const activeProjects = userProjects.filter((p: any) => p.status === 'in-progress');
   const completedProjects = userProjects.filter((p: any) => p.status === 'completed');
 

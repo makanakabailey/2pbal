@@ -39,12 +39,12 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                   See How Much You Can Save
                 </Button>
                 <Button 
-                  onClick={() => window.location.href = '/client-portal/package/accelerator'}
+                  onClick={() => window.location.href = '/dashboard'}
                   variant="outline"
                   size="lg"
                   className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg px-8 py-4"
                 >
-                  View Client Portal Demo
+                  Dashboard
                 </Button>
                 <Button 
                   onClick={scrollToPackages}

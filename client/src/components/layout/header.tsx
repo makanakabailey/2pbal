@@ -23,6 +23,7 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
     { name: 'All Services', href: '/services' },
     { name: 'Get Recommendations', href: '/recommendations' },
     { name: 'Custom Proposal', href: '/quote' },
+    { name: 'Dashboard', href: '/dashboard' },
   ];
 
   const handleLogout = async () => {

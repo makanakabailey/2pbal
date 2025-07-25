@@ -57,21 +57,12 @@ export default function PackageCard({ package: pkg, onSelect }: PackageCardProps
         <div className="text-lime-primary font-semibold mb-4">
           Save ${pkg.savings.toLocaleString()} ({pkg.savingsPercent}%)
         </div>
-        <div className="space-y-3">
-          <Button
-            onClick={() => window.location.href = `/payment/${pkg.id}`}
-            className="w-full font-semibold btn-gradient-glow"
-          >
-            Get Started
-          </Button>
-          <Button
-            onClick={() => window.location.href = '/client-portal'}
-            variant="outline"
-            className="w-full font-semibold border-teal-primary text-teal-primary hover:bg-teal-primary hover:text-white"
-          >
-            Client Portal
-          </Button>
-        </div>
+        <Button
+          onClick={() => window.location.href = `/payment/${pkg.id}`}
+          className="w-full font-semibold btn-gradient-glow"
+        >
+          Get Started
+        </Button>
       </div>
     </div>
   );
