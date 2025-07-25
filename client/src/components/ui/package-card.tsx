@@ -22,12 +22,12 @@ interface PackageCardProps {
 
 export default function PackageCard({ package: pkg, onSelect }: PackageCardProps) {
   return (
-    <div className={`bg-white p-8 rounded-xl shadow-lg border-2 transition-all hover:shadow-xl relative ${
-      pkg.popular ? 'border-lime-primary' : 'border-transparent hover:border-lime-primary'
+    <div className={`bg-white p-8 rounded-xl shadow-lg border-2 transition-all hover:shadow-xl relative card-glow ${
+      pkg.popular ? 'border-gradient-glow' : 'border-transparent hover:border-gradient-glow'
     }`}>
       {pkg.popular && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <span className="bg-lime-primary text-white px-4 py-2 rounded-full text-sm font-semibold">
+          <span className="btn-gradient-glow px-4 py-2 rounded-full text-sm font-semibold">
             Most Popular
           </span>
         </div>
@@ -59,11 +59,7 @@ export default function PackageCard({ package: pkg, onSelect }: PackageCardProps
         </div>
         <Button
           onClick={() => window.location.href = `/package/${pkg.id}`}
-          className={`w-full font-semibold transition-colors ${
-            pkg.popular
-              ? 'bg-lime-primary text-white hover:bg-green-500'
-              : 'bg-teal-primary text-white hover:bg-teal-600'
-          }`}
+          className="w-full font-semibold btn-gradient-glow"
         >
           See Full Value Breakdown
         </Button>

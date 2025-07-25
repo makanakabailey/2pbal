@@ -20,7 +20,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
   return (
     <div className="pt-16">
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-teal-primary to-blue-700">
+      <section className="py-16 bg-gradient-glow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-white">
@@ -34,7 +34,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                 <Button 
                   onClick={onOpenCalculator}
                   size="lg"
-                  className="bg-lime-primary text-white hover:bg-green-500 text-lg px-8 py-4"
+                  className="btn-gradient-glow text-lg px-8 py-4"
                 >
                   See How Much You Can Save
                 </Button>
@@ -42,7 +42,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                   onClick={() => window.location.href = '/client-portal/package/accelerator'}
                   variant="outline"
                   size="lg"
-                  className="border-2 border-white text-white hover:bg-white hover:text-teal-primary text-lg px-8 py-4"
+                  className="border-gradient-glow text-white hover:bg-white hover:text-teal-primary text-lg px-8 py-4"
                 >
                   View Client Portal Demo
                 </Button>

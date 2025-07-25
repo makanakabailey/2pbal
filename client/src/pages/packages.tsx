@@ -189,7 +189,7 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
                 </div>
               </div>
               
-              <div className="bg-teal-primary p-6 rounded-lg text-white text-center">
+              <div className="bg-gradient-glow p-6 rounded-lg text-white text-center">
                 <h3 className="text-xl font-bold mb-2">By switching to 2Pbal, you could save approximately:</h3>
                 <div className="text-4xl font-bold mb-2">${monthlySavings.toLocaleString()}/month</div>
                 <div className="text-2xl font-semibold">That's ${annualSavings.toLocaleString()}/year!</div>
@@ -197,7 +197,7 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
               
               <Button 
                 onClick={onOpenCalculator}
-                className="w-full bg-lime-primary text-white hover:bg-green-500 text-lg py-6"
+                className="w-full btn-gradient-glow text-lg py-6"
               >
                 See Personalized Package Recommendations
               </Button>

@@ -103,7 +103,7 @@ export default function BundleBuilder({
 
         <Button 
           onClick={onGetProposal}
-          className="w-full bg-teal-primary text-white hover:bg-teal-600"
+          className="w-full btn-gradient-glow"
         >
           Get Your Custom Proposal
         </Button>

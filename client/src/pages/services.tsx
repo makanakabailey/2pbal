@@ -81,8 +81,8 @@ export default function Services() {
                   variant={selectedCategory === category ? "default" : "outline"}
                   className={`cursor-pointer transition-colors ${
                     selectedCategory === category 
-                      ? 'bg-teal-primary text-white hover:bg-teal-600' 
-                      : 'hover:bg-teal-primary hover:text-white'
+                      ? 'btn-gradient-glow' 
+                      : 'hover:bg-teal-glow hover:text-white'
                   }`}
                   onClick={() => setSelectedCategory(category)}
                 >

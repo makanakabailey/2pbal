@@ -20,10 +20,10 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ service, onAddToBundle, isInBundle }: ServiceCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all overflow-hidden">
+    <div className="bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all overflow-hidden card-glow">
       {/* Service Image */}
       {service.image && (
-        <div className="w-full h-48 bg-gradient-to-br from-teal-primary to-lime-primary">
+        <div className="w-full h-48 bg-gradient-glow">
           {service.image}
         </div>
       )}
@@ -40,7 +40,7 @@ export default function ServiceCard({ service, onAddToBundle, isInBundle }: Serv
           <Button
             onClick={() => onAddToBundle(service.id)}
             variant={isInBundle ? "secondary" : "outline"}
-            className={`w-full ${isInBundle ? 'bg-lime-primary text-white hover:bg-green-500' : ''}`}
+            className={`w-full ${isInBundle ? 'btn-gradient-glow' : ''}`}
           >
             <Plus className="h-4 w-4 mr-2" />
             {isInBundle ? 'Added to Bundle' : 'Add to Solution'}
@@ -49,7 +49,7 @@ export default function ServiceCard({ service, onAddToBundle, isInBundle }: Serv
           <Link href={`/service/${service.id}`}>
             <Button
               variant="ghost"
-              className="w-full text-teal-primary hover:text-teal-600 hover:bg-teal-50"
+              className="w-full text-teal-primary hover:text-teal-600 hover:bg-teal-glow"
             >
               View Service Details
             </Button>

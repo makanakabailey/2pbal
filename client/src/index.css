@@ -135,6 +135,59 @@
     animation: gradientGlow 3s ease-in-out infinite;
   }
 
+  /* Glowing Background Animation for All Brand Colors */
+  .bg-gradient-glow {
+    background: linear-gradient(45deg, hsl(207, 57%, 24%), hsl(88, 50%, 53%), hsl(207, 57%, 24%));
+    background-size: 200% 200%;
+    animation: gradientGlow 3s ease-in-out infinite;
+  }
+
+  .bg-teal-glow {
+    background: linear-gradient(45deg, hsl(207, 57%, 20%), hsl(207, 57%, 30%), hsl(207, 57%, 20%));
+    background-size: 200% 200%;
+    animation: gradientGlow 3s ease-in-out infinite;
+  }
+
+  .bg-lime-glow {
+    background: linear-gradient(45deg, hsl(88, 50%, 43%), hsl(88, 50%, 60%), hsl(88, 50%, 43%));
+    background-size: 200% 200%;
+    animation: gradientGlow 3s ease-in-out infinite;
+  }
+
+  /* Border Gradient Glow */
+  .border-gradient-glow {
+    border: 2px solid;
+    border-image: linear-gradient(45deg, hsl(207, 57%, 24%), hsl(88, 50%, 53%), hsl(207, 57%, 24%)) 1;
+    background: linear-gradient(45deg, hsl(207, 57%, 24%), hsl(88, 50%, 53%), hsl(207, 57%, 24%));
+    background-size: 200% 200%;
+    background-clip: border-box;
+    animation: gradientGlow 3s ease-in-out infinite;
+  }
+
+  /* Card Gradient Glow Effect */
+  .card-glow {
+    background: linear-gradient(45deg, rgba(13, 148, 136, 0.1), rgba(132, 204, 22, 0.1), rgba(13, 148, 136, 0.1));
+    background-size: 200% 200%;
+    animation: gradientGlow 3s ease-in-out infinite;
+    border: 1px solid;
+    border-image: linear-gradient(45deg, hsl(207, 57%, 24%), hsl(88, 50%, 53%), hsl(207, 57%, 24%)) 1;
+  }
+
+  /* Button Gradient Glow */
+  .btn-gradient-glow {
+    background: linear-gradient(45deg, hsl(207, 57%, 24%), hsl(88, 50%, 53%), hsl(207, 57%, 24%));
+    background-size: 200% 200%;
+    animation: gradientGlow 3s ease-in-out infinite;
+    color: white;
+    border: none;
+  }
+
+  .btn-gradient-glow:hover {
+    background: linear-gradient(45deg, hsl(207, 57%, 30%), hsl(88, 50%, 60%), hsl(207, 57%, 30%));
+    background-size: 200% 200%;
+    animation: gradientGlow 2s ease-in-out infinite;
+  }
+
   .text-typing {
     overflow: hidden;
     border-right: 2px solid transparent;
