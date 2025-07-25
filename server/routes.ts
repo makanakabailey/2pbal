@@ -14,13 +14,15 @@ import multer from "multer";
 import cookieParser from "cookie-parser";
 import { z } from "zod";
 
-// Configure Stripe
-if (!process.env.STRIPE_SECRET_KEY) {
+// Configure Stripe (optional in development)
+let stripe: Stripe | null = null;
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2025-06-30.basil",
+  });
+} else if (process.env.NODE_ENV !== 'development') {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
 }
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-06-30.basil",
-});
 
 // Configure multer for file uploads
 const upload = multer({
@@ -317,6 +319,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!amount || typeof amount !== 'number') {
         return res.status(400).json({ message: "Valid amount is required" });
+      }
+
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe not configured" });
       }
 
       const paymentIntent = await stripe.paymentIntents.create({

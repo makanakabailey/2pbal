@@ -163,12 +163,12 @@ export class MemStorage implements IStorage {
       email: quoteData.email,
       company: quoteData.company || null,
       phone: quoteData.phone || null,
-      goals: Array.isArray(quoteData.goals) ? quoteData.goals : [],
-      overspending: Array.isArray(quoteData.overspending) ? quoteData.overspending : [],
-      outcomes: Array.isArray(quoteData.outcomes) ? quoteData.outcomes : [],
+      goals: Array.isArray(quoteData.goals) ? quoteData.goals as string[] : [],
+      overspending: Array.isArray(quoteData.overspending) ? quoteData.overspending as string[] : [],
+      outcomes: Array.isArray(quoteData.outcomes) ? quoteData.outcomes as string[] : [],
       projectDescription: quoteData.projectDescription,
       timeline: quoteData.timeline,
-      attachments: Array.isArray(quoteData.attachments) ? quoteData.attachments : [],
+      attachments: Array.isArray(quoteData.attachments) ? quoteData.attachments as {filename: string, mimetype: string, size: number, data: string}[] : [],
       status: quoteData.status || "pending",
       createdAt: new Date(),
     };
@@ -184,12 +184,12 @@ export class MemStorage implements IStorage {
       return allQuotes
         .filter(quote => quote.userId === userId)
         .sort((a, b) => 
-          (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0)
+          (b.createdAt ? b.createdAt.getTime() : 0) - (a.createdAt ? a.createdAt.getTime() : 0)
         );
     }
     
     return allQuotes.sort((a, b) => 
-      (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0)
+      (b.createdAt ? b.createdAt.getTime() : 0) - (a.createdAt ? a.createdAt.getTime() : 0)
     );
   }
 
@@ -224,7 +224,7 @@ export class MemStorage implements IStorage {
   async getUserProjects(userId: number): Promise<UserProject[]> {
     return Array.from(this.projects.values())
       .filter(project => project.userId === userId)
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
   }
 
   async getProject(id: number): Promise<UserProject | undefined> {

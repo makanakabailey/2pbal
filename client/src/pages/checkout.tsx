@@ -12,10 +12,9 @@ import { SERVICES } from '@/lib/constants';
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
-  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
-}
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+  : null;
 
 const CheckoutForm = ({ orderDetails }: { orderDetails: any }) => {
   const stripe = useStripe();
@@ -233,9 +232,16 @@ export default function Checkout() {
           <p className="text-gray-medium">Secure checkout for {orderDetails.serviceName}</p>
         </div>
 
-        <Elements stripe={stripePromise} options={{ clientSecret }}>
-          <CheckoutForm orderDetails={orderDetails} />
-        </Elements>
+        {stripePromise ? (
+          <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <CheckoutForm orderDetails={orderDetails} />
+          </Elements>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-medium">Payment processing is not available in development mode.</p>
+            <p className="text-sm text-gray-light mt-2">Stripe keys need to be configured for payments.</p>
+          </div>
+        )}
       </div>
     </div>
   );
