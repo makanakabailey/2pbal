@@ -44,89 +44,91 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
   };
 
   return (
-    <div className="pt-16">
+    <div className="pt-16 lg:pt-20">
       {/* Hero Section */}
-      <section className="py-16 bg-white">
+      <section className="py-8 sm:py-12 lg:py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl lg:text-5xl font-bold mb-6 text-gray-dark">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-gray-dark">
             Package Value That Fits Your Growth Stage
           </h1>
-          <p className="text-xl text-gray-medium mb-8">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-medium mb-6 sm:mb-8">
             Choose your package below and see exactly how much you'll save versus agency or in-house solutions.
           </p>
         </div>
       </section>
 
       {/* Comparison Table */}
-      <section className="py-16 bg-gray-light">
+      <section className="py-8 sm:py-12 lg:py-16 bg-gray-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-xl shadow-lg">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-6 font-bold text-gray-dark">Features</th>
-                  {PACKAGES.map((pkg) => (
-                    <th key={pkg.id} className="text-center p-6 font-bold text-gray-dark min-w-[200px]">
-                      {pkg.name}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b">
-                  <td className="p-6 font-medium text-gray-dark">Website Pages</td>
-                  <td className="text-center p-6">5 pages</td>
-                  <td className="text-center p-6">5 pages + funnel</td>
-                  <td className="text-center p-6">5 pages + AI features</td>
-                  <td className="text-center p-6">Unlimited</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="p-6 font-medium text-gray-dark">Lead Generation</td>
-                  <td className="text-center p-6">Basic</td>
-                  <td className="text-center p-6"><Check className="h-5 w-5 text-lime-primary mx-auto" /></td>
-                  <td className="text-center p-6"><Check className="h-5 w-5 text-lime-primary mx-auto" /></td>
-                  <td className="text-center p-6"><Check className="h-5 w-5 text-lime-primary mx-auto" /></td>
-                </tr>
-                <tr className="border-b">
-                  <td className="p-6 font-medium text-gray-dark">AI Automation</td>
-                  <td className="text-center p-6">-</td>
-                  <td className="text-center p-6">-</td>
-                  <td className="text-center p-6"><Check className="h-5 w-5 text-lime-primary mx-auto" /></td>
-                  <td className="text-center p-6"><Check className="h-5 w-5 text-lime-primary mx-auto" /></td>
-                </tr>
-                <tr className="border-b">
-                  <td className="p-6 font-medium text-gray-dark">Dedicated Team</td>
-                  <td className="text-center p-6">-</td>
-                  <td className="text-center p-6">-</td>
-                  <td className="text-center p-6">-</td>
-                  <td className="text-center p-6"><Check className="h-5 w-5 text-lime-primary mx-auto" /></td>
-                </tr>
-                <tr>
-                  <td className="p-6 font-bold text-gray-dark">Investment</td>
-                  {PACKAGES.map((pkg) => (
-                    <td key={pkg.id} className="text-center p-6">
-                      <div className="text-gray-400 text-sm line-through">
-                        Agency: ${pkg.originalPrice.toLocaleString()}
-                      </div>
-                      <div className="text-2xl font-bold text-teal-primary">
-                        ${pkg.price.toLocaleString()}
-                      </div>
-                      <div className="text-lime-primary font-semibold">
-                        Save ${pkg.savings.toLocaleString()} ({pkg.savingsPercent}%)
-                      </div>
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="w-full bg-white rounded-none sm:rounded-xl shadow-lg min-w-[800px]">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-3 sm:p-4 lg:p-6 font-bold text-gray-dark text-sm sm:text-base">Features</th>
+                    {PACKAGES.map((pkg) => (
+                      <th key={pkg.id} className="text-center p-3 sm:p-4 lg:p-6 font-bold text-gray-dark min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] text-xs sm:text-sm lg:text-base">
+                        {pkg.name}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="p-3 sm:p-4 lg:p-6 font-medium text-gray-dark text-sm sm:text-base">Website Pages</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">5 pages</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">5 pages + funnel</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">5 pages + AI features</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">Unlimited</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-3 sm:p-4 lg:p-6 font-medium text-gray-dark text-sm sm:text-base">Lead Generation</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">Basic</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6"><Check className="h-4 w-4 sm:h-5 sm:w-5 text-lime-primary mx-auto" /></td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6"><Check className="h-4 w-4 sm:h-5 sm:w-5 text-lime-primary mx-auto" /></td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6"><Check className="h-4 w-4 sm:h-5 sm:w-5 text-lime-primary mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-3 sm:p-4 lg:p-6 font-medium text-gray-dark text-sm sm:text-base">AI Automation</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">-</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">-</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6"><Check className="h-4 w-4 sm:h-5 sm:w-5 text-lime-primary mx-auto" /></td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6"><Check className="h-4 w-4 sm:h-5 sm:w-5 text-lime-primary mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-3 sm:p-4 lg:p-6 font-medium text-gray-dark text-sm sm:text-base">Dedicated Team</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">-</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">-</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6 text-xs sm:text-sm lg:text-base">-</td>
+                    <td className="text-center p-3 sm:p-4 lg:p-6"><Check className="h-4 w-4 sm:h-5 sm:w-5 text-lime-primary mx-auto" /></td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 sm:p-4 lg:p-6 font-bold text-gray-dark text-sm sm:text-base">Investment</td>
+                    {PACKAGES.map((pkg) => (
+                      <td key={pkg.id} className="text-center p-3 sm:p-4 lg:p-6">
+                        <div className="text-gray-400 text-xs sm:text-sm line-through">
+                          Agency: ${pkg.originalPrice.toLocaleString()}
+                        </div>
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-teal-primary">
+                          ${pkg.price.toLocaleString()}
+                        </div>
+                        <div className="text-lime-primary font-semibold text-xs sm:text-sm">
+                          Save ${pkg.savings.toLocaleString()} ({pkg.savingsPercent}%)
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Detailed Package Breakdown */}
-      <section className="py-16 bg-white">
+      <section className="py-8 sm:py-12 lg:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {PACKAGES.map((pkg) => (
               <PackageCard
                 key={pkg.id}

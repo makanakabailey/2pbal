@@ -90,26 +90,27 @@ export default function ClientPortal({ onOpenCalculator }: ClientPortalProps) {
   }
 
   return (
-    <div className="pt-16 min-h-screen bg-gray-light">
+    <div className="pt-16 lg:pt-20 min-h-screen bg-gray-light">
       {/* Header */}
-      <section className="py-8 bg-white border-b">
+      <section className="py-6 sm:py-8 bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
               <Link href="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
+                <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
+                  <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Back to Home</span>
+                  <span className="sm:hidden">Home</span>
                 </Button>
               </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-dark">{projectData.name}</h1>
-                <p className="text-gray-medium">Client Portal - {projectData.client}</p>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-dark truncate">{projectData.name}</h1>
+                <p className="text-gray-medium text-sm sm:text-base">Client Portal - {projectData.client}</p>
               </div>
             </div>
-            <div className="text-right">
+            <div className="text-left sm:text-right w-full sm:w-auto flex-shrink-0">
               {getStatusBadge(projectData.status)}
-              <p className="text-sm text-gray-medium mt-1">
+              <p className="text-xs sm:text-sm text-gray-medium mt-1">
                 {projectData.progress}% Complete
               </p>
             </div>
@@ -118,14 +119,14 @@ export default function ClientPortal({ onOpenCalculator }: ClientPortalProps) {
       </section>
 
       {/* Main Content */}
-      <section className="py-8">
+      <section className="py-6 sm:py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="progress">Progress</TabsTrigger>
-              <TabsTrigger value="payments">Payments</TabsTrigger>
-              <TabsTrigger value="communication">Updates</TabsTrigger>
+          <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 sm:px-4 py-2">Overview</TabsTrigger>
+              <TabsTrigger value="progress" className="text-xs sm:text-sm px-2 sm:px-4 py-2">Progress</TabsTrigger>
+              <TabsTrigger value="payments" className="text-xs sm:text-sm px-2 sm:px-4 py-2">Payments</TabsTrigger>
+              <TabsTrigger value="communication" className="text-xs sm:text-sm px-2 sm:px-4 py-2">Updates</TabsTrigger>
             </TabsList>
 
             {/* Overview Tab */}

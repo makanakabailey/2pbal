@@ -18,31 +18,32 @@ export default function Home({ onOpenCalculator }: HomeProps) {
   };
 
   return (
-    <div className="pt-16">
+    <div className="pt-16 lg:pt-20">
       {/* Hero Section */}
-      <section className="py-16 bg-white">
+      <section className="py-8 sm:py-12 lg:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-gray-900">
-              <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="text-gray-900 order-2 lg:order-1">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
                 Stop Overpaying for Digital Solutions. <span className="text-lime-primary">Start Scaling.</span>
               </h1>
-              <p className="text-xl mb-8 text-gray-600">
+              <p className="text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 text-gray-600">
                 Get a dedicated team of experts for less than the cost of one in-house hire. Save up to 70% vs. traditional agencies.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button 
                   onClick={onOpenCalculator}
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-4"
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4"
                 >
-                  See How Much You Can Save
+                  <span className="hidden sm:inline">See How Much You Can Save</span>
+                  <span className="sm:hidden">Calculate Savings</span>
                 </Button>
                 <Button 
                   onClick={() => window.location.href = '/dashboard'}
                   variant="outline"
                   size="lg"
-                  className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg px-8 py-4"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4"
                 >
                   Dashboard
                 </Button>
@@ -50,21 +51,22 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                   onClick={scrollToPackages}
                   variant="ghost"
                   size="lg"
-                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-lg px-8 py-4"
+                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4"
                 >
-                  Explore Packages
+                  <span className="hidden sm:inline">Explore Packages</span>
+                  <span className="sm:hidden">Packages</span>
                 </Button>
               </div>
             </div>
-            <div className="relative">
+            <div className="relative order-1 lg:order-2">
               <img 
                 src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
                 alt="Modern collaborative workspace with diverse team" 
-                className="rounded-xl shadow-2xl w-full"
+                className="rounded-xl shadow-2xl w-full h-auto"
               />
-              <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-lg shadow-lg">
-                <div className="text-teal-primary font-bold text-2xl">70%</div>
-                <div className="text-gray-medium text-sm">Average Savings</div>
+              <div className="absolute -bottom-3 sm:-bottom-6 -left-3 sm:-left-6 bg-white p-3 sm:p-6 rounded-lg shadow-lg">
+                <div className="text-teal-primary font-bold text-xl sm:text-2xl">70%</div>
+                <div className="text-gray-medium text-xs sm:text-sm">Average Savings</div>
               </div>
             </div>
           </div>
@@ -86,12 +88,12 @@ export default function Home({ onOpenCalculator }: HomeProps) {
       </section>
 
       {/* Problem & Solution Section */}
-      <section className="py-16 bg-white">
+      <section className="py-8 sm:py-12 lg:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl lg:text-4xl font-bold text-center mb-16 text-gray-dark">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 lg:mb-16 text-gray-dark">
             The Hidden Costs of Getting Digital Wrong
           </h2>
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
             <Card className="bg-red-50 border-red-200">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-6 text-red-600">Costs of Alternatives</h3>

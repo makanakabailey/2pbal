@@ -39,21 +39,21 @@ export default function Payment() {
   const annualSavings = (monthlyPrice * 12) - annualPrice;
 
   return (
-    <div className="pt-16 min-h-screen bg-gray-light">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="pt-16 lg:pt-20 min-h-screen bg-gray-light">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Link href="/packages">
-            <Button variant="ghost" className="mb-4">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+            <Button variant="ghost" className="mb-4 text-sm sm:text-base">
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
               Back to Packages
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold text-gray-dark mb-2">Complete Your Purchase</h1>
-          <p className="text-gray-medium">You're one step away from transforming your business</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-dark mb-2">Complete Your Purchase</h1>
+          <p className="text-gray-medium text-sm sm:text-base">You're one step away from transforming your business</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Order Summary */}
           <Card className="h-fit">
             <CardHeader>
