@@ -23,42 +23,42 @@ export default function Home({ onOpenCalculator }: HomeProps) {
       <section className="py-8 sm:py-12 lg:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="text-gray-900 order-2 lg:order-1">
+            <div className="text-gray-900 order-2 lg:order-1 lg:pr-8">
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
                 Stop Overpaying for Digital Solutions. <span className="text-lime-primary">Start Scaling.</span>
               </h1>
               <p className="text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 text-gray-600">
                 Get a dedicated team of experts for less than the cost of one in-house hire. Save up to 70% vs. traditional agencies.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="flex flex-col gap-3 max-w-xs sm:max-w-sm">
                 <Button 
                   onClick={onOpenCalculator}
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4"
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base px-4 sm:px-6 py-3 w-full"
                 >
                   <span className="hidden sm:inline">See How Much You Can Save</span>
                   <span className="sm:hidden">Calculate Savings</span>
                 </Button>
-                <Button 
-                  onClick={() => window.location.href = '/dashboard'}
-                  variant="outline"
-                  size="lg"
-                  className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4"
-                >
-                  Dashboard
-                </Button>
-                <Button 
-                  onClick={scrollToPackages}
-                  variant="ghost"
-                  size="lg"
-                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4"
-                >
-                  <span className="hidden sm:inline">Explore Packages</span>
-                  <span className="sm:hidden">Packages</span>
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => window.location.href = '/dashboard'}
+                    variant="outline"
+                    className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm px-3 py-2 flex-1"
+                  >
+                    Dashboard
+                  </Button>
+                  <Button 
+                    onClick={scrollToPackages}
+                    variant="ghost"
+                    className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-sm px-3 py-2 flex-1"
+                  >
+                    <span className="hidden sm:inline">Explore Packages</span>
+                    <span className="sm:hidden">Packages</span>
+                  </Button>
+                </div>
               </div>
             </div>
-            <div className="relative order-1 lg:order-2">
+            <div className="relative order-1 lg:order-2 lg:pl-8">
               <img 
                 src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
                 alt="Modern collaborative workspace with diverse team" 

@@ -19,12 +19,12 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
   const { toast } = useToast();
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Packages', href: '/packages' },
-    { name: 'All Services', href: '/services' },
-    { name: 'Get Recommendations', href: '/recommendations' },
-    { name: 'Custom Proposal', href: '/quote' },
-    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Home', href: '/', icon: 'home' },
+    { name: 'Packages', href: '/packages', icon: 'package' },
+    { name: 'Services', href: '/services', icon: 'grid' },
+    { name: 'Recommendations', href: '/recommendations', icon: 'target' },
+    { name: 'Quote', href: '/quote', icon: 'clipboard' },
+    { name: 'Dashboard', href: '/dashboard', icon: 'chart' },
   ];
 
   const handleLogout = async () => {
@@ -61,35 +61,36 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
             </span>
           </div>
           
-          <div className="hidden md:flex items-center space-x-2 lg:space-x-4 xl:space-x-6 flex-shrink-0">
+          <div className="hidden lg:flex items-center space-x-1 xl:space-x-3 flex-shrink-0">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`font-medium transition-colors text-sm lg:text-base whitespace-nowrap ${
+                className={`font-medium transition-colors text-xs xl:text-sm whitespace-nowrap px-2 py-1 rounded hover:bg-blue-700 ${
                   location === item.href 
-                    ? 'text-lime-primary' 
+                    ? 'text-lime-primary bg-blue-700' 
                     : 'text-white hover:text-lime-primary'
                 }`}
               >
-                {item.name}
+                <span className="xl:hidden">{item.name.split(' ')[0]}</span>
+                <span className="hidden xl:inline">{item.name}</span>
               </Link>
             ))}
             <Button 
               onClick={onOpenCalculator}
-              className="bg-white text-blue-600 hover:bg-gray-100 text-xs lg:text-sm px-2 lg:px-4 whitespace-nowrap"
+              className="bg-white text-blue-600 hover:bg-gray-100 text-xs px-2 py-1 whitespace-nowrap ml-2"
               size="sm"
             >
-              Calculate Savings
+              <span className="xl:hidden">Save</span>
+              <span className="hidden xl:inline">Calculate</span>
             </Button>
             
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="text-white hover:text-lime-primary text-xs lg:text-sm" size="sm">
-                    <User className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
-                    <span className="hidden lg:inline">{user?.firstName || 'Account'}</span>
-                    <span className="lg:hidden">Account</span>
+                  <Button variant="ghost" className="text-white hover:text-lime-primary text-xs px-2 py-1" size="sm">
+                    <User className="h-3 w-3 mr-1" />
+                    <span className="hidden xl:inline">{user?.firstName || 'Account'}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -113,26 +114,28 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
                 <Link href="/login">
-                  <Button variant="ghost" className="text-white hover:text-lime-primary">
-                    Sign In
+                  <Button variant="ghost" className="text-white hover:text-lime-primary text-xs px-2 py-1" size="sm">
+                    <span className="xl:hidden">Login</span>
+                    <span className="hidden xl:inline">Sign In</span>
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button className="bg-white text-teal-primary hover:bg-gray-100">
-                    Get Started
+                  <Button className="bg-white text-teal-primary hover:bg-gray-100 text-xs px-2 py-1" size="sm">
+                    <span className="xl:hidden">Start</span>
+                    <span className="hidden xl:inline">Get Started</span>
                   </Button>
                 </Link>
               </div>
             )}
           </div>
 
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6 text-white" />
+                <Button variant="ghost" size="icon" className="p-1">
+                  <Menu className="h-5 w-5 text-white" />
                 </Button>
               </SheetTrigger>
               <SheetContent>
