@@ -973,14 +973,16 @@ export default function ServiceDetail() {
                 </div>
               </div>
               <div className="flex gap-4">
-                <Link href="/quote">
-                  <Button size="lg" className="bg-lime-primary text-white hover:bg-green-500">
+                <Link href={`/payment-options/${serviceId}`}>
+                  <Button size="lg" className="btn-gradient-glow">
                     Get Started
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg">
-                  Schedule Consultation
-                </Button>
+                <Link href={`/schedule-consultation?service=${serviceId}`}>
+                  <Button variant="outline" size="lg" className="border-teal-primary text-teal-primary hover:bg-teal-50">
+                    Schedule Consultation
+                  </Button>
+                </Link>
               </div>
             </div>
             <div>
