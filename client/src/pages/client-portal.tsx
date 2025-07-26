@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRoute, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +17,10 @@ interface ClientPortalProps {
 }
 
 export default function ClientPortal({ onOpenCalculator }: ClientPortalProps) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [, params] = useRoute('/client-portal/:type/:id');
   const { type, id } = params || {};
   

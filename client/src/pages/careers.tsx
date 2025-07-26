@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +12,9 @@ import {
 } from 'lucide-react';
 
 export default function Careers() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const { toast } = useToast();
   const [applicationForm, setApplicationForm] = useState({
     name: '',
@@ -115,10 +118,10 @@ export default function Careers() {
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-teal-primary to-blue-700 text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-sky-300">
             Join the 2PBAL Team
           </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-8">
+          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-8 text-sky-300">
             Help us empower small businesses worldwide with innovative digital solutions
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

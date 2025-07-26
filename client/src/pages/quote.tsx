@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,10 @@ interface AudioRecording {
 }
 
 export default function Quote() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();

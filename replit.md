@@ -133,3 +133,4 @@ Preferred communication style: Simple, everyday language.
 - **Company Information Pages**: Created comprehensive About Us page with founding story and team profiles, built Careers page with job listings and application form, developed Case Studies page with real ROI data proving service effectiveness
 - **Contact System Enhancement**: Implemented contact popup with clickable email (infodesk@2pbal.online) and phone (+16822844934), added recruitment email (recruitment@2pbal.site) for career inquiries
 - **API Parameter Order Fix**: Resolved critical apiRequest function parameter order issues that were causing fetch errors throughout the application
+- **UI Improvements**: Updated hero text colors to light blue (sky-300) on About, Case Studies, and Careers pages as requested, implemented universal scroll-to-top functionality for all website pages to ensure consistent navigation experience

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,6 +13,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react';
 
 export default function Login() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [, setLocation] = useLocation();
   const { login, isLoginLoading, loginError } = useAuth();
   const { toast } = useToast();

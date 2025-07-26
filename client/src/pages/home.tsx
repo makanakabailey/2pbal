@@ -3,12 +3,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import PackageCard from '@/components/ui/package-card';
 import { Check, X, MessageCircle, ClipboardList, Rocket, TrendingUp } from 'lucide-react';
 import { PACKAGES, CASE_STUDIES } from '@/lib/constants';
+import { useEffect } from 'react';
 
 interface HomeProps {
   onOpenCalculator: () => void;
 }
 
 export default function Home({ onOpenCalculator }: HomeProps) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const handlePackageSelect = (packageId: string) => {
     window.location.href = `/package/${packageId}`;
   };

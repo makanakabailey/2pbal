@@ -5,8 +5,12 @@ import {
   TrendingUp, DollarSign, Clock, Users, BarChart3, 
   ArrowRight, Target, Zap, Award, CheckCircle 
 } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function CaseStudies() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const caseStudies = [
     {
       company: "ASUS Singapore",
@@ -142,10 +146,10 @@ export default function CaseStudies() {
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-teal-primary to-blue-700 text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-sky-300">
             Proven Success Stories
           </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-8">
+          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-8 text-sky-300">
             Real case studies demonstrating how our services deliver measurable ROI and competitive advantages
           </p>
           <Badge variant="secondary" className="text-lg px-6 py-2">

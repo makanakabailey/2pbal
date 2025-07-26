@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,9 @@ import { Search } from 'lucide-react';
 import { SERVICES } from '@/lib/constants';
 
 export default function Services() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [bundledServices, setBundledServices] = useState<string[]>([]);

@@ -1,17 +1,22 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, Target, Lightbulb, Award } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function About() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="pt-16 min-h-screen bg-gray-light">
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-teal-primary to-blue-700 text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-sky-300">
             About 2PBAL
           </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed text-sky-300">
             Empowering small businesses with the tools and support they need to succeed in today's fast-moving digital world.
           </p>
         </div>

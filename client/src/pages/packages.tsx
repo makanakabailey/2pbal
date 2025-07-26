@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import PackageCard from '@/components/ui/package-card';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PACKAGES } from '@/lib/constants';
 import { Check } from 'lucide-react';
 
@@ -12,6 +12,9 @@ interface PackagesProps {
 }
 
 export default function Packages({ onOpenCalculator }: PackagesProps) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [spend, setSpend] = useState([10000]);
   const [selectedSolutions, setSelectedSolutions] = useState<string[]>([]);
 
