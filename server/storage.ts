@@ -14,10 +14,18 @@ import {
   type AvatarUpload,
   type PreferencesUpdate,
   type ChangePassword,
-  type AccountDeletion
+  type AccountDeletion,
+  users, 
+  userSessions, 
+  quotes, 
+  userProjects, 
+  activityLogs, 
+  emailVerifications
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
+import { db } from './db';
+import { eq, desc, and } from 'drizzle-orm';
 
 export interface IStorage {
   // User operations
@@ -469,4 +477,281 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database storage implementation
+
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    return result[0];
+  }
+
+  async createUser(userData: SignupData): Promise<User> {
+    const hashedPassword = await bcrypt.hash(userData.password, 12);
+    
+    const result = await db.insert(users).values({
+      email: userData.email,
+      password: hashedPassword,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      company: userData.company || null,
+      phone: userData.phone || null,
+      marketingConsent: userData.marketingConsent || false,
+      emailVerified: false,
+      profileComplete: false,
+      isActive: true,
+      role: 'user'
+    }).returning();
+
+    return result[0];
+  }
+
+  async updateUser(id: number, userData: ProfileUpdate): Promise<User | undefined> {
+    const result = await db.update(users)
+      .set({ ...userData, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    
+    return result[0];
+  }
+
+  async loginUser(credentials: LoginData): Promise<{ user: User; session: UserSession } | null> {
+    const user = await this.getUserByEmail(credentials.email);
+    if (!user || !user.isActive) {
+      return null;
+    }
+
+    const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    // Update last login
+    await db.update(users)
+      .set({ lastLogin: new Date() })
+      .where(eq(users.id, user.id));
+
+    const session = await this.createSession(user.id);
+    return { user, session };
+  }
+
+  async deleteUser(id: number, password: string): Promise<boolean> {
+    const user = await this.getUser(id);
+    if (!user) return false;
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return false;
+
+    await db.delete(users).where(eq(users.id, id));
+    return true;
+  }
+
+  async changePassword(id: number, currentPassword: string, newPassword: string): Promise<boolean> {
+    const user = await this.getUser(id);
+    if (!user) return false;
+
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) return false;
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+    await db.update(users)
+      .set({ password: hashedNewPassword, updatedAt: new Date() })
+      .where(eq(users.id, id));
+
+    return true;
+  }
+
+  async updateAvatar(id: number, avatar: string): Promise<User | undefined> {
+    const result = await db.update(users)
+      .set({ avatar, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    
+    return result[0];
+  }
+
+  async updatePreferences(id: number, preferences: PreferencesUpdate): Promise<User | undefined> {
+    const user = await this.getUser(id);
+    if (!user) return undefined;
+
+    const updatedPreferences = { ...user.preferences, ...preferences };
+    const result = await db.update(users)
+      .set({ preferences: updatedPreferences, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    
+    return result[0];
+  }
+
+  // Admin operations
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async updateUserRole(userId: number, role: string): Promise<User | undefined> {
+    const result = await db.update(users)
+      .set({ role, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return result[0];
+  }
+
+  // Session operations
+  async createSession(userId: number): Promise<UserSession> {
+    const sessionId = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    const result = await db.insert(userSessions).values({
+      id: sessionId,
+      userId,
+      expiresAt
+    }).returning();
+
+    return result[0];
+  }
+
+  async getSession(sessionId: string): Promise<UserSession | undefined> {
+    const result = await db.select().from(userSessions)
+      .where(and(
+        eq(userSessions.id, sessionId),
+        // Check if session hasn't expired
+      ))
+      .limit(1);
+    
+    const session = result[0];
+    if (!session || session.expiresAt < new Date()) {
+      if (session) {
+        await this.deleteSession(sessionId);
+      }
+      return undefined;
+    }
+
+    return session;
+  }
+
+  async deleteSession(sessionId: string): Promise<void> {
+    await db.delete(userSessions).where(eq(userSessions.id, sessionId));
+  }
+
+  // Quote operations
+  async createQuote(quote: InsertQuote): Promise<Quote> {
+    const result = await db.insert(quotes).values(quote).returning();
+    return result[0];
+  }
+
+  async getQuotes(userId?: number): Promise<Quote[]> {
+    if (userId) {
+      return await db.select().from(quotes)
+        .where(eq(quotes.userId, userId))
+        .orderBy(desc(quotes.createdAt));
+    }
+    return await db.select().from(quotes).orderBy(desc(quotes.createdAt));
+  }
+
+  async getQuote(id: number): Promise<Quote | undefined> {
+    const result = await db.select().from(quotes).where(eq(quotes.id, id)).limit(1);
+    return result[0];
+  }
+
+  // Project operations
+  async createProject(project: InsertProject): Promise<UserProject> {
+    const result = await db.insert(userProjects).values(project).returning();
+    return result[0];
+  }
+
+  async getUserProjects(userId: number): Promise<UserProject[]> {
+    return await db.select().from(userProjects)
+      .where(eq(userProjects.userId, userId))
+      .orderBy(desc(userProjects.createdAt));
+  }
+
+  async getProject(id: number): Promise<UserProject | undefined> {
+    const result = await db.select().from(userProjects).where(eq(userProjects.id, id)).limit(1);
+    return result[0];
+  }
+
+  async updateProject(id: number, data: Partial<InsertProject>): Promise<UserProject | undefined> {
+    const result = await db.update(userProjects)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(userProjects.id, id))
+      .returning();
+    
+    return result[0];
+  }
+
+  // Activity logging
+  async logActivity(activity: {
+    userId?: number;
+    adminId?: number;
+    action: string;
+    target?: string;
+    targetId?: number;
+    details?: any;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<ActivityLog> {
+    const result = await db.insert(activityLogs).values({
+      userId: activity.userId || null,
+      adminId: activity.adminId || null,
+      action: activity.action,
+      target: activity.target || null,
+      targetId: activity.targetId || null,
+      details: activity.details || null,
+      ipAddress: activity.ipAddress || null,
+      userAgent: activity.userAgent || null
+    }).returning();
+
+    return result[0];
+  }
+
+  async getActivityLogs(userId?: number, limit: number = 50): Promise<ActivityLog[]> {
+    let query = db.select().from(activityLogs);
+    
+    if (userId) {
+      query = query.where(eq(activityLogs.userId, userId));
+    }
+    
+    return await query.orderBy(desc(activityLogs.createdAt)).limit(limit);
+  }
+
+  // Email verification
+  async createEmailVerification(userId: number): Promise<EmailVerification> {
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    const result = await db.insert(emailVerifications).values({
+      userId,
+      token,
+      expiresAt
+    }).returning();
+
+    return result[0];
+  }
+
+  async verifyEmail(token: string): Promise<boolean> {
+    const result = await db.select().from(emailVerifications)
+      .where(eq(emailVerifications.token, token))
+      .limit(1);
+    
+    const verification = result[0];
+    if (!verification || verification.expiresAt < new Date()) {
+      return false;
+    }
+
+    await db.update(users)
+      .set({ emailVerified: true, updatedAt: new Date() })
+      .where(eq(users.id, verification.userId));
+    
+    await db.delete(emailVerifications).where(eq(emailVerifications.token, token));
+    return true;
+  }
+}
+
+// Use database storage in production, memory storage for development/testing
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();
