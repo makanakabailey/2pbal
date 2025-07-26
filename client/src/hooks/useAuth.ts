@@ -13,8 +13,7 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const response = await apiRequest('POST', '/api/auth/login', credentials);
-      return response.json();
+      return await apiRequest('/api/auth/login', 'POST', credentials);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
@@ -23,8 +22,7 @@ export function useAuth() {
 
   const signupMutation = useMutation({
     mutationFn: async (userData: SignupData) => {
-      const response = await apiRequest('POST', '/api/auth/signup', userData);
-      return response.json();
+      return await apiRequest('/api/auth/signup', 'POST', userData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
@@ -33,8 +31,7 @@ export function useAuth() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('POST', '/api/auth/logout');
-      return response.json();
+      return await apiRequest('/api/auth/logout', 'POST');
     },
     onSuccess: () => {
       queryClient.setQueryData(['/api/auth/me'], null);
