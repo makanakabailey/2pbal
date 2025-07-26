@@ -16,11 +16,27 @@ export default function SavingsCalculator({ open, onOpenChange }: SavingsCalcula
   const [savings, setSavings] = useState(3500);
 
   useEffect(() => {
-    // Calculate savings (35% average)
+    // Calculate savings based on selected services and spend
     const currentSpend = spend[0];
-    const calculatedSavings = Math.round(currentSpend * 0.35);
+    let savingsMultiplier = 0.25; // Base 25% savings
+    
+    // Increase savings based on what they currently use
+    if (selectedServices.includes('agency')) {
+      savingsMultiplier += 0.15; // Traditional agencies are expensive
+    }
+    if (selectedServices.includes('freelancer')) {
+      savingsMultiplier += 0.10; // Multiple freelancers add coordination costs
+    }
+    if (selectedServices.includes('inhouse')) {
+      savingsMultiplier += 0.20; // In-house teams have high overhead
+    }
+    
+    // Cap at 70% maximum savings
+    savingsMultiplier = Math.min(savingsMultiplier, 0.70);
+    
+    const calculatedSavings = Math.round(currentSpend * savingsMultiplier);
     setSavings(calculatedSavings);
-  }, [spend]);
+  }, [spend, selectedServices]);
 
   const services = [
     { id: 'agency', label: 'Traditional Agency' },
@@ -100,10 +116,21 @@ export default function SavingsCalculator({ open, onOpenChange }: SavingsCalcula
             <div className="text-3xl font-bold mb-2">
               ${savings.toLocaleString()}
             </div>
-            <p className="text-sm opacity-90">per month with 2Pbal's integrated approach</p>
+            <div className="text-lg font-semibold mb-1">
+              {Math.round((savings / spend[0]) * 100)}% savings per month
+            </div>
+            <p className="text-sm opacity-90">
+              That's ${(savings * 12).toLocaleString()} annually with 2Pbal's integrated approach
+            </p>
           </div>
           
-          <Button className="w-full bg-teal-primary text-white hover:bg-teal-600">
+          <Button 
+            onClick={() => {
+              onOpenChange(false);
+              window.location.href = '/recommendations';
+            }}
+            className="w-full bg-teal-primary text-white hover:bg-teal-600"
+          >
             Get Personalized Package Recommendations
           </Button>
         </div>

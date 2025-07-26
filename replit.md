@@ -135,3 +135,4 @@ Preferred communication style: Simple, everyday language.
 - **API Parameter Order Fix**: Resolved critical apiRequest function parameter order issues that were causing fetch errors throughout the application
 - **UI Improvements**: Updated hero text colors to light blue (sky-300) on About, Case Studies, and Careers pages as requested, implemented universal scroll-to-top functionality for all website pages to ensure consistent navigation experience
 - **Navigation Enhancement**: Fixed "Get Package Personalized Recommendations" button to properly redirect to the recommendation page (/recommendations) instead of opening calculator modal
+- **Savings Calculator Enhancement**: Improved calculator functionality with dynamic savings calculation based on user's current service providers (agencies, freelancers, in-house teams) and added proper redirect functionality to recommendations page
