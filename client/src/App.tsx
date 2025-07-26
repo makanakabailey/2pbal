@@ -23,6 +23,7 @@ import ClientPortal from "@/pages/client-portal";
 import RecommendationPage from "@/pages/recommendation";
 import CaseStudies from "@/pages/case-studies";
 import Careers from "@/pages/careers";
+import PrivacyPolicy from "@/pages/privacy-policy";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
@@ -47,6 +48,7 @@ function Router() {
           <Route path="/service/:serviceId" component={ServiceDetail} />
           <Route path="/case-studies" component={CaseStudies} />
           <Route path="/careers" component={Careers} />
+          <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/payment-options/:serviceId" component={PaymentOptions} />
           <Route path="/payment/:packageId" component={Payment} />
           <Route path="/schedule-consultation" component={ScheduleConsultation} />

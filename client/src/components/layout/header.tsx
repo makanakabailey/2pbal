@@ -21,11 +21,8 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
 
   const navigation = [
     { name: 'Home', href: '/', icon: 'home' },
-    { name: 'About', href: '/about', icon: 'info' },
     { name: 'Packages', href: '/packages', icon: 'package' },
     { name: 'Services', href: '/services', icon: 'grid' },
-    { name: 'Case Studies', href: '/case-studies', icon: 'chart' },
-    { name: 'Careers', href: '/careers', icon: 'briefcase' },
     { name: 'Quote', href: '/quote', icon: 'clipboard' },
   ];
 
