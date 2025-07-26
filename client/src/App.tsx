@@ -8,6 +8,7 @@ import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import SavingsCalculator from "@/components/ui/savings-calculator";
 import Home from "@/pages/home";
+import About from "@/pages/about";
 import Packages from "@/pages/packages";
 import PackageDetails from "@/pages/package-details";
 import Services from "@/pages/services";
@@ -20,6 +21,8 @@ import PaymentSuccess from "@/pages/payment-success";
 import Quote from "@/pages/quote";
 import ClientPortal from "@/pages/client-portal";
 import RecommendationPage from "@/pages/recommendation";
+import CaseStudies from "@/pages/case-studies";
+import Careers from "@/pages/careers";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
@@ -37,10 +40,13 @@ function Router() {
       <main>
         <Switch>
           <Route path="/" component={() => <Home onOpenCalculator={() => setCalculatorOpen(true)} />} />
+          <Route path="/about" component={About} />
           <Route path="/packages" component={() => <Packages onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/package/:id" component={() => <PackageDetails onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/services" component={Services} />
           <Route path="/service/:serviceId" component={ServiceDetail} />
+          <Route path="/case-studies" component={CaseStudies} />
+          <Route path="/careers" component={Careers} />
           <Route path="/payment-options/:serviceId" component={PaymentOptions} />
           <Route path="/payment/:packageId" component={Payment} />
           <Route path="/schedule-consultation" component={ScheduleConsultation} />

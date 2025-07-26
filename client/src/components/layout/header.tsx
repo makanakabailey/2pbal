@@ -3,9 +3,10 @@ import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Menu, User, LogOut, Settings, BarChart3, Home, Shield } from 'lucide-react';
+import { Menu, User, LogOut, Settings, BarChart3, Home, Shield, Mail } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { ContactPopup } from '@/components/ui/contact-popup';
 import logoPath from '@assets/logo_1753208911294.png';
 
 interface HeaderProps {
@@ -20,11 +21,12 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
 
   const navigation = [
     { name: 'Home', href: '/', icon: 'home' },
+    { name: 'About', href: '/about', icon: 'info' },
     { name: 'Packages', href: '/packages', icon: 'package' },
     { name: 'Services', href: '/services', icon: 'grid' },
-    { name: 'Recommendations', href: '/recommendations', icon: 'target' },
+    { name: 'Case Studies', href: '/case-studies', icon: 'chart' },
+    { name: 'Careers', href: '/careers', icon: 'briefcase' },
     { name: 'Quote', href: '/quote', icon: 'clipboard' },
-    { name: 'Dashboard', href: '/dashboard', icon: 'chart' },
   ];
 
   const handleLogout = async () => {
@@ -76,6 +78,17 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
                 <span className="hidden xl:inline">{item.name}</span>
               </Link>
             ))}
+            <ContactPopup>
+              <Button 
+                className="bg-lime-primary text-white hover:bg-lime-600 text-xs px-2 py-1 whitespace-nowrap ml-2"
+                size="sm"
+              >
+                <Mail className="h-3 w-3 mr-1" />
+                <span className="xl:hidden">Contact</span>
+                <span className="hidden xl:inline">Contact</span>
+              </Button>
+            </ContactPopup>
+            
             <Button 
               onClick={onOpenCalculator}
               className="bg-white text-blue-600 hover:bg-gray-100 text-xs px-2 py-1 whitespace-nowrap ml-2"
