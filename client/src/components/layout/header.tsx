@@ -3,7 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Menu, User, LogOut, Settings, BarChart3, Home } from 'lucide-react';
+import { Menu, User, LogOut, Settings, BarChart3, Home, Shield } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import logoPath from '@assets/logo_1753208911294.png';
@@ -101,11 +101,19 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/profile-setup" className="flex items-center cursor-pointer">
+                    <Link href="/account-settings" className="flex items-center cursor-pointer">
                       <Settings className="h-4 w-4 mr-2" />
-                      Profile Settings
+                      Account Settings
                     </Link>
                   </DropdownMenuItem>
+                  {user?.role === 'admin' && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin-dashboard" className="flex items-center cursor-pointer">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                     <LogOut className="h-4 w-4 mr-2" />

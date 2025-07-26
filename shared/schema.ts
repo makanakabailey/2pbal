@@ -32,6 +32,22 @@ export const users = pgTable("users", {
   marketingConsent: boolean("marketing_consent").default(false),
   profileComplete: boolean("profile_complete").default(false),
   isActive: boolean("is_active").default(true),
+  role: varchar("role", { length: 20 }).default("user"), // user, admin
+  avatar: text("avatar"), // Base64 or URL for profile picture
+  emailVerified: boolean("email_verified").default(false),
+  preferences: jsonb("preferences").$type<{
+    theme: string;
+    notifications: boolean;
+    language: string;
+    timezone: string;
+  }>().default({ theme: 'light', notifications: true, language: 'en', timezone: 'UTC' }),
+  subscription: jsonb("subscription").$type<{
+    plan: string;
+    status: string;
+    startDate: string;
+    endDate?: string;
+    features: string[];
+  }>(),
   lastLogin: timestamp("last_login"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -80,6 +96,27 @@ export const userProjects = pgTable("user_projects", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const activityLogs = pgTable("activity_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
+  adminId: integer("admin_id").references(() => users.id, { onDelete: "set null" }),
+  action: varchar("action", { length: 100 }).notNull(),
+  target: varchar("target", { length: 100 }), // user, quote, project, etc.
+  targetId: integer("target_id"),
+  details: jsonb("details"),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const emailVerifications = pgTable("email_verifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  token: varchar("token", { length: 255 }).unique().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Validation schemas
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -117,6 +154,35 @@ export const profileUpdateSchema = z.object({
   referralSource: z.string().optional(),
 });
 
+export const avatarUploadSchema = z.object({
+  avatar: z.string().min(1, "Avatar data is required"),
+});
+
+export const preferencesUpdateSchema = z.object({
+  theme: z.enum(["light", "dark"]).default("light"),
+  notifications: z.boolean().default(true),
+  language: z.enum(["en", "es", "fr", "de"]).default("en"),
+  timezone: z.string().default("UTC"),
+});
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(6, "Current password is required"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+  confirmPassword: z.string().min(6, "Password confirmation is required"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "New passwords don't match",
+  path: ["confirmPassword"],
+});
+
+export const accountDeletionSchema = z.object({
+  password: z.string().min(6, "Password is required to delete account"),
+  confirmation: z.literal("DELETE", { errorMap: () => ({ message: "Please type DELETE to confirm" }) }),
+});
+
+export const emailVerificationSchema = z.object({
+  token: z.string().min(1, "Verification token is required"),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -143,6 +209,13 @@ export type LoginData = z.infer<typeof loginSchema>;
 export type SignupData = z.infer<typeof signupSchema>;
 export type ProfileUpdate = z.infer<typeof profileUpdateSchema>;
 export type UserSession = typeof userSessions.$inferSelect;
+export type ActivityLog = typeof activityLogs.$inferSelect;
+export type EmailVerification = typeof emailVerifications.$inferSelect;
+export type AvatarUpload = z.infer<typeof avatarUploadSchema>;
+export type PreferencesUpdate = z.infer<typeof preferencesUpdateSchema>;
+export type ChangePassword = z.infer<typeof changePasswordSchema>;
+export type AccountDeletion = z.infer<typeof accountDeletionSchema>;
+export type EmailVerificationData = z.infer<typeof emailVerificationSchema>;
 export type Quote = typeof quotes.$inferSelect;
 export type InsertQuote = z.infer<typeof insertQuoteSchema>;
 export type UserProject = typeof userProjects.$inferSelect;

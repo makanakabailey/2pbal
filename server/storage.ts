@@ -8,7 +8,13 @@ import {
   type Quote, 
   type InsertQuote,
   type UserProject,
-  type InsertProject 
+  type InsertProject,
+  type ActivityLog,
+  type EmailVerification,
+  type AvatarUpload,
+  type PreferencesUpdate,
+  type ChangePassword,
+  type AccountDeletion
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
@@ -20,6 +26,14 @@ export interface IStorage {
   createUser(userData: SignupData): Promise<User>;
   updateUser(id: number, userData: ProfileUpdate): Promise<User | undefined>;
   loginUser(credentials: LoginData): Promise<{ user: User; session: UserSession } | null>;
+  deleteUser(id: number, password: string): Promise<boolean>;
+  changePassword(id: number, currentPassword: string, newPassword: string): Promise<boolean>;
+  updateAvatar(id: number, avatar: string): Promise<User | undefined>;
+  updatePreferences(id: number, preferences: PreferencesUpdate): Promise<User | undefined>;
+  
+  // Admin operations
+  getAllUsers(): Promise<User[]>;
+  updateUserRole(userId: number, role: string): Promise<User | undefined>;
   
   // Session operations
   createSession(userId: number): Promise<UserSession>;
@@ -36,6 +50,23 @@ export interface IStorage {
   getUserProjects(userId: number): Promise<UserProject[]>;
   getProject(id: number): Promise<UserProject | undefined>;
   updateProject(id: number, data: Partial<InsertProject>): Promise<UserProject | undefined>;
+  
+  // Activity logging
+  logActivity(activity: {
+    userId?: number;
+    adminId?: number;
+    action: string;
+    target?: string;
+    targetId?: number;
+    details?: any;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<ActivityLog>;
+  getActivityLogs(userId?: number, limit?: number): Promise<ActivityLog[]>;
+  
+  // Email verification
+  createEmailVerification(userId: number): Promise<EmailVerification>;
+  verifyEmail(token: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -43,9 +74,52 @@ export class MemStorage implements IStorage {
   private sessions: Map<string, UserSession> = new Map();
   private quotes: Map<number, Quote> = new Map();
   private projects: Map<number, UserProject> = new Map();
+  private activityLogs: Map<number, ActivityLog> = new Map();
+  private emailVerifications: Map<string, EmailVerification> = new Map();
   private nextUserId = 1;
   private nextQuoteId = 1;
   private nextProjectId = 1;
+  private nextActivityId = 1;
+  
+  constructor() {
+    // Create default admin user
+    this.createAdminUser();
+  }
+  
+  private async createAdminUser() {
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+    const adminUser: User = {
+      id: this.nextUserId++,
+      email: "admin@2pbal.com",
+      password: hashedPassword,
+      firstName: "Admin",
+      lastName: "User",
+      company: "2Pbal",
+      phone: null,
+      jobTitle: "Administrator",
+      industry: "Technology",
+      companySize: null,
+      website: null,
+      address: null,
+      businessGoals: null,
+      currentChallenges: null,
+      preferredBudget: null,
+      projectTimeline: null,
+      referralSource: null,
+      marketingConsent: false,
+      profileComplete: true,
+      isActive: true,
+      role: "admin",
+      avatar: null,
+      emailVerified: true,
+      preferences: { theme: 'light', notifications: true, language: 'en', timezone: 'UTC' },
+      subscription: null,
+      lastLogin: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.users.set(adminUser.id, adminUser);
+  }
 
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
@@ -84,6 +158,11 @@ export class MemStorage implements IStorage {
       marketingConsent: userData.marketingConsent || false,
       profileComplete: false,
       isActive: true,
+      role: "user",
+      avatar: null,
+      emailVerified: false,
+      preferences: { theme: 'light', notifications: true, language: 'en', timezone: 'UTC' },
+      subscription: null,
       lastLogin: null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -243,6 +322,150 @@ export class MemStorage implements IStorage {
     
     this.projects.set(id, updatedProject);
     return updatedProject;
+  }
+
+  // Account management methods
+  async deleteUser(id: number, password: string): Promise<boolean> {
+    const user = this.users.get(id);
+    if (!user) return false;
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return false;
+
+    this.users.delete(id);
+    // Clean up related sessions
+    const sessionsToDelete: string[] = [];
+    for (const [sessionId, session] of this.sessions.entries()) {
+      if (session.userId === id) {
+        sessionsToDelete.push(sessionId);
+      }
+    }
+    sessionsToDelete.forEach(sessionId => this.sessions.delete(sessionId));
+    return true;
+  }
+
+  async changePassword(id: number, currentPassword: string, newPassword: string): Promise<boolean> {
+    const user = this.users.get(id);
+    if (!user) return false;
+
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) return false;
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    const updatedUser = { ...user, password: hashedNewPassword, updatedAt: new Date() };
+    this.users.set(id, updatedUser);
+    return true;
+  }
+
+  async updateAvatar(id: number, avatar: string): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+
+    const updatedUser = { ...user, avatar, updatedAt: new Date() };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async updatePreferences(id: number, preferences: PreferencesUpdate): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+
+    const updatedUser = { 
+      ...user, 
+      preferences: { ...user.preferences, ...preferences }, 
+      updatedAt: new Date() 
+    };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  // Admin methods
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values())
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  }
+
+  async updateUserRole(userId: number, role: string): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+
+    const updatedUser = { ...user, role, updatedAt: new Date() };
+    this.users.set(userId, updatedUser);
+    return updatedUser;
+  }
+
+  // Activity logging
+  async logActivity(activity: {
+    userId?: number;
+    adminId?: number;
+    action: string;
+    target?: string;
+    targetId?: number;
+    details?: any;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<ActivityLog> {
+    const log: ActivityLog = {
+      id: this.nextActivityId++,
+      userId: activity.userId || null,
+      adminId: activity.adminId || null,
+      action: activity.action,
+      target: activity.target || null,
+      targetId: activity.targetId || null,
+      details: activity.details || null,
+      ipAddress: activity.ipAddress || null,
+      userAgent: activity.userAgent || null,
+      createdAt: new Date(),
+    };
+    
+    this.activityLogs.set(log.id, log);
+    return log;
+  }
+
+  async getActivityLogs(userId?: number, limit: number = 50): Promise<ActivityLog[]> {
+    const logs = Array.from(this.activityLogs.values());
+    
+    let filteredLogs = logs;
+    if (userId) {
+      filteredLogs = logs.filter(log => log.userId === userId || log.adminId === userId);
+    }
+    
+    return filteredLogs
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0))
+      .slice(0, limit);
+  }
+
+  // Email verification
+  async createEmailVerification(userId: number): Promise<EmailVerification> {
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    const verification: EmailVerification = {
+      id: this.nextActivityId++,
+      userId,
+      token,
+      expiresAt,
+      createdAt: new Date(),
+    };
+    
+    this.emailVerifications.set(token, verification);
+    return verification;
+  }
+
+  async verifyEmail(token: string): Promise<boolean> {
+    const verification = this.emailVerifications.get(token);
+    if (!verification || verification.expiresAt < new Date()) {
+      return false;
+    }
+
+    const user = this.users.get(verification.userId);
+    if (!user) return false;
+
+    const updatedUser = { ...user, emailVerified: true, updatedAt: new Date() };
+    this.users.set(user.id, updatedUser);
+    
+    this.emailVerifications.delete(token);
+    return true;
   }
 }
 

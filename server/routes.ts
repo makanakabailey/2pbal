@@ -7,7 +7,12 @@ import {
   loginSchema, 
   signupSchema, 
   profileUpdateSchema,
-  insertProjectSchema 
+  insertProjectSchema,
+  avatarUploadSchema,
+  preferencesUpdateSchema,
+  changePasswordSchema,
+  accountDeletionSchema,
+  emailVerificationSchema
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -69,11 +74,28 @@ async function requireAuth(req: any, res: any, next: any) {
 
     req.user = user;
     req.session = session;
+    
+    // Log activity
+    await storage.logActivity({
+      userId: user.id,
+      action: `${req.method} ${req.path}`,
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+    
     next();
   } catch (error) {
     console.error("Auth middleware error:", error);
     res.status(500).json({ message: "Authentication error" });
   }
+}
+
+// Admin middleware
+async function requireAdmin(req: any, res: any, next: any) {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ message: "Admin access required" });
+  }
+  next();
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -170,8 +192,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Profile routes
-  app.put("/api/profile", requireAuth, async (req: any, res) => {
+  // Account Management Routes
+  app.put("/api/users/profile", requireAuth, async (req: any, res) => {
     try {
       const result = profileUpdateSchema.safeParse(req.body);
       if (!result.success) {
@@ -189,6 +211,192 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Profile update error:", error);
       res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.post("/api/users/avatar", requireAuth, upload.single('avatar'), async (req: any, res) => {
+    try {
+      let avatarData = '';
+      
+      if (req.file) {
+        // Convert uploaded file to base64
+        avatarData = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+      } else if (req.body.avatar) {
+        // Use provided base64 avatar data
+        avatarData = req.body.avatar;
+      } else {
+        return res.status(400).json({ message: "No avatar data provided" });
+      }
+
+      const updatedUser = await storage.updateAvatar(req.user.id, avatarData);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      console.error("Avatar update error:", error);
+      res.status(500).json({ message: "Failed to update avatar" });
+    }
+  });
+
+  app.put("/api/users/preferences", requireAuth, async (req: any, res) => {
+    try {
+      const result = preferencesUpdateSchema.safeParse(req.body);
+      if (!result.success) {
+        const errorMessage = fromZodError(result.error);
+        return res.status(400).json({ message: errorMessage.toString() });
+      }
+
+      const updatedUser = await storage.updatePreferences(req.user.id, result.data);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      console.error("Preferences update error:", error);
+      res.status(500).json({ message: "Failed to update preferences" });
+    }
+  });
+
+  app.delete("/api/users/account", requireAuth, async (req: any, res) => {
+    try {
+      const result = accountDeletionSchema.safeParse(req.body);
+      if (!result.success) {
+        const errorMessage = fromZodError(result.error);
+        return res.status(400).json({ message: errorMessage.toString() });
+      }
+
+      const deleted = await storage.deleteUser(req.user.id, result.data.password);
+      if (!deleted) {
+        return res.status(400).json({ message: "Invalid password or user not found" });
+      }
+
+      res.clearCookie('session');
+      res.json({ message: "Account deleted successfully" });
+    } catch (error) {
+      console.error("Account deletion error:", error);
+      res.status(500).json({ message: "Failed to delete account" });
+    }
+  });
+
+  app.get("/api/users/subscription", requireAuth, async (req: any, res) => {
+    try {
+      const subscription = req.user.subscription || {
+        plan: "free",
+        status: "active",
+        startDate: req.user.createdAt,
+        features: ["basic_support", "1_project"]
+      };
+      
+      res.json({ subscription });
+    } catch (error) {
+      console.error("Get subscription error:", error);
+      res.status(500).json({ message: "Failed to get subscription details" });
+    }
+  });
+
+  app.post("/api/users/change-password", requireAuth, async (req: any, res) => {
+    try {
+      const result = changePasswordSchema.safeParse(req.body);
+      if (!result.success) {
+        const errorMessage = fromZodError(result.error);
+        return res.status(400).json({ message: errorMessage.toString() });
+      }
+
+      const changed = await storage.changePassword(
+        req.user.id, 
+        result.data.currentPassword, 
+        result.data.newPassword
+      );
+      
+      if (!changed) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      res.json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.error("Change password error:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
+  app.post("/api/users/verify-email", async (req, res) => {
+    try {
+      const result = emailVerificationSchema.safeParse(req.body);
+      if (!result.success) {
+        const errorMessage = fromZodError(result.error);
+        return res.status(400).json({ message: errorMessage.toString() });
+      }
+
+      const verified = await storage.verifyEmail(result.data.token);
+      if (!verified) {
+        return res.status(400).json({ message: "Invalid or expired verification token" });
+      }
+
+      res.json({ message: "Email verified successfully" });
+    } catch (error) {
+      console.error("Email verification error:", error);
+      res.status(500).json({ message: "Failed to verify email" });
+    }
+  });
+
+  // Admin Routes
+  app.get("/api/admin/users", requireAuth, requireAdmin, async (req: any, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const usersWithoutPasswords = users.map(({ password: _, ...user }) => user);
+      res.json({ users: usersWithoutPasswords });
+    } catch (error) {
+      console.error("Get all users error:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/activity-logs", requireAuth, requireAdmin, async (req: any, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 100;
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      
+      const logs = await storage.getActivityLogs(userId, limit);
+      res.json({ logs });
+    } catch (error) {
+      console.error("Get activity logs error:", error);
+      res.status(500).json({ message: "Failed to fetch activity logs" });
+    }
+  });
+
+  app.put("/api/admin/users/:userId/role", requireAuth, requireAdmin, async (req: any, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { role } = req.body;
+      
+      if (!['user', 'admin'].includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+      }
+
+      const updatedUser = await storage.updateUserRole(userId, role);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      await storage.logActivity({
+        adminId: req.user.id,
+        action: `Updated user role to ${role}`,
+        target: 'user',
+        targetId: userId,
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      console.error("Update user role error:", error);
+      res.status(500).json({ message: "Failed to update user role" });
     }
   });
 

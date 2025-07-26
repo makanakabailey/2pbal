@@ -24,6 +24,8 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
 import ProfileSetup from "@/pages/profile-setup";
+import AccountSettings from "@/pages/account-settings";
+import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -52,6 +54,8 @@ function Router() {
           <Route path="/signup" component={Signup} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/profile-setup" component={ProfileSetup} />
+          <Route path="/account-settings" component={AccountSettings} />
+          <Route path="/admin-dashboard" component={AdminDashboard} />
           <Route component={NotFound} />
         </Switch>
       </main>
