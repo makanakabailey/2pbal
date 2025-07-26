@@ -35,6 +35,7 @@ export interface IStorage {
   updateUser(id: number, userData: ProfileUpdate): Promise<User | undefined>;
   loginUser(credentials: LoginData): Promise<{ user: User; session: UserSession } | null>;
   deleteUser(id: number, password: string): Promise<boolean>;
+  forceDeleteUser(id: number): Promise<boolean>;
   changePassword(id: number, currentPassword: string, newPassword: string): Promise<boolean>;
   updateAvatar(id: number, avatar: string): Promise<User | undefined>;
   updatePreferences(id: number, preferences: PreferencesUpdate): Promise<User | undefined>;
@@ -352,6 +353,21 @@ export class MemStorage implements IStorage {
     return true;
   }
 
+  async forceDeleteUser(id: number): Promise<boolean> {
+    const user = this.users.get(id);
+    if (!user) return false;
+
+    this.users.delete(id);
+    // Also clean up related data
+    for (const [sessionId, session] of this.sessions.entries()) {
+      if (session.userId === id) {
+        this.sessions.delete(sessionId);
+      }
+    }
+    
+    return true;
+  }
+
   async changePassword(id: number, currentPassword: string, newPassword: string): Promise<boolean> {
     const user = this.users.get(id);
     if (!user) return false;
@@ -549,6 +565,16 @@ export class DatabaseStorage implements IStorage {
 
     await db.delete(users).where(eq(users.id, id));
     return true;
+  }
+
+  async forceDeleteUser(id: number): Promise<boolean> {
+    try {
+      await db.delete(users).where(eq(users.id, id));
+      return true;
+    } catch (error) {
+      console.error("Force delete user error:", error);
+      return false;
+    }
   }
 
   async changePassword(id: number, currentPassword: string, newPassword: string): Promise<boolean> {

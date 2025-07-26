@@ -10,13 +10,34 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Activity, Shield, User, Clock, Mail, Phone, Building, Eye } from "lucide-react";
+import { 
+  Users, Activity, Shield, User, Clock, Mail, Phone, Building, Eye, 
+  MoreVertical, UserX, Trash2, UserCheck, AlertTriangle 
+} from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from "@/components/ui/alert-dialog";
 
 export default function AdminDashboard() {
   const { toast } = useToast();
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [activityLimit, setActivityLimit] = useState(100);
+  const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
+  const [blockUserId, setBlockUserId] = useState<number | null>(null);
 
   // Get all users (admin only)
   const { data: allUsers, isLoading: usersLoading } = useQuery({
@@ -54,6 +75,48 @@ export default function AdminDashboard() {
 
   const handleRoleChange = (userId: number, newRole: string) => {
     updateRoleMutation.mutate({ userId, role: newRole });
+  };
+
+  // Block/Unblock user mutation
+  const blockUserMutation = useMutation({
+    mutationFn: ({ userId, isActive }: { userId: number; isActive: boolean }) => 
+      apiRequest(`/api/admin/users/${userId}/status`, "PUT", { isActive }),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ 
+        title: `User ${variables.isActive ? 'unblocked' : 'blocked'} successfully`,
+        description: `The user account has been ${variables.isActive ? 'activated' : 'deactivated'}.`
+      });
+      setBlockUserId(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: (userId: number) => 
+      apiRequest(`/api/admin/users/${userId}`, "DELETE"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ 
+        title: "User deleted successfully",
+        description: "The user account has been permanently removed."
+      });
+      setDeleteUserId(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleBlockUser = (userId: number, currentStatus: boolean) => {
+    blockUserMutation.mutate({ userId, isActive: !currentStatus });
+  };
+
+  const handleDeleteUser = (userId: number) => {
+    deleteUserMutation.mutate(userId);
   };
 
   const formatDate = (date: string | Date) => {
@@ -261,19 +324,54 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Select
-                              value={user.role}
-                              onValueChange={(newRole) => handleRoleChange(user.id, newRole)}
-                              disabled={updateRoleMutation.isPending}
-                            >
-                              <SelectTrigger className="w-24">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="user">User</SelectItem>
-                                <SelectItem value="admin">Admin</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <div className="flex items-center space-x-2">
+                              <Select
+                                value={user.role}
+                                onValueChange={(newRole) => handleRoleChange(user.id, newRole)}
+                                disabled={updateRoleMutation.isPending}
+                              >
+                                <SelectTrigger className="w-20">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="user">User</SelectItem>
+                                  <SelectItem value="admin">Admin</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem 
+                                    onClick={() => setBlockUserId(user.id)}
+                                    className="text-orange-600"
+                                  >
+                                    {user.isActive ? (
+                                      <>
+                                        <UserX className="h-4 w-4 mr-2" />
+                                        Block User
+                                      </>
+                                    ) : (
+                                      <>
+                                        <UserCheck className="h-4 w-4 mr-2" />
+                                        Unblock User
+                                      </>
+                                    )}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => setDeleteUserId(user.id)}
+                                    className="text-red-600"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete User
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -501,6 +599,75 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Block User Confirmation Dialog */}
+      <AlertDialog open={!!blockUserId} onOpenChange={() => setBlockUserId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center">
+              <AlertTriangle className="h-5 w-5 text-orange-500 mr-2" />
+              {users.find((u: any) => u.id === blockUserId)?.isActive ? 'Block User' : 'Unblock User'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {users.find((u: any) => u.id === blockUserId)?.isActive 
+                ? 'Are you sure you want to block this user? They will be unable to access their account until unblocked.'
+                : 'Are you sure you want to unblock this user? They will regain access to their account.'
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (blockUserId) {
+                  const user = users.find((u: any) => u.id === blockUserId);
+                  if (user) {
+                    handleBlockUser(blockUserId, user.isActive);
+                  }
+                }
+              }}
+              className={users.find((u: any) => u.id === blockUserId)?.isActive 
+                ? 'bg-orange-600 hover:bg-orange-700' 
+                : 'bg-green-600 hover:bg-green-700'
+              }
+              disabled={blockUserMutation.isPending}
+            >
+              {blockUserMutation.isPending ? 'Processing...' : 
+                (users.find((u: any) => u.id === blockUserId)?.isActive ? 'Block User' : 'Unblock User')
+              }
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete User Confirmation Dialog */}
+      <AlertDialog open={!!deleteUserId} onOpenChange={() => setDeleteUserId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center">
+              <Trash2 className="h-5 w-5 text-red-500 mr-2" />
+              Delete User Account
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete this user account? This action cannot be undone and will remove all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteUserId) {
+                  handleDeleteUser(deleteUserId);
+                }
+              }}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={deleteUserMutation.isPending}
+            >
+              {deleteUserMutation.isPending ? 'Deleting...' : 'Delete User'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

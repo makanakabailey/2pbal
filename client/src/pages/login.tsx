@@ -28,12 +28,18 @@ export default function Login() {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      await login(data);
+      const result = await login(data);
       toast({
         title: "Welcome back!",
         description: "You have been logged in successfully.",
       });
-      setLocation('/dashboard');
+      
+      // Redirect based on user role
+      if (result?.user?.role === 'admin') {
+        setLocation('/admin-dashboard');
+      } else {
+        setLocation('/dashboard');
+      }
     } catch (error: any) {
       toast({
         title: "Login failed",

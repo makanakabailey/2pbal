@@ -400,6 +400,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin: Block/Unblock user
+  app.put("/api/admin/users/:userId/status", requireAuth, requireAdmin, async (req: any, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { isActive } = req.body;
+      
+      if (typeof isActive !== 'boolean') {
+        return res.status(400).json({ message: "Invalid status value" });
+      }
+
+      const updatedUser = await storage.updateUser(userId, { isActive } as any);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      await storage.logActivity({
+        adminId: req.user.id,
+        action: isActive ? 'Unblocked user' : 'Blocked user',
+        target: 'user',
+        targetId: userId,
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      console.error("Update user status error:", error);
+      res.status(500).json({ message: "Failed to update user status" });
+    }
+  });
+
+  // Admin: Delete user account
+  app.delete("/api/admin/users/:userId", requireAuth, requireAdmin, async (req: any, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      // Prevent admin from deleting themselves
+      if (userId === req.user.id) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Use a temporary password for admin deletion
+      const deleted = await storage.deleteUser(userId, 'admin-force-delete');
+      if (!deleted) {
+        // Force delete from database directly if regular delete fails
+        await storage.forceDeleteUser(userId);
+      }
+
+      await storage.logActivity({
+        adminId: req.user.id,
+        action: `Deleted user account`,
+        target: 'user',
+        targetId: userId,
+        details: { deletedUserEmail: user.email },
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      res.json({ message: "User account deleted successfully" });
+    } catch (error) {
+      console.error("Delete user error:", error);
+      res.status(500).json({ message: "Failed to delete user account" });
+    }
+  });
+
   // Quote routes
   app.get("/api/quotes", async (req: any, res) => {
     try {
