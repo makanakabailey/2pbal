@@ -201,7 +201,7 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
               </div>
               
               <Button 
-                onClick={onOpenCalculator}
+                onClick={() => window.location.href = '/recommendations'}
                 className="w-full btn-gradient-glow text-lg py-6"
               >
                 See Personalized Package Recommendations
