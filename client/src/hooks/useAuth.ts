@@ -13,11 +13,8 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      return apiRequest('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(credentials),
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const response = await apiRequest('POST', '/api/auth/login', credentials);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
@@ -26,11 +23,8 @@ export function useAuth() {
 
   const signupMutation = useMutation({
     mutationFn: async (userData: SignupData) => {
-      return apiRequest('/api/auth/signup', {
-        method: 'POST',
-        body: JSON.stringify(userData),
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const response = await apiRequest('POST', '/api/auth/signup', userData);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
@@ -39,9 +33,8 @@ export function useAuth() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest('/api/auth/logout', {
-        method: 'POST',
-      });
+      const response = await apiRequest('POST', '/api/auth/logout');
+      return response.json();
     },
     onSuccess: () => {
       queryClient.setQueryData(['/api/auth/me'], null);
@@ -50,9 +43,9 @@ export function useAuth() {
   });
 
   return {
-    user: user?.user as User | undefined,
+    user: (user as any)?.user as User | undefined,
     isLoading,
-    isAuthenticated: !!user?.user,
+    isAuthenticated: !!(user as any)?.user,
     login: loginMutation.mutateAsync,
     signup: signupMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
