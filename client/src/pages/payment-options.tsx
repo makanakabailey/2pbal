@@ -217,7 +217,7 @@ export default function PaymentOptions() {
           amount: service.basePrice,
           serviceId,
           serviceName: service.name,
-          description: `${service.name} - ${service.tagline}`
+          description: `${service.name} - ${service.description}`
         };
         setOrderDetails(orderData);
         createPaymentIntent(orderData);
@@ -249,14 +249,12 @@ export default function PaymentOptions() {
 
   const createPaymentIntent = async (orderData: any) => {
     try {
-      const response = await apiRequest('POST', '/api/create-payment-intent', {
+      const data = await apiRequest('/api/create-payment-intent', 'POST', {
         amount: orderData.amount,
         serviceId: orderData.serviceId,
         planId: orderData.packageId,
         description: orderData.description
       });
-
-      const data = await response.json();
       
       if (data.clientSecret) {
         setClientSecret(data.clientSecret);
