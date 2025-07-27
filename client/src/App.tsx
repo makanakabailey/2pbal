@@ -49,7 +49,7 @@ function Router() {
           <Route path="/case-studies" component={CaseStudies} />
           <Route path="/careers" component={Careers} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
-          <Route path="/payment-options/:serviceId" component={PaymentOptions} />
+          <Route path="/payment-options" component={PaymentOptions} />
           <Route path="/payment/:packageId" component={Payment} />
           <Route path="/schedule-consultation" component={ScheduleConsultation} />
           <Route path="/checkout" component={Checkout} />

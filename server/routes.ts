@@ -12,7 +12,11 @@ import {
   preferencesUpdateSchema,
   changePasswordSchema,
   accountDeletionSchema,
-  emailVerificationSchema
+  emailVerificationSchema,
+  createPaymentIntentSchema,
+  createSubscriptionSchema,
+  updatePaymentSchema,
+  cancelSubscriptionSchema
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -591,33 +595,291 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe payment routes
+  // Enhanced Payment System Routes
+  
+  // Create Payment Intent with multiple payment methods support
   app.post("/api/create-payment-intent", async (req, res) => {
     try {
-      const { amount, serviceId, planId } = req.body;
+      const result = createPaymentIntentSchema.safeParse(req.body);
       
-      if (!amount || typeof amount !== 'number') {
-        return res.status(400).json({ message: "Valid amount is required" });
+      if (!result.success) {
+        const errorMessage = fromZodError(result.error);
+        return res.status(400).json({ message: errorMessage.toString() });
       }
 
       if (!stripe) {
         return res.status(503).json({ message: "Stripe not configured" });
       }
 
+      const { amount, currency = "usd", serviceId, planId, description, metadata } = result.data;
+
+      // Get or create customer if user is authenticated
+      let customerId = undefined;
+      const sessionId = req.cookies?.session;
+      if (sessionId) {
+        const session = await storage.getSession(sessionId);
+        if (session) {
+          const user = await storage.getUser(session.userId);
+          if (user?.email) {
+            const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+            if (customers.data.length > 0) {
+              customerId = customers.data[0].id;
+            } else {
+              const customer = await stripe.customers.create({
+                email: user.email,
+                name: `${user.firstName} ${user.lastName}`.trim(),
+                metadata: { userId: session.userId.toString() }
+              });
+              customerId = customer.id;
+            }
+          }
+        }
+      }
+
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
-        currency: "usd",
+        currency,
+        customer: customerId,
+        automatic_payment_methods: {
+          enabled: true, // Enables Apple Pay, Google Pay, etc.
+        },
+        payment_method_options: {
+          card: {
+            request_three_d_secure: 'automatic',
+          },
+          apple_pay: {
+            request_three_d_secure: 'automatic',
+          },
+          google_pay: {
+            request_three_d_secure: 'automatic',
+          },
+        },
+        description: description || `Payment for ${serviceId ? `service ${serviceId}` : 'services'}`,
         metadata: {
           serviceId: serviceId || '',
-          planId: planId || ''
+          planId: planId || '',
+          userId: sessionId ? 'authenticated' : 'guest',
+          ...metadata
         }
       });
 
-      res.json({ clientSecret: paymentIntent.client_secret });
+      // Store payment record in database
+      if (sessionId) {
+        const session = await storage.getSession(sessionId);
+        if (session) {
+          await storage.createPayment({
+            userId: session.userId,
+            stripePaymentIntentId: paymentIntent.id,
+            stripeCustomerId: customerId,
+            amount: Math.round(amount * 100),
+            currency,
+            status: 'pending',
+            description: paymentIntent.description,
+            metadata: paymentIntent.metadata
+          });
+        }
+      }
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id 
+      });
     } catch (error: any) {
       console.error("Payment intent creation error:", error);
       res.status(500).json({ 
         message: "Error creating payment intent: " + error.message 
+      });
+    }
+  });
+
+  // Create Subscription for recurring payments
+  app.post("/api/create-subscription", requireAuth, async (req: any, res) => {
+    try {
+      const result = createSubscriptionSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const errorMessage = fromZodError(result.error);
+        return res.status(400).json({ message: errorMessage.toString() });
+      }
+
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe not configured" });
+      }
+
+      const { priceId, packageType } = result.data;
+      const user = req.user;
+
+      // Get or create customer
+      let customer;
+      const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+      if (customers.data.length > 0) {
+        customer = customers.data[0];
+      } else {
+        customer = await stripe.customers.create({
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`.trim(),
+          metadata: { userId: user.id.toString() }
+        });
+      }
+
+      // Create subscription
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{ price: priceId }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: { save_default_payment_method: 'on_subscription' },
+        expand: ['latest_invoice.payment_intent'],
+      });
+
+      // Store subscription in database
+      await storage.createSubscription({
+        userId: user.id,
+        stripeSubscriptionId: subscription.id,
+        stripeCustomerId: customer.id,
+        stripePriceId: priceId,
+        packageType,
+        status: subscription.status as any,
+        currentPeriodStart: new Date(subscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+        amount: subscription.items.data[0].price.unit_amount || 0,
+        currency: subscription.items.data[0].price.currency,
+        interval: subscription.items.data[0].price.recurring?.interval || 'month',
+        intervalCount: subscription.items.data[0].price.recurring?.interval_count || 1
+      });
+
+      const clientSecret = (subscription.latest_invoice as any)?.payment_intent?.client_secret;
+
+      res.json({
+        subscriptionId: subscription.id,
+        clientSecret,
+        status: subscription.status
+      });
+    } catch (error: any) {
+      console.error("Subscription creation error:", error);
+      res.status(500).json({ 
+        message: "Error creating subscription: " + error.message 
+      });
+    }
+  });
+
+  // Update Payment Status (webhook handler)
+  app.post("/api/payment-webhook", async (req, res) => {
+    try {
+      const sig = req.headers['stripe-signature'];
+      let event;
+
+      try {
+        event = stripe?.webhooks.constructEvent(req.body, sig as string, process.env.STRIPE_WEBHOOK_SECRET || '');
+      } catch (err: any) {
+        console.error('Webhook signature verification failed:', err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+      }
+
+      if (!event) {
+        return res.status(400).json({ message: "Invalid event" });
+      }
+
+      // Handle the event
+      switch (event.type) {
+        case 'payment_intent.succeeded':
+          const paymentIntent = event.data.object;
+          const payment = await storage.getPaymentByStripeId(paymentIntent.id);
+          if (payment) {
+            await storage.updatePayment(payment.id, {
+              status: 'succeeded',
+              paymentMethod: paymentIntent.payment_method_types?.[0],
+              receiptUrl: paymentIntent.charges?.data[0]?.receipt_url
+            });
+          }
+          break;
+
+        case 'payment_intent.payment_failed':
+          const failedPayment = event.data.object;
+          const failedPaymentRecord = await storage.getPaymentByStripeId(failedPayment.id);
+          if (failedPaymentRecord) {
+            await storage.updatePayment(failedPaymentRecord.id, { status: 'failed' });
+          }
+          break;
+
+        case 'invoice.payment_succeeded':
+          const invoice = event.data.object;
+          // Handle subscription payment success
+          break;
+
+        default:
+          console.log(`Unhandled event type ${event.type}`);
+      }
+
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error("Webhook error:", error);
+      res.status(500).json({ message: "Webhook processing failed" });
+    }
+  });
+
+  // Get User Payment History
+  app.get("/api/payments", requireAuth, async (req: any, res) => {
+    try {
+      const payments = await storage.getUserPayments(req.user.id);
+      res.json({ payments });
+    } catch (error: any) {
+      console.error("Error fetching payments:", error);
+      res.status(500).json({ message: "Failed to fetch payments" });
+    }
+  });
+
+  // Get User Subscriptions
+  app.get("/api/subscriptions", requireAuth, async (req: any, res) => {
+    try {
+      const subscriptions = await storage.getUserSubscriptions(req.user.id);
+      res.json({ subscriptions });
+    } catch (error: any) {
+      console.error("Error fetching subscriptions:", error);
+      res.status(500).json({ message: "Failed to fetch subscriptions" });
+    }
+  });
+
+  // Cancel Subscription
+  app.post("/api/cancel-subscription", requireAuth, async (req: any, res) => {
+    try {
+      const result = cancelSubscriptionSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const errorMessage = fromZodError(result.error);
+        return res.status(400).json({ message: errorMessage.toString() });
+      }
+
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe not configured" });
+      }
+
+      const { subscriptionId, cancelAtPeriodEnd } = result.data;
+      
+      // Verify subscription belongs to user
+      const subscription = await storage.getSubscriptionByStripeId(subscriptionId);
+      if (!subscription || subscription.userId !== req.user.id) {
+        return res.status(404).json({ message: "Subscription not found" });
+      }
+
+      // Cancel in Stripe
+      const stripeSubscription = await stripe.subscriptions.update(subscriptionId, {
+        cancel_at_period_end: cancelAtPeriodEnd
+      });
+
+      // Update in database
+      await storage.updateSubscription(subscription.id, {
+        cancelAtPeriodEnd,
+        canceledAt: cancelAtPeriodEnd ? null : new Date()
+      });
+
+      res.json({ 
+        message: cancelAtPeriodEnd ? "Subscription will be canceled at period end" : "Subscription canceled",
+        subscription: stripeSubscription
+      });
+    } catch (error: any) {
+      console.error("Subscription cancellation error:", error);
+      res.status(500).json({ 
+        message: "Error canceling subscription: " + error.message 
       });
     }
   });

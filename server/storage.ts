@@ -15,12 +15,21 @@ import {
   type PreferencesUpdate,
   type ChangePassword,
   type AccountDeletion,
+  type Payment,
+  type InsertPayment,
+  type Subscription,
+  type InsertSubscription,
+  type Invoice,
+  type InsertInvoice,
   users, 
   userSessions, 
   quotes, 
   userProjects, 
   activityLogs, 
-  emailVerifications
+  emailVerifications,
+  payments,
+  subscriptions,
+  invoices
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
@@ -72,6 +81,27 @@ export interface IStorage {
     userAgent?: string;
   }): Promise<ActivityLog>;
   getActivityLogs(userId?: number, limit?: number): Promise<ActivityLog[]>;
+  
+  // Payment operations
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  getPayment(id: number): Promise<Payment | undefined>;
+  getPaymentByStripeId(stripePaymentIntentId: string): Promise<Payment | undefined>;
+  getUserPayments(userId: number): Promise<Payment[]>;
+  updatePayment(id: number, data: Partial<InsertPayment>): Promise<Payment | undefined>;
+  
+  // Subscription operations
+  createSubscription(subscription: InsertSubscription): Promise<Subscription>;
+  getSubscription(id: number): Promise<Subscription | undefined>;
+  getSubscriptionByStripeId(stripeSubscriptionId: string): Promise<Subscription | undefined>;
+  getUserSubscriptions(userId: number): Promise<Subscription[]>;
+  updateSubscription(id: number, data: Partial<InsertSubscription>): Promise<Subscription | undefined>;
+  
+  // Invoice operations
+  createInvoice(invoice: InsertInvoice): Promise<Invoice>;
+  getInvoice(id: number): Promise<Invoice | undefined>;
+  getInvoiceByStripeId(stripeInvoiceId: string): Promise<Invoice | undefined>;
+  getUserInvoices(userId: number): Promise<Invoice[]>;
+  updateInvoice(id: number, data: Partial<InsertInvoice>): Promise<Invoice | undefined>;
   
   // Email verification
   createEmailVerification(userId: number): Promise<EmailVerification>;
