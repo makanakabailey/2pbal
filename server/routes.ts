@@ -647,12 +647,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           card: {
             request_three_d_secure: 'automatic',
           },
-          apple_pay: {
-            request_three_d_secure: 'automatic',
-          },
-          google_pay: {
-            request_three_d_secure: 'automatic',
-          },
         },
         description: description || `Payment for ${serviceId ? `service ${serviceId}` : 'services'}`,
         metadata: {
@@ -739,8 +733,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         stripePriceId: priceId,
         packageType,
         status: subscription.status as any,
-        currentPeriodStart: new Date(subscription.current_period_start * 1000),
-        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+        currentPeriodStart: new Date((subscription as any).current_period_start * 1000),
+        currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
         amount: subscription.items.data[0].price.unit_amount || 0,
         currency: subscription.items.data[0].price.currency,
         interval: subscription.items.data[0].price.recurring?.interval || 'month',
@@ -788,7 +782,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             await storage.updatePayment(payment.id, {
               status: 'succeeded',
               paymentMethod: paymentIntent.payment_method_types?.[0],
-              receiptUrl: paymentIntent.charges?.data[0]?.receipt_url
+              receiptUrl: (paymentIntent as any).charges?.data[0]?.receipt_url
             });
           }
           break;

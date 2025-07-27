@@ -115,10 +115,16 @@ export class MemStorage implements IStorage {
   private projects: Map<number, UserProject> = new Map();
   private activityLogs: Map<number, ActivityLog> = new Map();
   private emailVerifications: Map<string, EmailVerification> = new Map();
+  private payments: Map<number, Payment> = new Map();
+  private subscriptions: Map<number, Subscription> = new Map();
+  private invoices: Map<number, Invoice> = new Map();
   private nextUserId = 1;
   private nextQuoteId = 1;
   private nextProjectId = 1;
   private nextActivityId = 1;
+  private nextPaymentId = 1;
+  private nextSubscriptionId = 1;
+  private nextInvoiceId = 1;
   
   constructor() {
     // Create default admin user
@@ -521,6 +527,114 @@ export class MemStorage implements IStorage {
     this.emailVerifications.delete(token);
     return true;
   }
+
+  // Payment operations
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    const newPayment: Payment = {
+      id: this.nextPaymentId++,
+      ...payment,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    this.payments.set(newPayment.id, newPayment);
+    return newPayment;
+  }
+
+  async getPayment(id: number): Promise<Payment | undefined> {
+    return this.payments.get(id);
+  }
+
+  async getPaymentByStripeId(stripePaymentIntentId: string): Promise<Payment | undefined> {
+    return Array.from(this.payments.values()).find(p => p.stripePaymentIntentId === stripePaymentIntentId);
+  }
+
+  async getUserPayments(userId: number): Promise<Payment[]> {
+    return Array.from(this.payments.values())
+      .filter(p => p.userId === userId)
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  }
+
+  async updatePayment(id: number, data: Partial<InsertPayment>): Promise<Payment | undefined> {
+    const payment = this.payments.get(id);
+    if (!payment) return undefined;
+
+    const updatedPayment = { ...payment, ...data, updatedAt: new Date() };
+    this.payments.set(id, updatedPayment);
+    return updatedPayment;
+  }
+
+  // Subscription operations
+  async createSubscription(subscription: InsertSubscription): Promise<Subscription> {
+    const newSubscription: Subscription = {
+      id: this.nextSubscriptionId++,
+      ...subscription,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    this.subscriptions.set(newSubscription.id, newSubscription);
+    return newSubscription;
+  }
+
+  async getSubscription(id: number): Promise<Subscription | undefined> {
+    return this.subscriptions.get(id);
+  }
+
+  async getSubscriptionByStripeId(stripeSubscriptionId: string): Promise<Subscription | undefined> {
+    return Array.from(this.subscriptions.values()).find(s => s.stripeSubscriptionId === stripeSubscriptionId);
+  }
+
+  async getUserSubscriptions(userId: number): Promise<Subscription[]> {
+    return Array.from(this.subscriptions.values())
+      .filter(s => s.userId === userId)
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  }
+
+  async updateSubscription(id: number, data: Partial<InsertSubscription>): Promise<Subscription | undefined> {
+    const subscription = this.subscriptions.get(id);
+    if (!subscription) return undefined;
+
+    const updatedSubscription = { ...subscription, ...data, updatedAt: new Date() };
+    this.subscriptions.set(id, updatedSubscription);
+    return updatedSubscription;
+  }
+
+  // Invoice operations
+  async createInvoice(invoice: InsertInvoice): Promise<Invoice> {
+    const newInvoice: Invoice = {
+      id: this.nextInvoiceId++,
+      ...invoice,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    this.invoices.set(newInvoice.id, newInvoice);
+    return newInvoice;
+  }
+
+  async getInvoice(id: number): Promise<Invoice | undefined> {
+    return this.invoices.get(id);
+  }
+
+  async getInvoiceByStripeId(stripeInvoiceId: string): Promise<Invoice | undefined> {
+    return Array.from(this.invoices.values()).find(i => i.stripeInvoiceId === stripeInvoiceId);
+  }
+
+  async getUserInvoices(userId: number): Promise<Invoice[]> {
+    return Array.from(this.invoices.values())
+      .filter(i => i.userId === userId)
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  }
+
+  async updateInvoice(id: number, data: Partial<InsertInvoice>): Promise<Invoice | undefined> {
+    const invoice = this.invoices.get(id);
+    if (!invoice) return undefined;
+
+    const updatedInvoice = { ...invoice, ...data, updatedAt: new Date() };
+    this.invoices.set(id, updatedInvoice);
+    return updatedInvoice;
+  }
 }
 
 // Database storage implementation
@@ -806,6 +920,99 @@ export class DatabaseStorage implements IStorage {
     
     await db.delete(emailVerifications).where(eq(emailVerifications.token, token));
     return true;
+  }
+
+  // Payment operations
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    const result = await db.insert(payments).values(payment).returning();
+    return result[0];
+  }
+
+  async getPayment(id: number): Promise<Payment | undefined> {
+    const result = await db.select().from(payments).where(eq(payments.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getPaymentByStripeId(stripePaymentIntentId: string): Promise<Payment | undefined> {
+    const result = await db.select().from(payments)
+      .where(eq(payments.stripePaymentIntentId, stripePaymentIntentId)).limit(1);
+    return result[0];
+  }
+
+  async getUserPayments(userId: number): Promise<Payment[]> {
+    return await db.select().from(payments)
+      .where(eq(payments.userId, userId))
+      .orderBy(desc(payments.createdAt));
+  }
+
+  async updatePayment(id: number, data: Partial<InsertPayment>): Promise<Payment | undefined> {
+    const result = await db.update(payments)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(payments.id, id))
+      .returning();
+    return result[0];
+  }
+
+  // Subscription operations
+  async createSubscription(subscription: InsertSubscription): Promise<Subscription> {
+    const result = await db.insert(subscriptions).values(subscription).returning();
+    return result[0];
+  }
+
+  async getSubscription(id: number): Promise<Subscription | undefined> {
+    const result = await db.select().from(subscriptions).where(eq(subscriptions.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getSubscriptionByStripeId(stripeSubscriptionId: string): Promise<Subscription | undefined> {
+    const result = await db.select().from(subscriptions)
+      .where(eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId)).limit(1);
+    return result[0];
+  }
+
+  async getUserSubscriptions(userId: number): Promise<Subscription[]> {
+    return await db.select().from(subscriptions)
+      .where(eq(subscriptions.userId, userId))
+      .orderBy(desc(subscriptions.createdAt));
+  }
+
+  async updateSubscription(id: number, data: Partial<InsertSubscription>): Promise<Subscription | undefined> {
+    const result = await db.update(subscriptions)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(subscriptions.id, id))
+      .returning();
+    return result[0];
+  }
+
+  // Invoice operations
+  async createInvoice(invoice: InsertInvoice): Promise<Invoice> {
+    const result = await db.insert(invoices).values(invoice).returning();
+    return result[0];
+  }
+
+  async getInvoice(id: number): Promise<Invoice | undefined> {
+    const result = await db.select().from(invoices).where(eq(invoices.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getInvoiceByStripeId(stripeInvoiceId: string): Promise<Invoice | undefined> {
+    const result = await db.select().from(invoices)
+      .where(eq(invoices.stripeInvoiceId, stripeInvoiceId)).limit(1);
+    return result[0];
+  }
+
+  async getUserInvoices(userId: number): Promise<Invoice[]> {
+    return await db.select().from(invoices)
+      .where(eq(invoices.userId, userId))
+      .orderBy(desc(invoices.createdAt));
+  }
+
+  async updateInvoice(id: number, data: Partial<InsertInvoice>): Promise<Invoice | undefined> {
+    const result = await db.update(invoices)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(invoices.id, id))
+      .returning();
+    return result[0];
   }
 }
 
