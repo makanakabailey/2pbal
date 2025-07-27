@@ -192,17 +192,44 @@ export default function PaymentOptions() {
   const [orderDetails, setOrderDetails] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState('one-time');
   const { toast } = useToast();
 
-  const createPaymentIntent = useCallback(async (orderData: any) => {
+  const calculatePlanAmount = (baseAmount: number, plan: string) => {
+    switch (plan) {
+      case '3-month':
+        return Math.round(baseAmount * 1.15); // 15% interest
+      case '6-month':
+        return Math.round(baseAmount * 1.25); // 25% interest
+      default:
+        return baseAmount;
+    }
+  };
+
+  const getMonthlyAmount = (totalAmount: number, plan: string) => {
+    switch (plan) {
+      case '3-month':
+        return Math.round(totalAmount / 3);
+      case '6-month':
+        return Math.round(totalAmount / 6);
+      default:
+        return totalAmount;
+    }
+  };
+
+  const createPaymentIntent = useCallback(async (orderData: any, paymentPlan: string = 'one-time') => {
     if (loading === false) return; // Prevent duplicate calls
     
     try {
+      const planAmount = calculatePlanAmount(orderData.amount, paymentPlan);
+      const monthlyAmount = getMonthlyAmount(planAmount, paymentPlan);
+      
       const data = await apiRequest('/api/create-payment-intent', 'POST', {
-        amount: orderData.amount,
+        amount: paymentPlan === 'one-time' ? planAmount : monthlyAmount,
         serviceId: orderData.serviceId,
         planId: orderData.packageId,
-        description: orderData.description
+        description: `${orderData.description} - ${paymentPlan} payment`,
+        paymentPlan
       });
       
       if (data.clientSecret) {
@@ -253,7 +280,7 @@ export default function PaymentOptions() {
         };
         setOrderDetails(orderData);
         setInitialized(true);
-        createPaymentIntent(orderData);
+        createPaymentIntent(orderData, selectedPlan);
         return;
       }
     }
@@ -278,8 +305,17 @@ export default function PaymentOptions() {
 
     setOrderDetails(orderData);
     setInitialized(true);
-    createPaymentIntent(orderData);
+    createPaymentIntent(orderData, selectedPlan);
   }, [params?.serviceId, initialized, createPaymentIntent, toast, setLocation]);
+
+  // Handle payment plan changes
+  useEffect(() => {
+    if (orderDetails.amount && initialized && !loading) {
+      setLoading(true);
+      setClientSecret('');
+      createPaymentIntent(orderDetails, selectedPlan);
+    }
+  }, [selectedPlan, orderDetails.amount, initialized, loading, createPaymentIntent]);
 
   const handlePaymentSuccess = () => {
     setLocation('/payment-success');
@@ -358,10 +394,94 @@ export default function PaymentOptions() {
               
               <Separator />
               
+              {/* Payment Plan Selection */}
+              <div className="space-y-4">
+                <h4 className="font-medium">Choose Payment Plan:</h4>
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="payment-plan"
+                      value="one-time"
+                      checked={selectedPlan === 'one-time'}
+                      onChange={(e) => {
+                        setSelectedPlan(e.target.value);
+                      }}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">Pay in Full</span>
+                        <span className="text-green-600 font-bold">
+                          ${orderDetails.amount ? orderDetails.amount.toLocaleString() : '0'}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500">One-time payment - Best Value</div>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="payment-plan"
+                      value="3-month"
+                      checked={selectedPlan === '3-month'}
+                      onChange={(e) => {
+                        setSelectedPlan(e.target.value);
+                      }}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">3 Monthly Payments</span>
+                        <span className="text-blue-600 font-bold">
+                          ${orderDetails.amount ? Math.round(calculatePlanAmount(orderDetails.amount, '3-month') / 3).toLocaleString() : '0'}/mo
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Total: ${orderDetails.amount ? calculatePlanAmount(orderDetails.amount, '3-month').toLocaleString() : '0'} (15% interest)
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="payment-plan"
+                      value="6-month"
+                      checked={selectedPlan === '6-month'}
+                      onChange={(e) => {
+                        setSelectedPlan(e.target.value);
+                      }}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">6 Monthly Payments</span>
+                        <span className="text-blue-600 font-bold">
+                          ${orderDetails.amount ? Math.round(calculatePlanAmount(orderDetails.amount, '6-month') / 6).toLocaleString() : '0'}/mo
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Total: ${orderDetails.amount ? calculatePlanAmount(orderDetails.amount, '6-month').toLocaleString() : '0'} (25% interest)
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              
+              <Separator />
+              
               <div className="flex justify-between items-center text-lg font-bold">
-                <span>Total:</span>
+                <span>
+                  {selectedPlan === 'one-time' ? 'Total:' : 'First Payment:'}
+                </span>
                 <span className="text-blue-600">
-                  ${orderDetails.amount ? orderDetails.amount.toLocaleString() : '0'}
+                  ${orderDetails.amount ? (
+                    selectedPlan === 'one-time' 
+                      ? orderDetails.amount.toLocaleString()
+                      : getMonthlyAmount(calculatePlanAmount(orderDetails.amount, selectedPlan), selectedPlan).toLocaleString()
+                  ) : '0'}
                 </span>
               </div>
 
