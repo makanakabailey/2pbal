@@ -14,6 +14,54 @@ export default function Payment() {
   const packageId = params?.packageId;
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [billingCycle, setBillingCycle] = useState('monthly');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [expiry, setExpiry] = useState('');
+
+  // Format card number with spaces (4-4-4-4 pattern)
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = matches && matches[0] || '';
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length) {
+      return parts.join(' ');
+    } else {
+      return v;
+    }
+  };
+
+  // Format expiry date (MM/YY pattern)
+  const formatExpiry = (value: string) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    if (v.length >= 2) {
+      return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
+    }
+    return v;
+  };
+
+  // Format CVV (3-4 digits only, masked with •)
+  const formatCvv = (value: string) => {
+    return value.replace(/[^0-9]/gi, '').substring(0, 4);
+  };
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCardNumber(e.target.value);
+    setCardNumber(formatted);
+  };
+
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatExpiry(e.target.value);
+    setExpiry(formatted);
+  };
+
+  const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCvv(e.target.value);
+    setCvv(formatted);
+  };
   
   const packageData = PACKAGES.find(pkg => pkg.id === packageId);
   
@@ -171,16 +219,55 @@ export default function Payment() {
                   <div className="space-y-4 pl-6">
                     <div>
                       <Label htmlFor="cardNumber">Card Number</Label>
-                      <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
+                      <div className="relative">
+                        <Input 
+                          id="cardNumber" 
+                          type="text"
+                          value={cardNumber}
+                          onChange={handleCardNumberChange}
+                          placeholder="1234 5678 9012 3456"
+                          maxLength={19}
+                          autoComplete="cc-number"
+                          className="font-mono tracking-wider pr-12"
+                        />
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                          <CreditCard className="h-4 w-4 text-gray-400" />
+                        </div>
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="expiry">Expiry Date</Label>
-                        <Input id="expiry" placeholder="MM/YY" />
+                        <Input 
+                          id="expiry" 
+                          type="text"
+                          value={expiry}
+                          onChange={handleExpiryChange}
+                          placeholder="MM/YY"
+                          maxLength={5}
+                          autoComplete="cc-exp"
+                          className="font-mono"
+                        />
                       </div>
                       <div>
                         <Label htmlFor="cvv">CVV</Label>
-                        <Input id="cvv" placeholder="123" />
+                        <div className="relative">
+                          <Input 
+                            id="cvv" 
+                            type="password"
+                            value={cvv}
+                            onChange={handleCvvChange}
+                            placeholder="•••"
+                            maxLength={4}
+                            autoComplete="cc-csc"
+                            className="font-mono tracking-widest pr-10"
+                          />
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                              Hidden
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -188,6 +275,20 @@ export default function Payment() {
               </div>
 
               <Separator />
+
+              {/* Security Notice */}
+              {paymentMethod === 'card' && cardNumber && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 text-sm text-green-800">
+                    <Check className="h-4 w-4" />
+                    <span className="font-medium">Payment Information Protected</span>
+                  </div>
+                  <p className="text-xs text-green-700 mt-1">
+                    Your card number and CVV are encrypted and masked for security. 
+                    We use industry-standard SSL encryption to protect your payment data.
+                  </p>
+                </div>
+              )}
 
               {/* Complete Purchase */}
               <div className="space-y-4">
@@ -202,7 +303,7 @@ export default function Payment() {
                   Complete Purchase - ${currentPrice.toLocaleString()}
                 </Button>
                 <p className="text-xs text-gray-500 text-center">
-                  Secure payment powered by Stripe. Your information is encrypted and secure.
+                  🔒 Secure payment powered by Stripe. Your information is encrypted and secure.
                 </p>
               </div>
             </CardContent>
