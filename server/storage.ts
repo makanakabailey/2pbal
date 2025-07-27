@@ -380,7 +380,7 @@ export class MemStorage implements IStorage {
     this.users.delete(id);
     // Clean up related sessions
     const sessionsToDelete: string[] = [];
-    for (const [sessionId, session] of this.sessions.entries()) {
+    for (const [sessionId, session] of Array.from(this.sessions.entries())) {
       if (session.userId === id) {
         sessionsToDelete.push(sessionId);
       }
@@ -395,7 +395,7 @@ export class MemStorage implements IStorage {
 
     this.users.delete(id);
     // Also clean up related data
-    for (const [sessionId, session] of this.sessions.entries()) {
+    for (const [sessionId, session] of Array.from(this.sessions.entries())) {
       if (session.userId === id) {
         this.sessions.delete(sessionId);
       }
@@ -533,6 +533,9 @@ export class MemStorage implements IStorage {
     const newPayment: Payment = {
       id: this.nextPaymentId++,
       ...payment,
+      projectId: payment.projectId || null,
+      status: payment.status || null,
+      description: payment.description || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -569,6 +572,9 @@ export class MemStorage implements IStorage {
     const newSubscription: Subscription = {
       id: this.nextSubscriptionId++,
       ...subscription,
+      stripeCustomerId: subscription.stripeCustomerId || null,
+      status: subscription.status || null,
+      packageType: subscription.packageType || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -605,6 +611,10 @@ export class MemStorage implements IStorage {
     const newInvoice: Invoice = {
       id: this.nextInvoiceId++,
       ...invoice,
+      subscriptionId: invoice.subscriptionId || null,
+      status: invoice.status || null,
+      description: invoice.description || null,
+      currency: invoice.currency || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -811,7 +821,19 @@ export class DatabaseStorage implements IStorage {
 
   // Quote operations
   async createQuote(quote: InsertQuote): Promise<Quote> {
-    const result = await db.insert(quotes).values(quote).returning();
+    const result = await db.insert(quotes).values({
+      name: quote.name,
+      email: quote.email,
+      company: quote.company || null,
+      phone: quote.phone || null,
+      goals: quote.goals,
+      overspending: quote.overspending,
+      outcomes: quote.outcomes,
+      projectDescription: quote.projectDescription,
+      timeline: quote.timeline,
+      attachments: quote.attachments || [],
+      status: quote.status || "pending"
+    }).returning();
     return result[0];
   }
 
@@ -881,13 +903,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getActivityLogs(userId?: number, limit: number = 50): Promise<ActivityLog[]> {
-    let query = db.select().from(activityLogs);
-    
     if (userId) {
-      query = query.where(eq(activityLogs.userId, userId));
+      return await db.select().from(activityLogs)
+        .where(eq(activityLogs.userId, userId))
+        .orderBy(desc(activityLogs.createdAt))
+        .limit(limit);
     }
     
-    return await query.orderBy(desc(activityLogs.createdAt)).limit(limit);
+    return await db.select().from(activityLogs)
+      .orderBy(desc(activityLogs.createdAt))
+      .limit(limit);
   }
 
   // Email verification
