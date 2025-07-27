@@ -35,7 +35,10 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
   const { monthlySavings, annualSavings } = calculateSavings();
 
   const handlePackageSelect = (packageId: string) => {
-    window.location.href = `/package/${packageId}`;
+    const packageData = PACKAGES.find(p => p.id === packageId);
+    if (packageData) {
+      window.location.href = `/payment-options?package=${packageId}&amount=${packageData.price}&description=${encodeURIComponent(packageData.name)}`;
+    }
   };
 
   const handleSolutionToggle = (solutionId: string) => {

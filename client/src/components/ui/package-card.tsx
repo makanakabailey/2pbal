@@ -58,7 +58,7 @@ export default function PackageCard({ package: pkg, onSelect }: PackageCardProps
           Save ${pkg.savings.toLocaleString()} ({pkg.savingsPercent}%)
         </div>
         <Button
-          onClick={() => window.location.href = `/payment/${pkg.id}`}
+          onClick={() => window.location.href = `/payment-options?package=${pkg.id}&amount=${pkg.price}&description=${encodeURIComponent(pkg.name)}`}
           className="w-full font-semibold btn-gradient-glow text-sm sm:text-base"
           size="sm"
         >

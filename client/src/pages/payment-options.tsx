@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { SERVICES } from '@/lib/constants';
+import { SERVICES, PACKAGES } from '@/lib/constants';
 import { 
   CreditCard, 
   Smartphone, 
@@ -285,6 +285,23 @@ export default function PaymentOptions() {
       }
     }
 
+    // Handle package data
+    if (packageId) {
+      const packageData = PACKAGES.find(p => p.id === packageId);
+      if (packageData) {
+        const orderData = {
+          amount: packageData.price,
+          packageId,
+          packageName: packageData.name,
+          description: `${packageData.name} - ${packageData.tagline}`
+        };
+        setOrderDetails(orderData);
+        setInitialized(true);
+        createPaymentIntent(orderData, selectedPlan);
+        return;
+      }
+    }
+
     // Fallback to query parameters (for packages)
     if (!amount) {
       toast({
@@ -408,13 +425,19 @@ export default function PaymentOptions() {
                   {orderDetails.serviceId ? 'Service:' : 'Package:'}
                 </span>
                 <span className="text-right">
-                  {orderDetails.serviceName || orderDetails.description}
+                  {orderDetails.serviceName || orderDetails.packageName || orderDetails.description}
                 </span>
               </div>
               
               {orderDetails.serviceId && (
                 <div className="text-sm text-gray-600">
                   Professional digital service solution
+                </div>
+              )}
+              
+              {orderDetails.packageId && (
+                <div className="text-sm text-gray-600">
+                  Complete business growth package
                 </div>
               )}
               
