@@ -309,13 +309,39 @@ export default function PaymentOptions() {
   }, [params?.serviceId, initialized, createPaymentIntent, toast, setLocation]);
 
   // Handle payment plan changes
-  useEffect(() => {
-    if (orderDetails.amount && initialized && !loading) {
-      setLoading(true);
-      setClientSecret('');
-      createPaymentIntent(orderDetails, selectedPlan);
+  const handlePlanChange = async (newPlan: string) => {
+    if (!orderDetails.amount) return;
+    
+    setSelectedPlan(newPlan);
+    setLoading(true);
+    setClientSecret('');
+    
+    try {
+      const planAmount = calculatePlanAmount(orderDetails.amount, newPlan);
+      const monthlyAmount = getMonthlyAmount(planAmount, newPlan);
+      
+      const data = await apiRequest('/api/create-payment-intent', 'POST', {
+        amount: newPlan === 'one-time' ? planAmount : monthlyAmount,
+        serviceId: orderDetails.serviceId,
+        planId: orderDetails.packageId,
+        description: `${orderDetails.description} - ${newPlan} payment`,
+        paymentPlan: newPlan
+      });
+      
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+      }
+    } catch (error) {
+      console.error('Payment intent update failed:', error);
+      toast({
+        title: "Payment Update Failed",
+        description: "Unable to update payment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  }, [selectedPlan, orderDetails.amount, initialized, loading, createPaymentIntent]);
+  };
 
   const handlePaymentSuccess = () => {
     setLocation('/payment-success');
@@ -405,7 +431,7 @@ export default function PaymentOptions() {
                       value="one-time"
                       checked={selectedPlan === 'one-time'}
                       onChange={(e) => {
-                        setSelectedPlan(e.target.value);
+                        handlePlanChange(e.target.value);
                       }}
                       className="w-4 h-4 text-blue-600"
                     />
@@ -427,7 +453,7 @@ export default function PaymentOptions() {
                       value="3-month"
                       checked={selectedPlan === '3-month'}
                       onChange={(e) => {
-                        setSelectedPlan(e.target.value);
+                        handlePlanChange(e.target.value);
                       }}
                       className="w-4 h-4 text-blue-600"
                     />
@@ -451,7 +477,7 @@ export default function PaymentOptions() {
                       value="6-month"
                       checked={selectedPlan === '6-month'}
                       onChange={(e) => {
-                        setSelectedPlan(e.target.value);
+                        handlePlanChange(e.target.value);
                       }}
                       className="w-4 h-4 text-blue-600"
                     />
