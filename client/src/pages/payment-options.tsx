@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'wouter';
+import { useLocation, useRoute } from 'wouter';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { SERVICES } from '@/lib/constants';
 import { 
   CreditCard, 
   Smartphone, 
@@ -186,6 +187,7 @@ const PaymentForm = ({ clientSecret, orderDetails, onSuccess }: PaymentFormProps
 
 export default function PaymentOptions() {
   const [, setLocation] = useLocation();
+  const [match, params] = useRoute('/payment-options/:serviceId');
   const [clientSecret, setClientSecret] = useState('');
   const [orderDetails, setOrderDetails] = useState<any>({});
   const [loading, setLoading] = useState(true);
@@ -194,13 +196,36 @@ export default function PaymentOptions() {
   useEffect(() => {
     window.scrollTo(0, 0);
     
-    // Parse URL parameters
+    // Get serviceId from route parameters
+    const routeServiceId = params?.serviceId;
+    
+    // Parse URL parameters (for query strings)
     const urlParams = new URLSearchParams(window.location.search);
     const packageId = urlParams.get('package');
-    const serviceId = urlParams.get('service');
+    const queryServiceId = urlParams.get('service');
     const amount = urlParams.get('amount');
     const description = urlParams.get('description');
 
+    // Use service ID from route or query parameter
+    const serviceId = routeServiceId || queryServiceId;
+    
+    // If we have a serviceId, get service data
+    if (serviceId) {
+      const service = SERVICES.find(s => s.id === serviceId);
+      if (service) {
+        const orderData = {
+          amount: service.basePrice,
+          serviceId,
+          serviceName: service.name,
+          description: `${service.name} - ${service.tagline}`
+        };
+        setOrderDetails(orderData);
+        createPaymentIntent(orderData);
+        return;
+      }
+    }
+
+    // Fallback to query parameters (for packages)
     if (!amount) {
       toast({
         title: "Invalid Payment",
@@ -214,15 +239,13 @@ export default function PaymentOptions() {
     const orderData = {
       amount: parseFloat(amount),
       packageId,
-      serviceId,
+      serviceId: queryServiceId,
       description: description || 'Payment for 2Pbal services'
     };
 
     setOrderDetails(orderData);
-
-    // Create payment intent
     createPaymentIntent(orderData);
-  }, [setLocation, toast]);
+  }, [setLocation, toast, params]);
 
   const createPaymentIntent = async (orderData: any) => {
     try {
@@ -293,11 +316,11 @@ export default function PaymentOptions() {
         <div className="mb-8">
           <Button
             variant="ghost"
-            onClick={() => setLocation('/packages')}
+            onClick={() => setLocation(orderDetails.serviceId ? '/services' : '/packages')}
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Packages
+            Back to {orderDetails.serviceId ? 'Services' : 'Packages'}
           </Button>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Complete Your Payment</h1>
           <p className="text-gray-600">Secure checkout with multiple payment options</p>
@@ -314,9 +337,19 @@ export default function PaymentOptions() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="font-medium">Service:</span>
-                <span>{orderDetails.description}</span>
+                <span className="font-medium">
+                  {orderDetails.serviceId ? 'Service:' : 'Package:'}
+                </span>
+                <span className="text-right">
+                  {orderDetails.serviceName || orderDetails.description}
+                </span>
               </div>
+              
+              {orderDetails.serviceId && (
+                <div className="text-sm text-gray-600">
+                  Professional digital service solution
+                </div>
+              )}
               
               <Separator />
               
