@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useRoute } from 'wouter';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -191,9 +191,41 @@ export default function PaymentOptions() {
   const [clientSecret, setClientSecret] = useState('');
   const [orderDetails, setOrderDetails] = useState<any>({});
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
   const { toast } = useToast();
 
+  const createPaymentIntent = useCallback(async (orderData: any) => {
+    if (loading === false) return; // Prevent duplicate calls
+    
+    try {
+      const data = await apiRequest('/api/create-payment-intent', 'POST', {
+        amount: orderData.amount,
+        serviceId: orderData.serviceId,
+        planId: orderData.packageId,
+        description: orderData.description
+      });
+      
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+      } else {
+        throw new Error('Failed to create payment intent');
+      }
+    } catch (error) {
+      console.error('Payment intent creation failed:', error);
+      toast({
+        title: "Payment Setup Failed",
+        description: "Unable to initialize payment. Please try again.",
+        variant: "destructive",
+      });
+      setLocation('/packages');
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, toast, setLocation]);
+
   useEffect(() => {
+    if (initialized) return; // Prevent re-initialization
+    
     window.scrollTo(0, 0);
     
     // Get serviceId from route parameters
@@ -220,6 +252,7 @@ export default function PaymentOptions() {
           description: `${service.name} - ${service.description}`
         };
         setOrderDetails(orderData);
+        setInitialized(true);
         createPaymentIntent(orderData);
         return;
       }
@@ -244,35 +277,9 @@ export default function PaymentOptions() {
     };
 
     setOrderDetails(orderData);
+    setInitialized(true);
     createPaymentIntent(orderData);
-  }, [setLocation, toast, params]);
-
-  const createPaymentIntent = async (orderData: any) => {
-    try {
-      const data = await apiRequest('/api/create-payment-intent', 'POST', {
-        amount: orderData.amount,
-        serviceId: orderData.serviceId,
-        planId: orderData.packageId,
-        description: orderData.description
-      });
-      
-      if (data.clientSecret) {
-        setClientSecret(data.clientSecret);
-      } else {
-        throw new Error('Failed to create payment intent');
-      }
-    } catch (error) {
-      console.error('Payment intent creation failed:', error);
-      toast({
-        title: "Payment Setup Failed",
-        description: "Unable to initialize payment. Please try again.",
-        variant: "destructive",
-      });
-      setLocation('/packages');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [params?.serviceId, initialized, createPaymentIntent, toast, setLocation]);
 
   const handlePaymentSuccess = () => {
     setLocation('/payment-success');
