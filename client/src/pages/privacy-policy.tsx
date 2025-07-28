@@ -1,7 +1,11 @@
+import { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Database, Users, Eye, Lock, UserCheck } from 'lucide-react';
 
 export default function PrivacyPolicy() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="pt-16 min-h-screen bg-gray-light">
       {/* Hero Section */}
