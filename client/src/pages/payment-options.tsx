@@ -193,6 +193,8 @@ export default function PaymentOptions() {
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('one-time');
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
   const { toast } = useToast();
 
   const calculatePlanAmount = (baseAmount: number, plan: string) => {
@@ -218,8 +220,6 @@ export default function PaymentOptions() {
   };
 
   const createPaymentIntent = useCallback(async (orderData: any, paymentPlan: string = 'one-time') => {
-    if (loading === false) return; // Prevent duplicate calls
-    
     try {
       const planAmount = calculatePlanAmount(orderData.amount, paymentPlan);
       const monthlyAmount = getMonthlyAmount(planAmount, paymentPlan);
@@ -234,6 +234,7 @@ export default function PaymentOptions() {
       
       if (data.clientSecret) {
         setClientSecret(data.clientSecret);
+        return true;
       } else {
         throw new Error('Failed to create payment intent');
       }
@@ -244,11 +245,9 @@ export default function PaymentOptions() {
         description: "Unable to initialize payment. Please try again.",
         variant: "destructive",
       });
-      setLocation('/packages');
-    } finally {
-      setLoading(false);
+      return false;
     }
-  }, [loading, toast, setLocation]);
+  }, [toast]);
 
   useEffect(() => {
     if (initialized) return; // Prevent re-initialization
@@ -280,7 +279,7 @@ export default function PaymentOptions() {
         };
         setOrderDetails(orderData);
         setInitialized(true);
-        createPaymentIntent(orderData, selectedPlan);
+        setLoading(false); // Show payment page without creating payment intent yet
         return;
       }
     }
@@ -297,67 +296,47 @@ export default function PaymentOptions() {
         };
         setOrderDetails(orderData);
         setInitialized(true);
-        createPaymentIntent(orderData, selectedPlan);
+        setLoading(false); // Show payment page without creating payment intent yet
         return;
       }
     }
 
     // Fallback to query parameters (for packages)
-    if (!amount) {
-      toast({
-        title: "Invalid Payment",
-        description: "Payment amount is required",
-        variant: "destructive",
-      });
-      setLocation('/packages');
+    if (amount) {
+      const orderData = {
+        amount: parseFloat(amount),
+        packageId,
+        serviceId: queryServiceId,
+        description: description || 'Payment for 2Pbal services'
+      };
+      setOrderDetails(orderData);
+      setInitialized(true);
+      setLoading(false);
       return;
     }
 
-    const orderData = {
-      amount: parseFloat(amount),
-      packageId,
-      serviceId: queryServiceId,
-      description: description || 'Payment for 2Pbal services'
-    };
-
-    setOrderDetails(orderData);
-    setInitialized(true);
-    createPaymentIntent(orderData, selectedPlan);
+    // If no valid data found, redirect back
+    toast({
+      title: "Invalid Payment",
+      description: "No payment information found",
+      variant: "destructive",  
+    });
+    setLocation('/packages');
   }, [params?.serviceId, initialized, createPaymentIntent, toast, setLocation]);
 
   // Handle payment plan changes
-  const handlePlanChange = async (newPlan: string) => {
-    if (!orderDetails.amount) return;
-    
+  const handlePlanChange = (newPlan: string) => {
     setSelectedPlan(newPlan);
-    setLoading(true);
-    setClientSecret('');
-    
-    try {
-      const planAmount = calculatePlanAmount(orderDetails.amount, newPlan);
-      const monthlyAmount = getMonthlyAmount(planAmount, newPlan);
-      
-      const data = await apiRequest('/api/create-payment-intent', 'POST', {
-        amount: newPlan === 'one-time' ? planAmount : monthlyAmount,
-        serviceId: orderDetails.serviceId,
-        planId: orderDetails.packageId,
-        description: `${orderDetails.description} - ${newPlan} payment`,
-        paymentPlan: newPlan
-      });
-      
-      if (data.clientSecret) {
-        setClientSecret(data.clientSecret);
-      }
-    } catch (error) {
-      console.error('Payment intent update failed:', error);
-      toast({
-        title: "Payment Update Failed",
-        description: "Unable to update payment. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+  };
+
+  // Handle proceed to payment
+  const handleProceedToPayment = async () => {
+    setProcessingPayment(true);
+    const success = await createPaymentIntent(orderDetails, selectedPlan);
+    if (success) {
+      setShowPaymentForm(true);
     }
+    setProcessingPayment(false);
   };
 
   const handlePaymentSuccess = () => {
@@ -375,20 +354,27 @@ export default function PaymentOptions() {
     );
   }
 
-  if (!stripePromise) {
+  // Show payment form with Stripe if clientSecret is available
+  if (showPaymentForm && clientSecret && stripePromise) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 flex items-center justify-center">
-        <Card className="max-w-md mx-4">
-          <CardContent className="p-8 text-center">
-            <h1 className="text-2xl font-bold mb-4 text-gray-800">Payment Not Available</h1>
-            <p className="text-gray-600 mb-6">
-              Payment processing is currently not configured. Please contact support.
-            </p>
-            <Button onClick={() => setLocation('/packages')}>
-              Back to Packages
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Button
+            variant="ghost"
+            onClick={() => setShowPaymentForm(false)}
+            className="mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Payment Details
+          </Button>
+          <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <PaymentForm 
+              clientSecret={clientSecret} 
+              orderDetails={orderDetails}
+              onSuccess={handlePaymentSuccess}
+            />
+          </Elements>
+        </div>
       </div>
     );
   }
@@ -570,41 +556,72 @@ export default function PaymentOptions() {
             </CardContent>
           </Card>
 
-          {/* Payment Form */}
+          {/* Payment Action */}
           <Card>
             <CardHeader>
-              <CardTitle>Payment Details</CardTitle>
+              <CardTitle className="flex items-center">
+                <Lock className="h-5 w-5 mr-2 text-green-600" />
+                Ready to Proceed?
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              {clientSecret ? (
-                <Elements
-                  stripe={stripePromise}
-                  options={{
-                    clientSecret,
-                    appearance: {
-                      theme: 'stripe',
-                      variables: {
-                        colorPrimary: '#2563eb',
-                        colorBackground: '#ffffff',
-                        colorText: '#30313d',
-                        colorDanger: '#df1b41',
-                        borderRadius: '8px',
-                      }
-                    }
-                  }}
-                >
-                  <PaymentForm
-                    clientSecret={clientSecret}
-                    orderDetails={orderDetails}
-                    onSuccess={handlePaymentSuccess}
-                  />
-                </Elements>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4" />
-                  <p className="text-gray-600">Loading payment form...</p>
+            <CardContent className="space-y-6">
+              <div className="text-center space-y-4">
+                <p className="text-gray-600">
+                  Review your order details and click below to proceed to secure payment.
+                </p>
+                
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-2 text-blue-800">
+                    <Shield className="h-4 w-4" />
+                    <span className="font-medium">Secure Payment Processing</span>
+                  </div>
+                  <p className="text-sm text-blue-700 mt-1">
+                    Your payment will be processed securely through Stripe with bank-level encryption.
+                  </p>
                 </div>
-              )}
+                
+                <Button
+                  onClick={handleProceedToPayment}
+                  disabled={processingPayment || !orderDetails.amount}
+                  className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white text-lg py-6"
+                >
+                  {processingPayment ? (
+                    <>
+                      <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2" />
+                      Setting up payment...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-5 w-5 mr-2" />
+                      Proceed to Secure Payment
+                    </>
+                  )}
+                </Button>
+                
+                <p className="text-xs text-gray-500 text-center max-w-md mx-auto">
+                  You will be taken to our secure payment form where you can enter your payment details. 
+                  No payment will be processed until you explicitly confirm your purchase.
+                </p>
+              </div>
+              
+              {/* What Happens Next */}
+              <div className="border-t pt-4">
+                <h4 className="font-medium mb-3">What happens next:</h4>
+                <div className="space-y-2 text-sm text-gray-600">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">1</div>
+                    <span>Enter your payment information securely</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">2</div>
+                    <span>Review and confirm your purchase</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">3</div>
+                    <span>Receive confirmation and get started</span>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
