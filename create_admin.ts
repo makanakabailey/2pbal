@@ -13,7 +13,7 @@ const db = drizzle({ client: pool, schema });
 async function createAdmin() {
   try {
     const email = 'mkanakabailey@gmail.com';
-    const password = '7653mac843';
+    const password = 'admin123';
     
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 12);
