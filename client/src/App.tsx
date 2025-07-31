@@ -30,6 +30,9 @@ import Dashboard from "@/pages/dashboard";
 import ProfileSetup from "@/pages/profile-setup";
 import AccountSettings from "@/pages/account-settings";
 import AdminDashboard from "@/pages/admin-dashboard";
+import SubscriptionManagement from "@/pages/subscription-management";
+import AdminSubscriptionManagement from "@/pages/admin-subscription-management";
+import Subscribe from "@/pages/subscribe";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -54,6 +57,7 @@ function Router() {
           <Route path="/payment/:packageId" component={Payment} />
           <Route path="/schedule-consultation" component={ScheduleConsultation} />
           <Route path="/checkout" component={Checkout} />
+          <Route path="/subscribe" component={Subscribe} />
           <Route path="/payment-success" component={PaymentSuccess} />
           <Route path="/quote" component={Quote} />
           <Route path="/recommendations" component={RecommendationPage} />
@@ -64,7 +68,9 @@ function Router() {
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/profile-setup" component={ProfileSetup} />
           <Route path="/account-settings" component={AccountSettings} />
+          <Route path="/subscription-management" component={SubscriptionManagement} />
           <Route path="/admin-dashboard" component={AdminDashboard} />
+          <Route path="/admin-subscription-management" component={AdminSubscriptionManagement} />
           <Route component={NotFound} />
         </Switch>
       </main>

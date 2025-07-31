@@ -170,6 +170,29 @@ export default function Payment() {
                   ))}
                 </ul>
               </div>
+
+              {/* Subscription Benefits */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Subscription Benefits</h4>
+                <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                  <li className="flex items-center gap-2">
+                    <Check className="h-3 w-3" />
+                    Cancel anytime through your dashboard
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-3 w-3" />
+                    Automatic billing and invoicing
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-3 w-3" />
+                    Priority customer support
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-3 w-3" />
+                    Full subscription management portal
+                  </li>
+                </ul>
+              </div>
             </CardContent>
           </Card>
 

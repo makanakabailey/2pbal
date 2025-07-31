@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { useLocation, Link } from 'wouter';
 import { 
   User, Settings, LogOut, Plus, FileText, DollarSign,
-  Calendar, CheckCircle, Clock, ArrowRight, Target, BarChart3
+  Calendar, CheckCircle, Clock, ArrowRight, Target, BarChart3, CreditCard
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -79,6 +79,12 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center space-x-4">
+              <Link href="/subscription-management">
+                <Button variant="outline" size="sm">
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Subscription
+                </Button>
+              </Link>
               <Link href="/profile-setup">
                 <Button variant="outline" size="sm">
                   <Settings className="h-4 w-4 mr-2" />

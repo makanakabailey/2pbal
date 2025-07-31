@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { 
   Users, Activity, Shield, User, Clock, Mail, Phone, Building, Eye, 
-  MoreVertical, UserX, Trash2, UserCheck, AlertTriangle 
+  MoreVertical, UserX, Trash2, UserCheck, AlertTriangle, CreditCard 
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { 
@@ -208,10 +208,14 @@ export default function AdminDashboard() {
       </div>
 
       <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             User Management
+          </TabsTrigger>
+          <TabsTrigger value="subscriptions" className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4" />
+            Subscriptions
           </TabsTrigger>
           <TabsTrigger value="activity" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
@@ -379,6 +383,29 @@ export default function AdminDashboard() {
                   </Table>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="subscriptions">
+          <Card>
+            <CardHeader>
+              <CardTitle>Subscription Management</CardTitle>
+              <CardDescription>Full subscription management features available on dedicated page</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">Comprehensive Subscription Management</h3>
+                <p className="text-muted-foreground mb-4">
+                  Access the full subscription management system with customer portal creation, 
+                  subscription updates, billing history, and analytics.
+                </p>
+                <Button onClick={() => window.location.href = '/admin-subscription-management'}>
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Open Subscription Management
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
