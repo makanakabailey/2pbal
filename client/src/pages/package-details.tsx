@@ -3,7 +3,8 @@ import { useRoute, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, CheckCircle, TrendingUp, Users, Zap, Target, ArrowLeft, DollarSign, Clock, Shield } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ArrowRight, CheckCircle, TrendingUp, Users, Zap, Target, ArrowLeft, DollarSign, Clock, Shield, Calculator } from 'lucide-react';
 import { PACKAGES } from '@/lib/constants';
 
 interface PackageDetailsProps {
@@ -13,6 +14,7 @@ interface PackageDetailsProps {
 export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps) {
   const [, params] = useRoute('/package/:id') || useRoute('/package-details/:id');
   const packageId = params?.id;
+  const [showSavingsCalculator, setShowSavingsCalculator] = useState(false);
   
   const packageData = PACKAGES.find(pkg => pkg.id === packageId);
   
@@ -331,7 +333,7 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
     }
   };
 
-  const details = getPackageDetails(packageId);
+  const details = getPackageDetails(packageId || '');
   if (!details) {
     return (
       <div className="pt-16 min-h-screen bg-gray-light flex items-center justify-center">
@@ -397,13 +399,138 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="px-8 py-4" onClick={() => window.location.href = '/quote'}>
+            <Button size="lg" className="px-8 py-4" onClick={() => window.location.href = `/payment?package=${packageId}`}>
               Get Started Now
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
-            <Button size="lg" variant="outline" onClick={onOpenCalculator}>
-              Calculate Savings
-            </Button>
+            <Dialog open={showSavingsCalculator} onOpenChange={setShowSavingsCalculator}>
+              <DialogTrigger asChild>
+                <Button size="lg" variant="outline">
+                  <Calculator className="w-5 h-5 mr-2" />
+                  Calculate Savings
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-blue-primary">
+                    Your Savings Report - {packageData.name}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6">
+                  {/* Money Savings */}
+                  <Card className="border-green-200 bg-green-50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-green-800">
+                        <DollarSign className="w-6 h-6" />
+                        Money Savings Breakdown
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="text-center p-4 bg-white rounded-lg border border-green-200">
+                          <div className="text-2xl font-bold text-red-600 line-through">
+                            ${packageData.originalPrice.toLocaleString()}
+                          </div>
+                          <div className="text-sm text-gray-600">If hired separately</div>
+                        </div>
+                        <div className="text-center p-4 bg-white rounded-lg border border-green-200">
+                          <div className="text-2xl font-bold text-green-600">
+                            ${packageData.price.toLocaleString()}
+                          </div>
+                          <div className="text-sm text-gray-600">2Pbal package price</div>
+                        </div>
+                      </div>
+                      <div className="text-center p-4 bg-green-100 rounded-lg border-2 border-green-300">
+                        <div className="text-3xl font-bold text-green-800">
+                          ${packageData.savings.toLocaleString()} SAVED
+                        </div>
+                        <div className="text-lg text-green-700">
+                          That's {packageData.savingsPercent}% off the market rate!
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Time Savings */}
+                  <Card className="border-blue-200 bg-blue-50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-blue-800">
+                        <Clock className="w-6 h-6" />
+                        Time Savings Breakdown
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="text-center p-4 bg-white rounded-lg border border-blue-200">
+                          <div className="text-2xl font-bold text-red-600">
+                            12-16 weeks
+                          </div>
+                          <div className="text-sm text-gray-600">Finding & coordinating specialists</div>
+                        </div>
+                        <div className="text-center p-4 bg-white rounded-lg border border-blue-200">
+                          <div className="text-2xl font-bold text-blue-600">
+                            4-6 weeks
+                          </div>
+                          <div className="text-sm text-gray-600">2Pbal delivery timeline</div>
+                        </div>
+                      </div>
+                      <div className="text-center p-4 bg-blue-100 rounded-lg border-2 border-blue-300">
+                        <div className="text-3xl font-bold text-blue-800">
+                          6-10 weeks faster
+                        </div>
+                        <div className="text-lg text-blue-700">
+                          Get to market 2-3 months earlier!
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Additional Benefits */}
+                  <Card className="border-purple-200 bg-purple-50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-purple-800">
+                        <Shield className="w-6 h-6" />
+                        Risk Reduction & Quality Assurance
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                          <span>No coordination headaches between multiple contractors</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                          <span>Guaranteed project completion (no abandoned projects)</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                          <span>Consistent quality across all deliverables</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                          <span>Single point of contact and accountability</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <div className="text-center pt-4">
+                    <Button 
+                      size="lg" 
+                      onClick={() => {
+                        setShowSavingsCalculator(false);
+                        window.location.href = `/payment?package=${packageId}`;
+                      }}
+                      className="px-8 py-4"
+                    >
+                      Lock In These Savings Now
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </section>
@@ -486,14 +613,14 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl font-bold mb-6">
+                <h2 className="text-3xl font-bold mb-6 text-white">
                   What You'll Achieve
                 </h2>
                 <div className="space-y-4">
                   {details.outcomes.map((outcome, index) => (
                     <div key={index} className="flex items-start gap-3">
-                      <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-lg">{outcome}</p>
+                      <CheckCircle className="w-6 h-6 text-green-300 flex-shrink-0 mt-0.5" />
+                      <p className="text-lg text-gray-100 font-medium leading-relaxed">{outcome}</p>
                     </div>
                   ))}
                 </div>
@@ -554,7 +681,7 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
             </Card>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="px-8 py-4" onClick={() => window.location.href = '/quote'}>
+              <Button size="lg" className="px-8 py-4" onClick={() => window.location.href = `/payment?package=${packageId}`}>
                 Start Your Project
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
