@@ -22,12 +22,7 @@ export default function ProfileSetup() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileUpdate) => {
-      const response = await apiRequest('/api/users/profile', {
-        method: 'PUT',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      return response.json();
+      return await apiRequest('/api/users/profile', 'PUT', data);
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });

@@ -871,7 +871,7 @@ export class DatabaseStorage implements IStorage {
   // Quote operations
   async createQuote(quote: InsertQuote): Promise<Quote> {
     const result = await db.insert(quotes).values({
-      name: quote.name,
+      userId: quote.userId || null,
       email: quote.email,
       company: quote.company || null,
       phone: quote.phone || null,

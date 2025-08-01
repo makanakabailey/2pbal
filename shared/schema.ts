@@ -67,7 +67,6 @@ export const userSessions = pgTable("user_sessions", {
 export const quotes = pgTable("quotes", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
   email: text("email").notNull(),
   company: text("company"),
   phone: text("phone"),
