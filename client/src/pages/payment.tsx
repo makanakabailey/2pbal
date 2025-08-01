@@ -11,7 +11,8 @@ import { PACKAGES } from '@/lib/constants';
 
 export default function Payment() {
   const [, params] = useRoute('/payment/:packageId');
-  const packageId = params?.packageId;
+  const urlParams = new URLSearchParams(window.location.search);
+  const packageId = urlParams.get('package') || params?.packageId;
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [cardNumber, setCardNumber] = useState('');

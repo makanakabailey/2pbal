@@ -620,7 +620,7 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
                   {details.outcomes.map((outcome, index) => (
                     <div key={index} className="flex items-start gap-3">
                       <CheckCircle className="w-6 h-6 text-green-300 flex-shrink-0 mt-0.5" />
-                      <p className="text-lg text-gray-100 font-medium leading-relaxed">{outcome}</p>
+                      <p className="text-lg text-gray-200 font-semibold leading-relaxed drop-shadow-sm">{outcome}</p>
                     </div>
                   ))}
                 </div>
