@@ -34,6 +34,7 @@ import SubscriptionManagement from "@/pages/subscription-management";
 import EnhancedSubscriptionManagement from "@/pages/enhanced-subscription-management";
 import AdminSubscriptionManagement from "@/pages/admin-subscription-management";
 import EnhancedAdminSubscriptionManagement from "@/pages/enhanced-admin-subscription-management";
+import AdminFileManagement from "@/pages/admin-file-management";
 import Subscribe from "@/pages/subscribe";
 import NotFound from "@/pages/not-found";
 
@@ -77,6 +78,7 @@ function Router() {
           <Route path="/admin-dashboard" component={AdminDashboard} />
           <Route path="/admin-subscription-management" component={EnhancedAdminSubscriptionManagement} />
           <Route path="/admin-subscription-management-legacy" component={AdminSubscriptionManagement} />
+          <Route path="/admin-file-management" component={AdminFileManagement} />
           <Route component={NotFound} />
         </Switch>
       </main>

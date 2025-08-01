@@ -432,26 +432,52 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="subscriptions">
-          <Card>
-            <CardHeader>
-              <CardTitle>Subscription Management</CardTitle>
-              <CardDescription>Full subscription management features available on dedicated page</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Comprehensive Subscription Management</h3>
-                <p className="text-muted-foreground mb-4">
-                  Access the full subscription management system with customer portal creation, 
-                  subscription updates, billing history, and analytics.
-                </p>
-                <Button onClick={() => window.location.href = '/admin-subscription-management'}>
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Open Subscription Management
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Subscription Management</CardTitle>
+                <CardDescription>Full subscription management features available on dedicated page</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Comprehensive Subscription Management</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Access the full subscription management system with customer portal creation, 
+                    subscription updates, billing history, and analytics.
+                  </p>
+                  <Button onClick={() => window.location.href = '/admin-subscription-management'}>
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Open Subscription Management
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>File Management</CardTitle>
+                <CardDescription>Cloudinary cloud storage management</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <svg className="h-12 w-12 mx-auto text-muted-foreground mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7zm0 0V5a2 2 0 012-2h6l2 2h6a2 2 0 012 2v2M7 13h10M7 17h10" />
+                  </svg>
+                  <h3 className="text-lg font-medium mb-2">Cloud File Storage</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Manage all uploaded files from quotes and forms. View, organize, and delete files stored in Cloudinary.
+                  </p>
+                  <Button onClick={() => window.location.href = '/admin-file-management'}>
+                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7zm0 0V5a2 2 0 012-2h6l2 2h6a2 2 0 012 2v2M7 13h10M7 17h10" />
+                    </svg>
+                    Open File Management
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="activity">
