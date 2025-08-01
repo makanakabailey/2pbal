@@ -37,6 +37,13 @@
 - [x] 5. Start application server successfully
 - [x] 6. Verify all systems working
 
+### 🚨 CRITICAL DATABASE REMINDER FOR 2PBAL:
+**STICK TO NEON POSTGRESQL DATABASE - DO NOT CHANGE**
+- **Primary Database**: Neon PostgreSQL ONLY
+- **Data Continuity**: Essential for continuous data management
+- **Performance**: Superior cloud infrastructure 
+- **DO NOT MIGRATE**: Keep all data in Neon PostgreSQL
+
 ### Database Status Clarification:
 🟢 **Active Database**: Neon PostgreSQL (fully functional)
 🔄 **Migration Complete**: Schema and admin account successfully created

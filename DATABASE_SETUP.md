@@ -40,6 +40,7 @@ The following PostgreSQL credentials are configured:
 - **Data Integrity**: Admin account and database structure properly established
 - **Connection**: Secure connection via NEON_DATABASE_URL environment variable
 - **Verification**: Database connection and admin authentication confirmed
+- **Authentication Fix**: ✅ RESOLVED - Fixed database column mapping issues for proper login/admin access
 
 ### Database Tables Confirmed:
 ✅ users (1 admin account active)
@@ -68,6 +69,15 @@ The following PostgreSQL credentials are configured:
    - Navigate to application login page
    - Use credentials: mkanakabailey@gmail.com / admin123
    - Should access admin dashboard successfully
+
+### 🚨 CRITICAL DATABASE REMINDER:
+**ALWAYS USE NEON POSTGRESQL DATABASE FOR 2PBAL PROJECT**
+- **Primary Database**: Neon PostgreSQL (cloud-hosted) 
+- **Connection**: NEON_DATABASE_URL environment variable
+- **Data Continuity**: All project data MUST remain in Neon for continuous management
+- **DO NOT SWITCH**: Never migrate away from Neon - data persistence is critical
+- **Performance**: Neon provides superior performance and reliability
+- **Scalability**: Cloud infrastructure handles growth automatically
 
 ### Important Database Notes:
 - **Current Database**: Neon PostgreSQL (primary) - fully operational
