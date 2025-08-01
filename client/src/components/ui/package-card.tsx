@@ -22,9 +22,11 @@ interface PackageCardProps {
 
 export default function PackageCard({ package: pkg, onSelect }: PackageCardProps) {
   return (
-    <div className={`bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg border-2 transition-all hover:shadow-xl relative card-glow ${
-      pkg.popular ? 'border-gradient-glow' : 'border-transparent hover:border-gradient-glow'
-    }`}>
+    <div 
+      onClick={() => onSelect(pkg.id)}
+      className={`bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg border-2 transition-all hover:shadow-xl relative card-glow cursor-pointer ${
+        pkg.popular ? 'border-gradient-glow' : 'border-transparent hover:border-gradient-glow'
+      }`}>
       {pkg.popular && (
         <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
           <span className="btn-gradient-glow px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-semibold">
@@ -58,11 +60,14 @@ export default function PackageCard({ package: pkg, onSelect }: PackageCardProps
           Save ${pkg.savings.toLocaleString()} ({pkg.savingsPercent}%)
         </div>
         <Button
-          onClick={() => window.location.href = `/payment-options?package=${pkg.id}&amount=${pkg.price}&description=${encodeURIComponent(pkg.name)}`}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent card click
+            window.location.href = `/package/${pkg.id}`;
+          }}
           className="w-full font-semibold btn-gradient-glow text-sm sm:text-base"
           size="sm"
         >
-          Get Started
+          View Details
         </Button>
       </div>
     </div>

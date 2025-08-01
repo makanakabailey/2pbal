@@ -35,10 +35,7 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
   const { monthlySavings, annualSavings } = calculateSavings();
 
   const handlePackageSelect = (packageId: string) => {
-    const packageData = PACKAGES.find(p => p.id === packageId);
-    if (packageData) {
-      window.location.href = `/payment-options?package=${packageId}&amount=${packageData.price}&description=${encodeURIComponent(packageData.name)}`;
-    }
+    window.location.href = `/package/${packageId}`;
   };
 
   const handleSolutionToggle = (solutionId: string) => {
@@ -74,7 +71,12 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
                     <th className="text-left p-3 sm:p-4 lg:p-6 font-bold text-gray-dark text-sm sm:text-base">Features</th>
                     {PACKAGES.map((pkg) => (
                       <th key={pkg.id} className="text-center p-3 sm:p-4 lg:p-6 font-bold text-gray-dark min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] text-xs sm:text-sm lg:text-base">
-                        {pkg.name}
+                        <button 
+                          onClick={() => window.location.href = `/package/${pkg.id}`}
+                          className="hover:text-blue-primary cursor-pointer underline underline-offset-2 hover:underline-offset-4 transition-all"
+                        >
+                          {pkg.name}
+                        </button>
                       </th>
                     ))}
                   </tr>

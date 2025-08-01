@@ -168,7 +168,10 @@ export default function RecommendationWizard({ onComplete }: RecommendationWizar
                     ))}
                   </ul>
                 </div>
-                <Button className="btn-gradient-glow">
+                <Button 
+                  className="btn-gradient-glow"
+                  onClick={() => window.location.href = `/package/${recommendedPackage.id}`}
+                >
                   Get Started with {recommendedPackage.name}
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
