@@ -27,7 +27,7 @@ import { z } from "zod";
 let stripe: Stripe | null = null;
 if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-06-30.basil",
+    apiVersion: "2024-06-20",
   });
 } else if (process.env.NODE_ENV !== 'development') {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -833,8 +833,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Cancel Subscription
-  app.post("/api/cancel-subscription", requireAuth, async (req: any, res) => {
+  // Create new subscription
+  app.post("/api/subscriptions/create", requireAuth, async (req: any, res) => {
+    try {
+      const result = createSubscriptionSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const errorMessage = fromZodError(result.error);
+        return res.status(400).json({ message: errorMessage.toString() });
+      }
+
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe not configured" });
+      }
+
+      const { priceId, packageType } = result.data;
+      const user = req.user;
+
+      // Get or create customer
+      let customer;
+      const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+      if (customers.data.length > 0) {
+        customer = customers.data[0];
+      } else {
+        customer = await stripe.customers.create({
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`.trim(),
+          metadata: { userId: user.id.toString() }
+        });
+      }
+
+      // Create subscription
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{ price: priceId }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: { save_default_payment_method: 'on_subscription' },
+        expand: ['latest_invoice.payment_intent'],
+      });
+
+      // Store subscription in database
+      await storage.createSubscription({
+        userId: user.id,
+        stripeSubscriptionId: subscription.id,
+        stripeCustomerId: customer.id,
+        stripePriceId: priceId,
+        packageType,
+        status: subscription.status as any,
+        currentPeriodStart: new Date((subscription as any).current_period_start * 1000),
+        currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+        amount: subscription.items.data[0].price.unit_amount || 0,
+        currency: subscription.items.data[0].price.currency,
+        interval: subscription.items.data[0].price.recurring?.interval || 'month',
+        intervalCount: subscription.items.data[0].price.recurring?.interval_count || 1
+      });
+
+      const clientSecret = (subscription.latest_invoice as any)?.payment_intent?.client_secret;
+
+      res.json({
+        subscriptionId: subscription.id,
+        clientSecret,
+        status: subscription.status
+      });
+    } catch (error: any) {
+      console.error("Subscription creation error:", error);
+      res.status(500).json({ 
+        message: "Error creating subscription: " + error.message 
+      });
+    }
+  });
+
+  // Update subscription plan
+  app.put("/api/subscriptions/update", requireAuth, async (req: any, res) => {
+    try {
+      const { subscriptionId, newPriceId } = req.body;
+
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe not configured" });
+      }
+
+      // Verify subscription belongs to user
+      const subscription = await storage.getSubscriptionByStripeId(subscriptionId);
+      if (!subscription || subscription.userId !== req.user.id) {
+        return res.status(404).json({ message: "Subscription not found" });
+      }
+
+      // Get current subscription from Stripe
+      const stripeSubscription = await stripe.subscriptions.retrieve(subscriptionId);
+      
+      // Update subscription
+      const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
+        items: [{
+          id: stripeSubscription.items.data[0].id,
+          price: newPriceId,
+        }],
+        proration_behavior: 'create_prorations',
+      });
+
+      // Update in database
+      await storage.updateSubscription(subscription.id, {
+        stripePriceId: newPriceId,
+        amount: updatedSubscription.items.data[0].price.unit_amount || 0,
+        interval: updatedSubscription.items.data[0].price.recurring?.interval || 'month',
+        intervalCount: updatedSubscription.items.data[0].price.recurring?.interval_count || 1
+      });
+
+      res.json({ 
+        message: "Subscription updated successfully",
+        subscription: updatedSubscription
+      });
+    } catch (error: any) {
+      console.error("Subscription update error:", error);
+      res.status(500).json({ 
+        message: "Error updating subscription: " + error.message 
+      });
+    }
+  });
+
+  // Cancel subscription
+  app.post("/api/subscriptions/cancel", requireAuth, async (req: any, res) => {
     try {
       const result = cancelSubscriptionSchema.safeParse(req.body);
       
@@ -874,6 +991,171 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Subscription cancellation error:", error);
       res.status(500).json({ 
         message: "Error canceling subscription: " + error.message 
+      });
+    }
+  });
+
+  // Get subscription invoices
+  app.get("/api/subscriptions/invoices", requireAuth, async (req: any, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe not configured" });
+      }
+
+      // Get user's subscriptions
+      const subscriptions = await storage.getUserSubscriptions(req.user.id);
+      let allInvoices: any[] = [];
+
+      for (const subscription of subscriptions) {
+        if (subscription.stripeCustomerId) {
+          const invoices = await stripe.invoices.list({
+            customer: subscription.stripeCustomerId,
+            limit: 100,
+          });
+          allInvoices = allInvoices.concat(invoices.data);
+        }
+      }
+
+      // Sort by date descending
+      allInvoices.sort((a, b) => b.created - a.created);
+
+      res.json({ invoices: allInvoices });
+    } catch (error: any) {
+      console.error("Error fetching invoices:", error);
+      res.status(500).json({ message: "Failed to fetch invoices" });
+    }
+  });
+
+  // Create customer portal session
+  app.post("/api/subscriptions/portal", requireAuth, async (req: any, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe not configured" });
+      }
+
+      const user = req.user;
+      
+      // Get or create customer
+      let customerId;
+      const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+      if (customers.data.length > 0) {
+        customerId = customers.data[0].id;
+      } else {
+        const customer = await stripe.customers.create({
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`.trim(),
+          metadata: { userId: user.id.toString() }
+        });
+        customerId = customer.id;
+      }
+
+      // Create portal session
+      const session = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: `${req.headers.origin}/subscription-management`,
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Portal session creation error:", error);
+      res.status(500).json({ 
+        message: "Error creating portal session: " + error.message 
+      });
+    }
+  });
+
+  // Admin subscription management endpoints
+  app.get("/api/admin/subscriptions", requireAuth, requireAdmin, async (req: any, res) => {
+    try {
+      const allSubscriptions = await storage.getAllSubscriptions();
+      
+      // Enrich with user data
+      const enrichedSubscriptions = await Promise.all(
+        allSubscriptions.map(async (subscription) => {
+          const user = await storage.getUser(subscription.userId);
+          return {
+            ...subscription,
+            customerName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+            customerEmail: user ? user.email : 'Unknown'
+          };
+        })
+      );
+
+      res.json({ subscriptions: enrichedSubscriptions });
+    } catch (error: any) {
+      console.error("Error fetching admin subscriptions:", error);
+      res.status(500).json({ message: "Failed to fetch subscriptions" });
+    }
+  });
+
+  app.post("/api/admin/subscriptions/create", requireAuth, requireAdmin, async (req: any, res) => {
+    try {
+      const { customerEmail, priceId, packageType } = req.body;
+
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe not configured" });
+      }
+
+      // Get customer user
+      const user = await storage.getUserByEmail(customerEmail);
+      if (!user) {
+        return res.status(404).json({ message: "Customer not found" });
+      }
+
+      // Get or create Stripe customer
+      let customer;
+      const customers = await stripe.customers.list({ email: customerEmail, limit: 1 });
+      if (customers.data.length > 0) {
+        customer = customers.data[0];
+      } else {
+        customer = await stripe.customers.create({
+          email: customerEmail,
+          name: `${user.firstName} ${user.lastName}`.trim(),
+          metadata: { userId: user.id.toString() }
+        });
+      }
+
+      // Create subscription
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{ price: priceId }],
+        collection_method: 'charge_automatically',
+      });
+
+      // Store in database
+      await storage.createSubscription({
+        userId: user.id,
+        stripeSubscriptionId: subscription.id,
+        stripeCustomerId: customer.id,
+        stripePriceId: priceId,
+        packageType,
+        status: subscription.status as any,
+        currentPeriodStart: new Date((subscription as any).current_period_start * 1000),
+        currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+        amount: subscription.items.data[0].price.unit_amount || 0,
+        currency: subscription.items.data[0].price.currency,
+        interval: subscription.items.data[0].price.recurring?.interval || 'month',
+        intervalCount: subscription.items.data[0].price.recurring?.interval_count || 1
+      });
+
+      await storage.logActivity({
+        adminId: req.user.id,
+        action: 'Created subscription',
+        target: 'subscription',
+        targetId: user.id,
+        details: { customerEmail, packageType },
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      res.json({
+        message: "Subscription created successfully",
+        subscription
+      });
+    } catch (error: any) {
+      console.error("Admin subscription creation error:", error);
+      res.status(500).json({ 
+        message: "Error creating subscription: " + error.message 
       });
     }
   });

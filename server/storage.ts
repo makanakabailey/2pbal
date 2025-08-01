@@ -94,6 +94,7 @@ export interface IStorage {
   getSubscription(id: number): Promise<Subscription | undefined>;
   getSubscriptionByStripeId(stripeSubscriptionId: string): Promise<Subscription | undefined>;
   getUserSubscriptions(userId: number): Promise<Subscription[]>;
+  getAllSubscriptions(): Promise<Subscription[]>;
   updateSubscription(id: number, data: Partial<InsertSubscription>): Promise<Subscription | undefined>;
   
   // Invoice operations
@@ -597,6 +598,11 @@ export class MemStorage implements IStorage {
       .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
   }
 
+  async getAllSubscriptions(): Promise<Subscription[]> {
+    return Array.from(this.subscriptions.values())
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  }
+
   async updateSubscription(id: number, data: Partial<InsertSubscription>): Promise<Subscription | undefined> {
     const subscription = this.subscriptions.get(id);
     if (!subscription) return undefined;
@@ -998,6 +1004,11 @@ export class DatabaseStorage implements IStorage {
   async getUserSubscriptions(userId: number): Promise<Subscription[]> {
     return await db.select().from(subscriptions)
       .where(eq(subscriptions.userId, userId))
+      .orderBy(desc(subscriptions.createdAt));
+  }
+
+  async getAllSubscriptions(): Promise<Subscription[]> {
+    return await db.select().from(subscriptions)
       .orderBy(desc(subscriptions.createdAt));
   }
 
