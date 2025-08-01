@@ -1,15 +1,9 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
-import * as schema from "@shared/schema";
+/**
+ * Main Database Connection Module
+ * 
+ * This module exports the database connection and related utilities.
+ * It uses the flexible database configuration system to support both
+ * Replit PostgreSQL and Neon PostgreSQL.
+ */
 
-neonConfig.webSocketConstructor = ws;
-
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
-  );
-}
-
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle({ client: pool, schema });
+export { db, pool, databaseProvider, getDatabaseStatus } from './db-config';

@@ -1,25 +1,24 @@
 # Database Setup Instructions
 
-## Database Status: Neon PostgreSQL Database
+## Database Status: Replit PostgreSQL Database
 
-This project now uses **Neon PostgreSQL database** exclusively. All data has been successfully migrated from Replit PostgreSQL to Neon with full schema and data preservation.
+This project now uses **Replit PostgreSQL database** for the standard Replit environment. All data has been successfully migrated and the admin account is properly configured.
 
 ### Current Database Status:
 
-✅ **Neon PostgreSQL**: Cloud-hosted PostgreSQL with full schema deployed
-✅ **Data Migration Complete**: All data successfully transferred from Replit
-✅ **Admin Account Verified**: Production admin account working perfectly
+✅ **Replit PostgreSQL**: Built-in PostgreSQL with full schema deployed
+✅ **Admin Account Created**: Production admin account working perfectly
 ✅ **Schema Integrity**: All 9 tables and relationships properly established
-✅ **Environment Variables**: Configured via Replit Secrets
+✅ **Environment Variables**: Automatically configured by Replit
 
-### Database Environment Variables (Replit Secrets):
+### Database Environment Variables (Auto-configured):
 
-The following Neon database credentials are configured:
-- `DATABASE_URL` - Full Neon connection string
-- `PGHOST` - ep-raspy-feather-afz1ts7h-pooler.c-2.us-west-2.aws.neon.tech
-- `PGDATABASE` - 2pal
-- `PGUSER` - neondb_owner
-- `PGPASSWORD` - [Secure credential in Replit Secrets]
+The following PostgreSQL credentials are automatically provided by Replit:
+- `DATABASE_URL` - Full PostgreSQL connection string
+- `PGHOST` - Automatically configured
+- `PGDATABASE` - Automatically configured
+- `PGUSER` - Automatically configured
+- `PGPASSWORD` - Automatically configured
 - `PGPORT` - 5432
 
 ### Database Schema Deployment:
@@ -38,11 +37,11 @@ The following Neon database credentials are configured:
 - ✅ **Authentication ready**: Login/logout system functional
 - ✅ **Data persistence**: All operations use real PostgreSQL storage
 
-### Migration Summary (January 31, 2025):
-- **Database Provider**: Neon PostgreSQL (cloud-hosted)
-- **Migration Status**: ✅ COMPLETE - Schema and data successfully transferred
-- **Data Integrity**: All user data, admin account, and activity logs preserved
-- **Connection**: Secure via Replit Secrets configuration
+### Migration Summary (August 01, 2025):
+- **Database Provider**: Replit PostgreSQL (built-in)
+- **Migration Status**: ✅ COMPLETE - Schema and admin account successfully created
+- **Data Integrity**: Admin account and database structure properly established
+- **Connection**: Automatic via Replit environment variables
 - **Verification**: Database connection and admin authentication confirmed
 
 ### Database Tables Confirmed:
@@ -74,12 +73,13 @@ The following Neon database credentials are configured:
    - Should access admin dashboard successfully
 
 ### Important Database Notes:
-- **Current Database**: Neon PostgreSQL exclusively - fully operational
-- **Former Database**: Replit PostgreSQL data successfully migrated and no longer used
-- **Environment**: Standard Replit environment with Neon PostgreSQL connection
-- **Persistence**: Data persists in Neon cloud infrastructure
-- **Security**: Credentials securely stored in Replit Secrets
-- **Cloud Benefits**: Neon provides enhanced scalability and geographic distribution
+- **Current Database**: Replit PostgreSQL (primary) - fully operational
+- **Environment**: Standard Replit environment with built-in PostgreSQL
+- **Persistence**: Data persists in Replit's PostgreSQL infrastructure
+- **Security**: Credentials automatically managed by Replit environment
+- **Benefits**: Seamless integration with Replit development environment
+- **Neon Migration**: Optional migration to Neon PostgreSQL available via `tsx migrate-to-neon.ts`
+- **Flexibility**: Database configuration automatically detects and uses available connection
 
 ### Troubleshooting:
 If you encounter issues:
