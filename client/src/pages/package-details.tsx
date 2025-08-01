@@ -613,14 +613,16 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl font-bold mb-6 text-white">
+                <h2 className="text-3xl font-bold mb-6 glow-heading typing-text">
                   What You'll Achieve
                 </h2>
                 <div className="space-y-4">
                   {details.outcomes.map((outcome, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <CheckCircle className="w-6 h-6 text-green-300 flex-shrink-0 mt-0.5" />
-                      <p className="text-lg glow-text leading-relaxed">{outcome}</p>
+                    <div key={index} className="flex items-start gap-3" style={{
+                      animation: `typing 2s steps(30, end) ${1.5 + (index * 0.3)}s both`
+                    }}>
+                      <CheckCircle className="w-6 h-6 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-lg glow-text leading-relaxed typing-text">{outcome}</p>
                     </div>
                   ))}
                 </div>
