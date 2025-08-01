@@ -31,6 +31,10 @@ export const users = pgTable("users", {
   referralSource: varchar("referral_source", { length: 100 }),
   marketingConsent: boolean("marketing_consent").default(false),
   profileComplete: boolean("profile_complete").default(false),
+  recommendedPackage: varchar("recommended_package", { length: 100 }),
+  recommendationScore: integer("recommendation_score"),
+  recommendationReason: text("recommendation_reason"),
+  recommendationDate: timestamp("recommendation_date"),
   isActive: boolean("is_active").default(true),
   role: varchar("role", { length: 20 }).default("user"), // user, admin
   avatar: text("avatar"), // Base64 or URL for profile picture
@@ -212,6 +216,19 @@ export const profileUpdateSchema = z.object({
   referralSource: z.string().optional(),
 });
 
+// Package recommendation system
+export const packageRecommendationSchema = z.object({
+  packageType: z.string(),
+  score: z.number(),
+  reason: z.string(),
+  factors: z.array(z.object({
+    factor: z.string(),
+    weight: z.number(),
+    value: z.string(),
+    impact: z.number()
+  }))
+});
+
 export const avatarUploadSchema = z.object({
   avatar: z.string().min(1, "Avatar data is required"),
 });
@@ -328,6 +345,7 @@ export type PreferencesUpdate = z.infer<typeof preferencesUpdateSchema>;
 export type ChangePassword = z.infer<typeof changePasswordSchema>;
 export type AccountDeletion = z.infer<typeof accountDeletionSchema>;
 export type EmailVerificationData = z.infer<typeof emailVerificationSchema>;
+export type PackageRecommendation = z.infer<typeof packageRecommendationSchema>;
 export type Quote = typeof quotes.$inferSelect;
 export type InsertQuote = z.infer<typeof insertQuoteSchema>;
 export type UserProject = typeof userProjects.$inferSelect;

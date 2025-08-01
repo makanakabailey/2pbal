@@ -42,6 +42,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(userData: SignupData): Promise<User>;
   updateUser(id: number, userData: ProfileUpdate): Promise<User | undefined>;
+  updateUserWithRecommendation(id: number, userData: ProfileUpdate, recommendation: any): Promise<User | undefined>;
   loginUser(credentials: LoginData): Promise<{ user: User; session: UserSession } | null>;
   deleteUser(id: number, password: string): Promise<boolean>;
   forceDeleteUser(id: number): Promise<boolean>;
@@ -154,6 +155,10 @@ export class MemStorage implements IStorage {
       referralSource: null,
       marketingConsent: false,
       profileComplete: true,
+      recommendedPackage: null,
+      recommendationScore: null,
+      recommendationReason: null,
+      recommendationDate: null,
       isActive: true,
       role: "admin",
       avatar: null,
@@ -203,6 +208,10 @@ export class MemStorage implements IStorage {
       referralSource: null,
       marketingConsent: userData.marketingConsent || false,
       profileComplete: false,
+      recommendedPackage: null,
+      recommendationScore: null,
+      recommendationReason: null,
+      recommendationDate: null,
       isActive: true,
       role: "user",
       avatar: null,
@@ -229,6 +238,24 @@ export class MemStorage implements IStorage {
       profileComplete: true,
     };
     
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async updateUserWithRecommendation(id: number, userData: ProfileUpdate, recommendation: any): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+
+    const updatedUser: User = { 
+      ...user, 
+      ...userData, 
+      profileComplete: true,
+      recommendedPackage: recommendation.packageType,
+      recommendationScore: recommendation.score,
+      recommendationReason: recommendation.reason,
+      recommendationDate: new Date(),
+      updatedAt: new Date() 
+    };
     this.users.set(id, updatedUser);
     return updatedUser;
   }
@@ -693,6 +720,22 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     
+    return result[0];
+  }
+
+  async updateUserWithRecommendation(id: number, userData: ProfileUpdate, recommendation: any): Promise<User | undefined> {
+    const result = await db.update(users)
+      .set({ 
+        ...userData, 
+        profileComplete: true,
+        recommendedPackage: recommendation.packageType,
+        recommendationScore: recommendation.score,
+        recommendationReason: recommendation.reason,
+        recommendationDate: new Date(),
+        updatedAt: new Date() 
+      })
+      .where(eq(users.id, id))
+      .returning();
     return result[0];
   }
 

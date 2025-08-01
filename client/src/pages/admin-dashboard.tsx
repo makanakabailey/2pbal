@@ -244,6 +244,8 @@ export default function AdminDashboard() {
                         <TableHead>User</TableHead>
                         <TableHead>Contact</TableHead>
                         <TableHead>Company</TableHead>
+                        <TableHead>Profile Status</TableHead>
+                        <TableHead>Recommendation</TableHead>
                         <TableHead>Role</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Verified</TableHead>
@@ -291,12 +293,54 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            {user.company && (
-                              <div className="flex items-center text-sm">
-                                <Building className="h-3 w-3 mr-1" />
-                                {user.company}
-                              </div>
-                            )}
+                            <div className="space-y-1">
+                              {user.company && (
+                                <div className="flex items-center text-sm">
+                                  <Building className="h-3 w-3 mr-1" />
+                                  {user.company}
+                                </div>
+                              )}
+                              {user.industry && (
+                                <div className="text-xs text-gray-500">
+                                  {user.industry}
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <Badge variant={user.profileComplete ? "default" : "outline"} className="text-xs">
+                                {user.profileComplete ? "✓ Complete" : "Incomplete"}
+                              </Badge>
+                              {user.companySize && (
+                                <div className="text-xs text-gray-500">
+                                  Size: {user.companySize}
+                                </div>
+                              )}
+                              {user.preferredBudget && (
+                                <div className="text-xs text-gray-500">
+                                  Budget: {user.preferredBudget}
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              {user.recommendedPackage ? (
+                                <>
+                                  <Badge variant="secondary" className="text-xs">
+                                    {user.recommendedPackage}
+                                  </Badge>
+                                  {user.recommendationScore && (
+                                    <div className="text-xs text-gray-500">
+                                      Score: {user.recommendationScore}%
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="text-xs text-gray-400">No recommendation</span>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell>
                             <Badge className={getStatusBadge(user.role)}>

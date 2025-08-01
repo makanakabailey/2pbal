@@ -49,6 +49,7 @@ function Router() {
           <Route path="/about" component={About} />
           <Route path="/packages" component={() => <Packages onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/package/:id" component={() => <PackageDetails onOpenCalculator={() => setCalculatorOpen(true)} />} />
+          <Route path="/package-details/:id" component={() => <PackageDetails onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/services" component={Services} />
           <Route path="/service/:serviceId" component={ServiceDetail} />
           <Route path="/case-studies" component={CaseStudies} />

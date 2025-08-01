@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
+import { generatePackageRecommendation } from "./recommendation-engine";
 import { 
   insertQuoteSchema, 
   loginSchema, 
@@ -205,16 +206,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: errorMessage.toString() });
       }
 
-      const updatedUser = await storage.updateUser(req.user.id, result.data);
+      // Generate package recommendation
+      const recommendation = generatePackageRecommendation(result.data);
+      
+      const updatedUser = await storage.updateUserWithRecommendation(req.user.id, result.data, recommendation);
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
       }
 
       const { password: _, ...userWithoutPassword } = updatedUser;
-      res.json({ user: userWithoutPassword });
+      res.json({ 
+        user: userWithoutPassword,
+        recommendation: recommendation
+      });
     } catch (error) {
       console.error("Profile update error:", error);
       res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // New route to get package recommendation
+  app.get("/api/users/recommendation", requireAuth, async (req: any, res) => {
+    try {
+      const user = req.user;
+      if (!user.recommendedPackage) {
+        return res.status(404).json({ message: "No recommendation available" });
+      }
+
+      res.json({
+        packageType: user.recommendedPackage,
+        score: user.recommendationScore,
+        reason: user.recommendationReason,
+        date: user.recommendationDate
+      });
+    } catch (error) {
+      console.error("Get recommendation error:", error);
+      res.status(500).json({ message: "Failed to get recommendation" });
     }
   });
 

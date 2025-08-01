@@ -22,19 +22,34 @@ export default function ProfileSetup() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileUpdate) => {
-      return apiRequest('/api/profile', {
+      const response = await apiRequest('/api/users/profile', {
         method: 'PUT',
         body: JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' }
       });
+      return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      toast({
-        title: "Profile updated successfully!",
-        description: "Your business profile has been completed.",
-      });
-      setLocation('/dashboard');
+      
+      if (data.recommendation) {
+        toast({
+          title: "Profile completed successfully!",
+          description: data.recommendation.reason,
+          duration: 6000,
+        });
+        
+        // Redirect to package details page with the recommended package
+        setTimeout(() => {
+          setLocation(`/package-details/${data.recommendation.packageType}`);
+        }, 2000);
+      } else {
+        toast({
+          title: "Profile updated successfully!",
+          description: "Your business profile has been completed.",
+        });
+        setLocation('/dashboard');
+      }
     },
     onError: (error: any) => {
       toast({

@@ -11,7 +11,7 @@ interface PackageDetailsProps {
 }
 
 export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps) {
-  const [, params] = useRoute('/package/:id');
+  const [, params] = useRoute('/package/:id') || useRoute('/package-details/:id');
   const packageId = params?.id;
   
   const packageData = PACKAGES.find(pkg => pkg.id === packageId);
