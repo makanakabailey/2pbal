@@ -22,21 +22,21 @@ neonConfig.webSocketConstructor = ws;
  * Determines which database provider to use and returns appropriate configuration
  */
 function getDatabaseConfig() {
-  // If DATABASE_URL is set, use it directly (Replit auto-configuration)
-  if (process.env.DATABASE_URL) {
-    return {
-      provider: 'replit',
-      connectionString: process.env.DATABASE_URL,
-      description: 'Using Replit PostgreSQL (auto-configured)'
-    };
-  }
-
-  // If NEON_DATABASE_URL is set, use Neon
+  // Prioritize Neon database if NEON_DATABASE_URL is set
   if (process.env.NEON_DATABASE_URL) {
     return {
       provider: 'neon',
       connectionString: process.env.NEON_DATABASE_URL,
       description: 'Using Neon PostgreSQL (cloud-hosted)'
+    };
+  }
+
+  // Fallback to Replit PostgreSQL if DATABASE_URL is set
+  if (process.env.DATABASE_URL) {
+    return {
+      provider: 'replit',
+      connectionString: process.env.DATABASE_URL,
+      description: 'Using Replit PostgreSQL (auto-configured)'
     };
   }
 

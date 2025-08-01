@@ -23,11 +23,11 @@ Preferred communication style: Simple, everyday language.
 - **Development**: Integrated with Vite for HMR
 
 ### Data Storage
-- **Database**: PostgreSQL (configured via Drizzle)
+- **Database**: Neon PostgreSQL (cloud-hosted, primary) with Replit PostgreSQL fallback
 - **ORM**: Drizzle ORM with Drizzle Kit for migrations
-- **Connection**: Neon Database serverless connection
+- **Connection**: Neon Database serverless connection via NEON_DATABASE_URL
 - **Schema**: Defined in shared TypeScript with Zod validation
-- **Fallback**: In-memory storage for development/testing
+- **Configuration**: Automatic provider selection prioritizing Neon
 
 ### Key Components & Features
 - **Database Schema**: Users, Quotes, Projects, Sessions, Payments, Subscriptions, Invoices tables with Zod validation.
