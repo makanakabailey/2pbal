@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { generatePackageRecommendation } from "./recommendation-engine";
+import { upload, uploadFiles, deleteFiles, getFileCategory } from "./file-upload";
+import { setupFileManagementRoutes } from "./file-management-routes";
 import { 
   insertQuoteSchema, 
   loginSchema, 
@@ -547,14 +549,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Process uploaded files
+      // Upload files to Cloudinary
       const files = req.files as Express.Multer.File[];
-      const attachments = files?.map(file => ({
-        filename: file.originalname,
-        mimetype: file.mimetype,
-        size: file.size,
-        data: file.buffer.toString('base64')
-      })) || [];
+      let attachments: {
+        filename: string;
+        mimetype: string;
+        size: number;
+        cloudinary_url: string;
+        cloudinary_public_id: string;
+        upload_date: string;
+      }[] = [];
+      
+      if (files && files.length > 0) {
+        try {
+          attachments = await uploadFiles(files, 'quotes');
+          console.log(`Uploaded ${attachments.length} files to Cloudinary for quote`);
+        } catch (uploadError) {
+          console.error("File upload error:", uploadError);
+          return res.status(500).json({ 
+            success: false, 
+            error: "Failed to upload files to cloud storage",
+            details: uploadError.message
+          });
+        }
+      }
       
       const quoteData = insertQuoteSchema.parse({
         ...formData,
@@ -1186,6 +1204,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+
+  // Setup file management routes
+  setupFileManagementRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;

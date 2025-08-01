@@ -75,7 +75,14 @@ export const quotes = pgTable("quotes", {
   outcomes: jsonb("outcomes").$type<string[]>().notNull(),
   projectDescription: text("project_description").notNull(),
   timeline: text("timeline").notNull(),
-  attachments: jsonb("attachments").$type<{filename: string, mimetype: string, size: number, data: string}[]>().default([]),
+  attachments: jsonb("attachments").$type<{
+    filename: string;
+    mimetype: string;
+    size: number;
+    cloudinary_url: string;
+    cloudinary_public_id: string;
+    upload_date: string;
+  }[]>().default([]),
   status: varchar("status", { length: 50 }).default("pending"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
