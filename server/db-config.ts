@@ -31,6 +31,15 @@ function getDatabaseConfig() {
     };
   }
 
+  // Check if DATABASE_URL is a Neon connection (contains neon.tech domain)
+  if (process.env.DATABASE_URL && process.env.DATABASE_URL.includes('neon.tech')) {
+    return {
+      provider: 'neon',
+      connectionString: process.env.DATABASE_URL,
+      description: 'Using Neon PostgreSQL (cloud-hosted)'
+    };
+  }
+
   // Fallback to Replit PostgreSQL if DATABASE_URL is set
   if (process.env.DATABASE_URL) {
     return {
