@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { generatePackageRecommendation } from "./recommendation-engine";
-import { upload, uploadFiles, deleteFiles, getFileCategory } from "./file-upload";
+import { uploadFiles, deleteFiles, getFileCategory } from "./file-upload";
 import { setupFileManagementRoutes } from "./file-management-routes";
 import { 
   insertQuoteSchema, 
