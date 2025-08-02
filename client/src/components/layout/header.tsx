@@ -105,7 +105,7 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="flex items-center cursor-pointer">
+                    <Link href={user?.role === 'admin' ? '/admin-dashboard' : '/dashboard'} className="flex items-center cursor-pointer">
                       <BarChart3 className="h-4 w-4 mr-2" />
                       Dashboard
                     </Link>
@@ -193,7 +193,7 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
 
                   {isAuthenticated ? (
                     <div className="space-y-2 pt-4 border-t">
-                      <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                      <Link href={user?.role === 'admin' ? '/admin-dashboard' : '/dashboard'} onClick={() => setIsOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start">
                           <BarChart3 className="h-4 w-4 mr-2" />
                           Dashboard
