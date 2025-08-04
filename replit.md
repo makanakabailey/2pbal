@@ -6,6 +6,12 @@ This project is a modern full-stack web application for 2Pbal, a digital service
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Project Setup Documentation
+- **Master Setup Guide**: PROJECT_SETUP_GUIDE.md - Complete instructions for AI agents
+- **Database Setup**: NEON_DATABASE_SETUP.md - Neon PostgreSQL connection guide
+- **Email Setup**: RESEND_EMAIL_SETUP.md - Resend email service configuration
+- **Migration Tracker**: .local/state/replit/agent/progress_tracker.md - Setup progress tracking
+
 ## System Architecture
 
 ### Frontend
@@ -51,13 +57,16 @@ Preferred communication style: Simple, everyday language.
 - Custom logos and assets from `attached_assets` directory.
 
 ## Email System Status
-- **Email Service**: Resend API fully operational
+- **Email Service**: Resend API fully operational (RESEND_API_KEY configured)
 - **Verification System**: Complete with token-based verification (24-hour expiry)
 - **Package Tracking**: User engagement monitoring implemented
 - **Weekly Reminders**: Automated email service with 7-day intelligent intervals
 - **Database Integration**: All email data stored in Neon PostgreSQL
 - **Domain Status**: Currently using Resend's verified domain (onboarding@resend.dev)
 - **Production Ready**: Custom domain verification required for 2pbal.com sender
+- **Setup Guide**: RESEND_EMAIL_SETUP.md contains full configuration instructions for AI agents
+- **Service Files**: server/email-service.ts (core), server/email-reminder-service.ts (automation)
+- **Templates**: HTML email templates with 2Pbal branding and responsive design
 
 ## Database Connection Status
 - **Provider**: Neon PostgreSQL (cloud-hosted) - ACTIVELY CONNECTED ✅
