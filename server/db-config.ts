@@ -27,20 +27,21 @@ function getDatabaseConfig() {
     return {
       provider: 'neon',
       connectionString: process.env.NEON_DATABASE_URL,
-      description: 'Using Neon PostgreSQL (cloud-hosted)'
+      description: 'Using Neon PostgreSQL (cloud-hosted) - NEON_DATABASE_URL'
     };
   }
 
-  // Check if DATABASE_URL is a Neon connection (contains neon.tech domain or neondb database name)
+  // Check if DATABASE_URL is a Neon connection (contains Neon identifiers)
   if (process.env.DATABASE_URL && (
     process.env.DATABASE_URL.includes('neon.tech') || 
-    process.env.DATABASE_URL.includes('/neondb') ||
-    process.env.DATABASE_URL.includes('neondb_owner')
+    process.env.DATABASE_URL.includes('/2pal') ||
+    process.env.DATABASE_URL.includes('neondb_owner') ||
+    process.env.DATABASE_URL.includes('ep-raspy-feather')
   )) {
     return {
       provider: 'neon',
       connectionString: process.env.DATABASE_URL,
-      description: 'Using Neon PostgreSQL (cloud-hosted)'
+      description: 'Using Neon PostgreSQL (cloud-hosted) - DATABASE_URL detected as Neon'
     };
   }
 
@@ -63,8 +64,8 @@ function getDatabaseConfig() {
 
   // No database configuration found
   throw new Error(
-    "No database configuration found. Please ensure DATABASE_URL is set " +
-    "(automatically provided by Replit) or configure NEON_DATABASE_URL for Neon PostgreSQL."
+    "No database configuration found. Please ensure NEON_DATABASE_URL is set for the 2Pbal Neon database " +
+    "or DATABASE_URL is configured. Check NEON_DATABASE_SETUP.md for connection details."
   );
 }
 

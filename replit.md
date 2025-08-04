@@ -61,7 +61,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Database Connection Status
 - **Provider**: Neon PostgreSQL (cloud-hosted) - ACTIVELY CONNECTED ✅
-- **Connection**: Auto-detected via DATABASE_URL environment variable
-- **Schema**: Complete with users, emailVerificationTokens, packageViews tables
+- **Database Name**: 2pal
+- **Connection**: Official Neon connection string configured in NEON_DATABASE_URL
+- **Host**: ep-raspy-feather-afz1ts7h-pooler.c-2.us-west-2.aws.neon.tech
+- **User**: neondb_owner
+- **Schema**: Complete with users, quotes, projects, payments, sessions, invoices, subscriptions tables
+- **Admin Account**: mkanakabailey@gmail.com (password: admin123)
 - **Performance**: Optimized queries with proper indexing
 - **Migration**: Managed through Drizzle Kit (npm run db:push)
+- **Setup Guide**: NEON_DATABASE_SETUP.md contains full connection instructions for AI agents
