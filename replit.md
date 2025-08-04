@@ -38,6 +38,7 @@ Preferred communication style: Simple, everyday language.
 ### Key Components & Features
 - **Database Schema**: Users, Quotes, Projects, Sessions, Payments, Subscriptions, Invoices tables with Zod validation.
 - **UI Components**: Package/Service Cards, Service Detail Pages, Savings Calculator, Bundle Builder, Multi-step Quote Form (with audio recording and file upload), Client Portal, File Upload System (drag-and-drop, 10MB limit).
+- **Audio Recording System**: Complete voice recording functionality with Cloudinary cloud storage integration and intelligent local fallback. Users can record, playback, and submit voice messages with quotes.
 - **Pages**: Home, Packages, Services, Service Details, Quote, Client Portal, Subscription Management, Admin Panel (user management, subscription management), About Us, Careers, Case Studies, 404.
 - **Data Flow**: React Query handles API calls, Express processes requests with Zod validation, Drizzle ORM interacts with PostgreSQL, JSON responses are returned, and React Query updates UI.
 - **Deployment**: Client built by Vite to `dist/public`, server bundled by esbuild to `dist/index.js`. Static file serving from built client assets. Database connection via `DATABASE_URL` environment variable.
@@ -54,6 +55,8 @@ Preferred communication style: Simple, everyday language.
 - **PostCSS**: CSS processing.
 - **Stripe**: For payment processing (implied by payment flow).
 - **Resend**: Email service for verification and reminders (ACTIVE - using onboarding@resend.dev).
+- **Cloudinary**: Cloud storage for audio recordings and file uploads (configured with intelligent fallback).
+- **react-audio-voice-recorder**: Audio recording component for voice messages.
 - Custom logos and assets from `attached_assets` directory.
 
 ## Email System Status
@@ -79,3 +82,13 @@ Preferred communication style: Simple, everyday language.
 - **Performance**: Optimized queries with proper indexing
 - **Migration**: Managed through Drizzle Kit (npm run db:push)
 - **Setup Guide**: NEON_DATABASE_SETUP.md contains full connection instructions for AI agents
+
+## Audio Recording System Status
+- **Audio Recording**: Fully functional voice recording system integrated into quote form
+- **Cloudinary Integration**: Configured for cloud storage with automatic upload (fallback system active)
+- **Local Fallback**: Intelligent fallback to browser storage when cloud upload unavailable
+- **API Endpoints**: `/api/audio/upload-recording-blob` for audio processing and storage
+- **User Experience**: Seamless recording, playback, and submission of voice messages with quotes
+- **Storage Strategy**: Attempts Cloudinary upload, gracefully falls back to local storage with user notification
+- **Implementation Files**: server/audio-upload-routes.ts, server/cloudinary-config.ts, client/src/pages/quote.tsx
+- **Feature Status**: Production ready with robust error handling and user feedback

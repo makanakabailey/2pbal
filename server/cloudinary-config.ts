@@ -5,6 +5,14 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
+});
+
+// Debug logging (can be removed in production)
+console.log('Cloudinary config status:', {
+  cloud_name: !!process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: !!process.env.CLOUDINARY_API_KEY,
+  api_secret: !!process.env.CLOUDINARY_API_SECRET
 });
 
 export default cloudinary;
@@ -13,8 +21,8 @@ export default cloudinary;
 export async function uploadToCloudinary(
   fileBuffer: Buffer,
   originalName: string,
-  folder: string = 'uploads',
-  resourceType: 'image' | 'video' | 'raw' = 'auto'
+  folder?: string,
+  resourceType: 'image' | 'video' | 'raw' | 'auto' = 'auto'
 ): Promise<{
   public_id: string;
   secure_url: string;
@@ -24,14 +32,22 @@ export async function uploadToCloudinary(
   bytes: number;
 }> {
   return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream(
-      {
-        folder,
-        resource_type: resourceType as any,
-        use_filename: true,
-        unique_filename: true,
-        filename_override: originalName.split('.')[0],
-      },
+    const uploadOptions: any = {
+      resource_type: resourceType
+    };
+    
+    if (folder && folder.trim()) {
+      uploadOptions.folder = folder;
+    }
+    
+    console.log('Cloudinary upload options:', uploadOptions);
+    
+    // Try base64 upload instead of stream upload to avoid signature issues
+    const base64Data = `data:${resourceType === 'raw' ? 'application/octet-stream' : 'image/jpeg'};base64,${fileBuffer.toString('base64')}`;
+    
+    cloudinary.uploader.upload(
+      base64Data,
+      uploadOptions,
       (error, result) => {
         if (error) {
           reject(error);

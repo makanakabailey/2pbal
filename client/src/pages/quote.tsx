@@ -30,6 +30,10 @@ interface AudioRecording {
   duration: number;
   name: string;
   timestamp: Date;
+  cloudinary_url?: string;
+  cloudinary_public_id?: string;
+  cloudinary_url?: string;
+  cloudinary_public_id?: string;
 }
 
 export default function Quote() {
@@ -172,24 +176,94 @@ export default function Quote() {
     return File;
   };
 
-  const addAudioRecording = (audioBlob: Blob) => {
-    const newRecording: AudioRecording = {
-      id: Date.now().toString(),
-      blob: audioBlob,
-      duration: 0, // We'll calculate this if needed
-      name: `Voice Recording ${formData.audioRecordings.length + 1}`,
-      timestamp: new Date()
-    };
+  const addAudioRecording = async (audioBlob: Blob) => {
+    try {
+      const recordingName = `Voice Recording ${formData.audioRecordings.length + 1}`;
+      
+      // Convert blob to base64 for upload
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const base64String = reader.result as string;
+          
+          // Upload to Cloudinary via our API
+          const response = await fetch('/api/audio/upload-recording-blob', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              audioBlob: base64String,
+              recordingName: recordingName,
+              quoteId: null // Will be set when quote is submitted
+            }),
+          });
 
-    setFormData(prev => ({
-      ...prev,
-      audioRecordings: [...prev.audioRecordings, newRecording]
-    }));
+          if (!response.ok) {
+            throw new Error('Failed to upload audio recording');
+          }
 
-    toast({
-      title: "Audio Recorded",
-      description: "Your voice message has been added to your proposal.",
-    });
+          const result = await response.json();
+
+          if (result.success) {
+            const newRecording: AudioRecording = {
+              id: Date.now().toString(),
+              blob: audioBlob, // Keep blob for immediate playback
+              duration: 0,
+              name: recordingName,
+              timestamp: new Date(),
+              cloudinary_url: result.audio.cloudinary_url,
+              cloudinary_public_id: result.audio.cloudinary_public_id
+            };
+
+            setFormData(prev => ({
+              ...prev,
+              audioRecordings: [...prev.audioRecordings, newRecording]
+            }));
+
+            const storageMessage = result.audio.storage === 'cloudinary' 
+              ? "Your voice message has been uploaded to cloud storage."
+              : "Your voice message is saved locally and will be submitted with your quote.";
+
+            toast({
+              title: "Audio Recorded & Saved",
+              description: storageMessage,
+            });
+          } else {
+            throw new Error('Upload failed');
+          }
+        } catch (error) {
+          console.error('Audio upload error:', error);
+          toast({
+            title: "Upload Failed",
+            description: "Failed to save audio recording. You can still submit it locally.",
+            variant: "destructive",
+          });
+          
+          // Fallback: Add recording without cloud URL
+          const newRecording: AudioRecording = {
+            id: Date.now().toString(),
+            blob: audioBlob,
+            duration: 0,
+            name: recordingName,
+            timestamp: new Date()
+          };
+
+          setFormData(prev => ({
+            ...prev,
+            audioRecordings: [...prev.audioRecordings, newRecording]
+          }));
+        }
+      };
+      reader.readAsDataURL(audioBlob);
+    } catch (error) {
+      console.error('Error processing audio recording:', error);
+      toast({
+        title: "Recording Error",
+        description: "Failed to process audio recording.",
+        variant: "destructive",
+      });
+    }
   };
 
   const removeAudioRecording = (id: string) => {
@@ -205,15 +279,27 @@ export default function Quote() {
       return;
     }
 
-    const audioUrl = URL.createObjectURL(recording.blob);
+    // Use Cloudinary URL if available, fallback to blob
+    const audioUrl = recording.cloudinary_url || URL.createObjectURL(recording.blob);
     const audio = new Audio(audioUrl);
     
     setPlayingAudio(recording.id);
     
-    audio.play();
+    audio.play().catch(error => {
+      console.error('Audio playback error:', error);
+      toast({
+        title: "Playback Error",
+        description: "Unable to play audio recording.",
+        variant: "destructive",
+      });
+      setPlayingAudio(null);
+    });
+    
     audio.addEventListener('ended', () => {
       setPlayingAudio(null);
-      URL.revokeObjectURL(audioUrl);
+      if (!recording.cloudinary_url) {
+        URL.revokeObjectURL(audioUrl);
+      }
     });
   };
 
@@ -233,34 +319,66 @@ export default function Quote() {
 
   const handleSubmit = async () => {
     try {
-      // Convert audio recordings to a format suitable for submission
+      // Convert audio recordings to include Cloudinary URLs
       const audioData = formData.audioRecordings.map(recording => ({
         id: recording.id,
         name: recording.name,
-        timestamp: recording.timestamp,
-        // In a real implementation, you would upload the blob to your server
-        // For now, we'll just log the blob info
+        timestamp: recording.timestamp.toISOString(),
         size: recording.blob.size,
-        type: recording.blob.type
+        type: recording.blob.type,
+        cloudinary_url: recording.cloudinary_url,
+        cloudinary_public_id: recording.cloudinary_public_id
       }));
+
+      // Upload files if any
+      let uploadedFiles = [];
+      if (formData.attachments.length > 0) {
+        const fileFormData = new FormData();
+        formData.attachments.forEach(file => {
+          fileFormData.append('files', file);
+        });
+
+        const fileUploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: fileFormData,
+        });
+
+        if (fileUploadResponse.ok) {
+          const fileResult = await fileUploadResponse.json();
+          uploadedFiles = fileResult.files || [];
+        }
+      }
 
       const submissionData = {
         ...formData,
         audioRecordings: audioData,
+        uploadedFiles: uploadedFiles,
         totalAudioRecordings: formData.audioRecordings.length,
-        totalAttachments: formData.attachments.length
+        totalAttachments: formData.attachments.length,
+        submittedAt: new Date().toISOString()
       };
 
-      // Here you would normally submit to your API
-      console.log('Submitting form data:', submissionData);
-      console.log('Audio blobs:', formData.audioRecordings.map(r => r.blob));
-      
-      setIsSubmitted(true);
-      toast({
-        title: "Quote Request Submitted!",
-        description: `We're preparing your personalized savings proposal now. ${formData.audioRecordings.length > 0 ? 'Your voice recordings have been included.' : ''}`,
+      // Submit quote request to API
+      const response = await fetch('/api/quotes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
       });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        toast({
+          title: "Quote Request Submitted!",
+          description: `We're preparing your personalized savings proposal now. ${formData.audioRecordings.length > 0 ? 'Your voice recordings have been saved to cloud storage.' : ''}`,
+        });
+      } else {
+        throw new Error('Failed to submit quote request');
+      }
+      
     } catch (error) {
+      console.error('Submission error:', error);
       toast({
         title: "Submission Failed",
         description: "Please try again or contact us directly.",

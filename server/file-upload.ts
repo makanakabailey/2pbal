@@ -49,11 +49,13 @@ export async function uploadFiles(
 }[]> {
   const uploadPromises = files.map(async (file) => {
     // Determine resource type based on mimetype
-    let resourceType: 'image' | 'video' | 'raw' = 'raw';
+    let resourceType: 'image' | 'video' | 'raw' | 'auto' = 'raw';
     if (file.mimetype.startsWith('image/')) {
       resourceType = 'image';
     } else if (file.mimetype.startsWith('video/')) {
       resourceType = 'video';
+    } else if (file.mimetype.startsWith('audio/')) {
+      resourceType = 'raw'; // Audio files are handled as raw in Cloudinary
     }
 
     const result = await uploadToCloudinary(

@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { generatePackageRecommendation } from "./recommendation-engine";
 import { uploadFiles, deleteFiles, getFileCategory } from "./file-upload";
 import { setupFileManagementRoutes } from "./file-management-routes";
+import audioUploadRoutes from "./audio-upload-routes";
 import { sendEmail, generateVerificationEmailHTML, generatePackageReminderEmailHTML } from "./email-service";
 import { 
   insertQuoteSchema, 
@@ -118,6 +119,8 @@ async function requireEmailVerification(req: any, res: any, next: any) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Register audio upload routes
+  app.use('/api/audio', audioUploadRoutes);
   app.use(cookieParser());
 
   // Authentication routes
