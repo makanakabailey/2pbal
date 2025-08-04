@@ -31,8 +31,12 @@ function getDatabaseConfig() {
     };
   }
 
-  // Check if DATABASE_URL is a Neon connection (contains neon.tech domain)
-  if (process.env.DATABASE_URL && process.env.DATABASE_URL.includes('neon.tech')) {
+  // Check if DATABASE_URL is a Neon connection (contains neon.tech domain or neondb database name)
+  if (process.env.DATABASE_URL && (
+    process.env.DATABASE_URL.includes('neon.tech') || 
+    process.env.DATABASE_URL.includes('/neondb') ||
+    process.env.DATABASE_URL.includes('neondb_owner')
+  )) {
     return {
       provider: 'neon',
       connectionString: process.env.DATABASE_URL,
