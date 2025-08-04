@@ -10,6 +10,8 @@ Preferred communication style: Simple, everyday language.
 - **Master Setup Guide**: PROJECT_SETUP_GUIDE.md - Complete instructions for AI agents
 - **Database Setup**: NEON_DATABASE_SETUP.md - Neon PostgreSQL connection guide
 - **Email Setup**: RESEND_EMAIL_SETUP.md - Resend email service configuration
+- **Cloudinary Integration**: CLOUDINARY_INTEGRATION.md - Cloud storage setup and troubleshooting for AI agents
+- **Vercel Deployment**: VERCEL_DEPLOYMENT_GUIDE.md - Complete deployment instructions for custom domains
 - **Migration Tracker**: .local/state/replit/agent/progress_tracker.md - Setup progress tracking
 
 ## System Architecture
