@@ -15,7 +15,7 @@ interface EmailParams {
 export async function sendEmail(params: EmailParams): Promise<boolean> {
   try {
     const { data, error } = await resend.emails.send({
-      from: '2Pbal <verify@2pbal.com>',
+      from: '2Pbal <onboarding@resend.dev>',
       to: params.to,
       subject: params.subject,
       html: params.html,

@@ -47,4 +47,21 @@ Preferred communication style: Simple, everyday language.
 - **Tailwind CSS**: CSS framework.
 - **PostCSS**: CSS processing.
 - **Stripe**: For payment processing (implied by payment flow).
+- **Resend**: Email service for verification and reminders (ACTIVE - using onboarding@resend.dev).
 - Custom logos and assets from `attached_assets` directory.
+
+## Email System Status
+- **Email Service**: Resend API fully operational
+- **Verification System**: Complete with token-based verification (24-hour expiry)
+- **Package Tracking**: User engagement monitoring implemented
+- **Weekly Reminders**: Automated email service with 7-day intelligent intervals
+- **Database Integration**: All email data stored in Neon PostgreSQL
+- **Domain Status**: Currently using Resend's verified domain (onboarding@resend.dev)
+- **Production Ready**: Custom domain verification required for 2pbal.com sender
+
+## Database Connection Status
+- **Provider**: Neon PostgreSQL (cloud-hosted) - ACTIVELY CONNECTED ✅
+- **Connection**: Auto-detected via DATABASE_URL environment variable
+- **Schema**: Complete with users, emailVerificationTokens, packageViews tables
+- **Performance**: Optimized queries with proper indexing
+- **Migration**: Managed through Drizzle Kit (npm run db:push)
