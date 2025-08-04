@@ -4,15 +4,19 @@ import PackageCard from '@/components/ui/package-card';
 import { Check, X, MessageCircle, ClipboardList, Rocket, TrendingUp } from 'lucide-react';
 import { PACKAGES, CASE_STUDIES } from '@/lib/constants';
 import { useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface HomeProps {
   onOpenCalculator: () => void;
 }
 
 export default function Home({ onOpenCalculator }: HomeProps) {
+  const { user, isAuthenticated } = useAuth();
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
   const handlePackageSelect = (packageId: string) => {
     window.location.href = `/package/${packageId}`;
   };
@@ -22,7 +26,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
   };
 
   return (
-    <div className="pt-16 lg:pt-20">
+    <div className={`${isAuthenticated && !user?.emailVerified ? 'pt-[104px] lg:pt-[120px]' : 'pt-16 lg:pt-20'}`}>
       {/* Hero Section */}
       <section className="py-8 sm:py-12 lg:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

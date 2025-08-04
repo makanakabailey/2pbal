@@ -64,6 +64,30 @@ export const userSessions = pgTable("user_sessions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const emailVerificationTokens = pgTable("email_verification_tokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  token: varchar("token", { length: 255 }).unique().notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const packageViewTracking = pgTable("package_view_tracking", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
+  sessionId: varchar("session_id", { length: 255 }),
+  packageName: varchar("package_name", { length: 100 }).notNull(),
+  packageType: varchar("package_type", { length: 100 }).notNull(),
+  viewDuration: integer("view_duration"), // in seconds
+  pageUrl: varchar("page_url", { length: 500 }),
+  userAgent: text("user_agent"),
+  lastReminderSent: timestamp("last_reminder_sent"),
+  viewCount: integer("view_count").default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const quotes = pgTable("quotes", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
@@ -317,6 +341,24 @@ export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
 export type Subscription = typeof subscriptions.$inferSelect;
 export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;
 export type Invoice = typeof invoices.$inferSelect;
+
+// Insert schemas for new tables
+export const insertEmailVerificationTokenSchema = createInsertSchema(emailVerificationTokens).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPackageViewTrackingSchema = createInsertSchema(packageViewTracking).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Types for new tables
+export type InsertEmailVerificationToken = z.infer<typeof insertEmailVerificationTokenSchema>;
+export type EmailVerificationToken = typeof emailVerificationTokens.$inferSelect;
+export type InsertPackageViewTracking = z.infer<typeof insertPackageViewTrackingSchema>;
+export type PackageViewTracking = typeof packageViewTracking.$inferSelect;
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({

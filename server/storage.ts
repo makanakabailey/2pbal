@@ -21,12 +21,18 @@ import {
   type InsertSubscription,
   type Invoice,
   type InsertInvoice,
+  type EmailVerificationToken,
+  type InsertEmailVerificationToken,
+  type PackageViewTracking,
+  type InsertPackageViewTracking,
   users, 
   userSessions, 
   quotes, 
   userProjects, 
   activityLogs, 
   emailVerifications,
+  emailVerificationTokens,
+  packageViewTracking,
   payments,
   subscriptions,
   invoices
@@ -58,6 +64,18 @@ export interface IStorage {
   createSession(userId: number): Promise<UserSession>;
   getSession(sessionId: string): Promise<UserSession | undefined>;
   deleteSession(sessionId: string): Promise<void>;
+  
+  // Email verification operations
+  createEmailVerificationToken(userId: number, email: string): Promise<EmailVerificationToken>;
+  getEmailVerificationToken(token: string): Promise<EmailVerificationToken | undefined>;
+  verifyEmailToken(token: string): Promise<boolean>;
+  deleteEmailVerificationToken(token: string): Promise<void>;
+  
+  // Package tracking operations
+  trackPackageView(data: InsertPackageViewTracking): Promise<PackageViewTracking>;
+  getPackageViewsForUser(userId: number): Promise<PackageViewTracking[]>;
+  getMostViewedPackageForUser(userId: number): Promise<PackageViewTracking | undefined>;
+  updateLastReminderSent(userId: number, packageType: string): Promise<void>;
   
   // Quote operations
   createQuote(quote: InsertQuote): Promise<Quote>;
@@ -117,6 +135,8 @@ export class MemStorage implements IStorage {
   private projects: Map<number, UserProject> = new Map();
   private activityLogs: Map<number, ActivityLog> = new Map();
   private emailVerifications: Map<string, EmailVerification> = new Map();
+  private emailVerificationTokens: Map<string, EmailVerificationToken> = new Map();
+  private packageViewTracking: Map<number, PackageViewTracking> = new Map();
   private payments: Map<number, Payment> = new Map();
   private subscriptions: Map<number, Subscription> = new Map();
   private invoices: Map<number, Invoice> = new Map();
@@ -124,6 +144,8 @@ export class MemStorage implements IStorage {
   private nextQuoteId = 1;
   private nextProjectId = 1;
   private nextActivityId = 1;
+  private nextEmailVerificationTokenId = 1;
+  private nextPackageViewId = 1;
   private nextPaymentId = 1;
   private nextSubscriptionId = 1;
   private nextInvoiceId = 1;
@@ -554,6 +576,124 @@ export class MemStorage implements IStorage {
     
     this.emailVerifications.delete(token);
     return true;
+  }
+
+  // Email verification token operations
+  async createEmailVerificationToken(userId: number, email: string): Promise<EmailVerificationToken> {
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    const verificationToken: EmailVerificationToken = {
+      id: this.nextEmailVerificationTokenId++,
+      userId,
+      token,
+      email,
+      expiresAt,
+      createdAt: new Date(),
+    };
+    
+    this.emailVerificationTokens.set(token, verificationToken);
+    return verificationToken;
+  }
+
+  async getEmailVerificationToken(token: string): Promise<EmailVerificationToken | undefined> {
+    const verification = this.emailVerificationTokens.get(token);
+    if (!verification || verification.expiresAt < new Date()) {
+      if (verification) {
+        this.emailVerificationTokens.delete(token);
+      }
+      return undefined;
+    }
+    return verification;
+  }
+
+  async verifyEmailToken(token: string): Promise<boolean> {
+    const verification = this.emailVerificationTokens.get(token);
+    if (!verification || verification.expiresAt < new Date()) {
+      return false;
+    }
+
+    const user = this.users.get(verification.userId);
+    if (!user) return false;
+
+    const updatedUser = { ...user, emailVerified: true, updatedAt: new Date() };
+    this.users.set(user.id, updatedUser);
+    
+    this.emailVerificationTokens.delete(token);
+    return true;
+  }
+
+  async deleteEmailVerificationToken(token: string): Promise<void> {
+    this.emailVerificationTokens.delete(token);
+  }
+
+  // Package tracking operations
+  async trackPackageView(data: InsertPackageViewTracking): Promise<PackageViewTracking> {
+    const tracking: PackageViewTracking = {
+      id: this.nextPackageViewId++,
+      ...data,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    this.packageViewTracking.set(tracking.id, tracking);
+    return tracking;
+  }
+
+  async getPackageViewsForUser(userId: number): Promise<PackageViewTracking[]> {
+    return Array.from(this.packageViewTracking.values())
+      .filter(view => view.userId === userId)
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  }
+
+  async getMostViewedPackageForUser(userId: number): Promise<PackageViewTracking | undefined> {
+    const userViews = await this.getPackageViewsForUser(userId);
+    
+    if (userViews.length === 0) return undefined;
+    
+    // Group by package type and sum view counts and durations
+    const packageStats = new Map<string, { count: number; totalDuration: number; latest: PackageViewTracking }>();
+    
+    for (const view of userViews) {
+      const existing = packageStats.get(view.packageType);
+      if (existing) {
+        existing.count += (view.viewCount || 1);
+        existing.totalDuration += (view.viewDuration || 0);
+        if (view.createdAt && (!existing.latest.createdAt || view.createdAt > existing.latest.createdAt)) {
+          existing.latest = view;
+        }
+      } else {
+        packageStats.set(view.packageType, {
+          count: view.viewCount || 1,
+          totalDuration: view.viewDuration || 0,
+          latest: view
+        });
+      }
+    }
+    
+    // Find package with highest engagement (combination of views and time spent)
+    let bestPackage: PackageViewTracking | undefined;
+    let bestScore = 0;
+    
+    for (const [packageType, stats] of packageStats) {
+      const score = stats.count * 10 + stats.totalDuration; // Weight views more than duration
+      if (score > bestScore) {
+        bestScore = score;
+        bestPackage = stats.latest;
+      }
+    }
+    
+    return bestPackage;
+  }
+
+  async updateLastReminderSent(userId: number, packageType: string): Promise<void> {
+    const views = await this.getPackageViewsForUser(userId);
+    const relevantViews = views.filter(v => v.packageType === packageType);
+    
+    for (const view of relevantViews) {
+      const updatedView = { ...view, lastReminderSent: new Date(), updatedAt: new Date() };
+      this.packageViewTracking.set(view.id, updatedView);
+    }
   }
 
   // Payment operations
@@ -1229,6 +1369,139 @@ export class DatabaseStorage implements IStorage {
       .where(eq(invoices.id, id))
       .returning();
     return result[0];
+  }
+
+  // Email verification token operations
+  async createEmailVerificationToken(userId: number, email: string): Promise<EmailVerificationToken> {
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    const result = await db.insert(emailVerificationTokens).values({
+      userId,
+      token,
+      email,
+      expiresAt
+    }).returning();
+    
+    return result[0];
+  }
+
+  async getEmailVerificationToken(token: string): Promise<EmailVerificationToken | undefined> {
+    const result = await db.select().from(emailVerificationTokens)
+      .where(eq(emailVerificationTokens.token, token))
+      .limit(1);
+    
+    const verification = result[0];
+    if (!verification || verification.expiresAt < new Date()) {
+      if (verification) {
+        await this.deleteEmailVerificationToken(token);
+      }
+      return undefined;
+    }
+    return verification;
+  }
+
+  async verifyEmailToken(token: string): Promise<boolean> {
+    const verification = await this.getEmailVerificationToken(token);
+    if (!verification) return false;
+
+    // Update user's email verification status
+    const result = await db.update(users)
+      .set({ emailVerified: true, updatedAt: new Date() })
+      .where(eq(users.id, verification.userId))
+      .returning();
+
+    if (result.length > 0) {
+      await this.deleteEmailVerificationToken(token);
+      return true;
+    }
+
+    return false;
+  }
+
+  async deleteEmailVerificationToken(token: string): Promise<void> {
+    await db.delete(emailVerificationTokens).where(eq(emailVerificationTokens.token, token));
+  }
+
+  // Package tracking operations
+  async trackPackageView(data: InsertPackageViewTracking): Promise<PackageViewTracking> {
+    const result = await db.insert(packageViewTracking).values(data).returning();
+    return result[0];
+  }
+
+  async getPackageViewsForUser(userId: number): Promise<PackageViewTracking[]> {
+    return await db.select().from(packageViewTracking)
+      .where(eq(packageViewTracking.userId, userId))
+      .orderBy(desc(packageViewTracking.createdAt));
+  }
+
+  async getMostViewedPackageForUser(userId: number): Promise<PackageViewTracking | undefined> {
+    const userViews = await this.getPackageViewsForUser(userId);
+    
+    if (userViews.length === 0) return undefined;
+    
+    // Group by package type and sum view counts and durations
+    const packageStats = new Map<string, { count: number; totalDuration: number; latest: PackageViewTracking }>();
+    
+    for (const view of userViews) {
+      const existing = packageStats.get(view.packageType);
+      if (existing) {
+        existing.count += (view.viewCount || 1);
+        existing.totalDuration += (view.viewDuration || 0);
+        if (view.createdAt && (!existing.latest.createdAt || view.createdAt > existing.latest.createdAt)) {
+          existing.latest = view;
+        }
+      } else {
+        packageStats.set(view.packageType, {
+          count: view.viewCount || 1,
+          totalDuration: view.viewDuration || 0,
+          latest: view
+        });
+      }
+    }
+    
+    // Find package with highest engagement (combination of views and time spent)
+    let bestPackage: PackageViewTracking | undefined;
+    let bestScore = 0;
+    
+    for (const [packageType, stats] of packageStats) {
+      const score = stats.count * 10 + stats.totalDuration; // Weight views more than duration
+      if (score > bestScore) {
+        bestScore = score;
+        bestPackage = stats.latest;
+      }
+    }
+    
+    return bestPackage;
+  }
+
+  async updateLastReminderSent(userId: number, packageType: string): Promise<void> {
+    await db.update(packageViewTracking)
+      .set({ lastReminderSent: new Date(), updatedAt: new Date() })
+      .where(and(
+        eq(packageViewTracking.userId, userId),
+        eq(packageViewTracking.packageType, packageType)
+      ));
+  }
+
+  // Email verification (legacy method)
+  async createEmailVerification(userId: number): Promise<EmailVerification> {
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    const verification: EmailVerification = {
+      id: Date.now(), // Simple ID for memory storage compatibility
+      userId,
+      token,
+      expiresAt,
+      createdAt: new Date(),
+    };
+    
+    return verification;
+  }
+
+  async verifyEmail(token: string): Promise<boolean> {
+    return await this.verifyEmailToken(token);
   }
 }
 

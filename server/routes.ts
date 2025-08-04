@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { generatePackageRecommendation } from "./recommendation-engine";
 import { uploadFiles, deleteFiles, getFileCategory } from "./file-upload";
 import { setupFileManagementRoutes } from "./file-management-routes";
+import { sendEmail, generateVerificationEmailHTML, generatePackageReminderEmailHTML } from "./email-service";
 import { 
   insertQuoteSchema, 
   loginSchema, 
@@ -105,6 +106,17 @@ async function requireAdmin(req: any, res: any, next: any) {
   next();
 }
 
+// Email verification middleware
+async function requireEmailVerification(req: any, res: any, next: any) {
+  if (!req.user?.emailVerified) {
+    return res.status(403).json({ 
+      message: "Email verification required. Please check your email and verify your account before making purchases.",
+      requiresVerification: true
+    });
+  }
+  next();
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   app.use(cookieParser());
 
@@ -124,6 +136,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.createUser(result.data);
+      
+      // Create email verification token
+      const verificationToken = await storage.createEmailVerificationToken(user.id, user.email);
+      
+      // Send verification email
+      const verificationLink = `${req.protocol}://${req.get('host')}/verify-email?token=${verificationToken.token}`;
+      const emailHTML = generateVerificationEmailHTML(user.firstName || 'there', verificationLink);
+      
+      const emailSent = await sendEmail({
+        to: user.email,
+        subject: 'Verify Your Email - Welcome to 2Pbal!',
+        html: emailHTML
+      });
+
+      if (!emailSent) {
+        console.error('Failed to send verification email to:', user.email);
+        // Continue with signup even if email fails
+      }
+
+      // Create session but user won't be able to make purchases until verified
       const session = await storage.createSession(user.id);
 
       // Set session cookie
@@ -136,7 +168,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Return user without password
       const { password: _, ...userWithoutPassword } = user;
-      res.status(201).json({ user: userWithoutPassword });
+      res.status(201).json({ 
+        user: userWithoutPassword,
+        message: emailSent ? 'Account created! Please check your email to verify your account.' : 'Account created! Please contact support if you need to verify your email.'
+      });
     } catch (error) {
       console.error("Signup error:", error);
       res.status(500).json({ message: "Failed to create account" });
@@ -196,6 +231,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Get user error:", error);
       res.status(500).json({ message: "Failed to get user" });
+    }
+  });
+
+  // Email verification routes
+  app.get("/api/auth/verify-email", async (req, res) => {
+    try {
+      const { token } = req.query;
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({ message: "Verification token is required" });
+      }
+
+      const verified = await storage.verifyEmailToken(token);
+      if (!verified) {
+        return res.status(400).json({ message: "Invalid or expired verification token" });
+      }
+
+      res.json({ message: "Email verified successfully! You can now make purchases." });
+    } catch (error) {
+      console.error("Email verification error:", error);
+      res.status(500).json({ message: "Failed to verify email" });
+    }
+  });
+
+  app.post("/api/auth/resend-verification", requireAuth, async (req: any, res) => {
+    try {
+      if (req.user.emailVerified) {
+        return res.status(400).json({ message: "Email is already verified" });
+      }
+
+      // Create new verification token
+      const verificationToken = await storage.createEmailVerificationToken(req.user.id, req.user.email);
+      
+      // Send verification email
+      const verificationLink = `${req.protocol}://${req.get('host')}/verify-email?token=${verificationToken.token}`;
+      const emailHTML = generateVerificationEmailHTML(req.user.firstName || 'there', verificationLink);
+      
+      const emailSent = await sendEmail({
+        to: req.user.email,
+        subject: 'Verify Your Email - 2Pbal',
+        html: emailHTML
+      });
+
+      if (!emailSent) {
+        return res.status(500).json({ message: "Failed to send verification email" });
+      }
+
+      res.json({ message: "Verification email sent successfully" });
+    } catch (error) {
+      console.error("Resend verification error:", error);
+      res.status(500).json({ message: "Failed to resend verification email" });
     }
   });
 
@@ -609,6 +694,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Package tracking routes
+  app.post("/api/packages/track-view", async (req, res) => {
+    try {
+      const { packageName, packageType, viewDuration, pageUrl } = req.body;
+      
+      // Get user ID if authenticated
+      let userId = null;
+      let sessionId = null;
+      
+      const sessionCookie = req.cookies?.session;
+      if (sessionCookie) {
+        const session = await storage.getSession(sessionCookie);
+        if (session) {
+          userId = session.userId;
+        }
+      }
+      
+      // Use session ID for anonymous tracking if no user
+      if (!userId) {
+        sessionId = req.cookies?.session || `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      }
+      
+      const trackingData = {
+        userId,
+        sessionId,
+        packageName,
+        packageType,
+        viewDuration: viewDuration || 0,
+        pageUrl,
+        userAgent: req.get('User-Agent'),
+        viewCount: 1
+      };
+      
+      await storage.trackPackageView(trackingData);
+      
+      res.json({ success: true, message: "Package view tracked" });
+    } catch (error) {
+      console.error("Package tracking error:", error);
+      res.status(500).json({ message: "Failed to track package view" });
+    }
+  });
+
+  app.get("/api/packages/recommendations", requireAuth, async (req: any, res) => {
+    try {
+      const mostViewedPackage = await storage.getMostViewedPackageForUser(req.user.id);
+      
+      if (!mostViewedPackage) {
+        return res.json({ message: "No package views found" });
+      }
+      
+      res.json({
+        recommendedPackage: {
+          name: mostViewedPackage.packageName,
+          type: mostViewedPackage.packageType,
+          viewCount: mostViewedPackage.viewCount,
+          totalViewTime: mostViewedPackage.viewDuration,
+          lastViewed: mostViewedPackage.updatedAt
+        }
+      });
+    } catch (error) {
+      console.error("Package recommendations error:", error);
+      res.status(500).json({ message: "Failed to get package recommendations" });
+    }
+  });
+
   // Project routes
   app.get("/api/projects", requireAuth, async (req: any, res) => {
     try {
@@ -643,7 +793,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced Payment System Routes
   
   // Create Payment Intent with multiple payment methods support
-  app.post("/api/create-payment-intent", async (req, res) => {
+  app.post("/api/create-payment-intent", requireAuth, requireEmailVerification, async (req: any, res) => {
     try {
       const result = createPaymentIntentSchema.safeParse(req.body);
       
@@ -732,7 +882,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create Subscription for recurring payments
-  app.post("/api/create-subscription", requireAuth, async (req: any, res) => {
+  app.post("/api/create-subscription", requireAuth, requireEmailVerification, async (req: any, res) => {
     try {
       const result = createSubscriptionSchema.safeParse(req.body);
       

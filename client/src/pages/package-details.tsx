@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRoute, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,8 +15,64 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
   const [, params] = useRoute('/package/:id') || useRoute('/package-details/:id');
   const packageId = params?.id;
   const [showSavingsCalculator, setShowSavingsCalculator] = useState(false);
+  const [startTime] = useState(Date.now());
   
   const packageData = PACKAGES.find(pkg => pkg.id === packageId);
+
+  // Track package view
+  useEffect(() => {
+    if (!packageData) return;
+
+    const trackView = async () => {
+      try {
+        await fetch('/api/packages/track-view', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            packageName: packageData.name,
+            packageType: packageData.id,
+            pageUrl: window.location.pathname,
+            viewDuration: 0 // Initial view, duration will be updated on unmount
+          })
+        });
+      } catch (error) {
+        console.error('Failed to track package view:', error);
+      }
+    };
+
+    trackView();
+
+    // Track view duration when user leaves the page
+    const handleBeforeUnload = async () => {
+      const viewDuration = Math.floor((Date.now() - startTime) / 1000); // in seconds
+      
+      try {
+        // Use sendBeacon for reliable tracking on page unload
+        if (navigator.sendBeacon) {
+          const data = JSON.stringify({
+            packageName: packageData.name,
+            packageType: packageData.id,
+            pageUrl: window.location.pathname,
+            viewDuration
+          });
+          navigator.sendBeacon('/api/packages/track-view', data);
+        }
+      } catch (error) {
+        console.error('Failed to track view duration:', error);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // Also track when component unmounts
+      handleBeforeUnload();
+    };
+  }, [packageData, startTime]);
   
   if (!packageData) {
     return (

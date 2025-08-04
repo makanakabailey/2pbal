@@ -3,7 +3,8 @@ import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Menu, User, LogOut, Settings, BarChart3, Home, Shield, Mail } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Menu, User, LogOut, Settings, BarChart3, Home, Shield, Mail, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { ContactPopup } from '@/components/ui/contact-popup';
@@ -43,8 +44,56 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
     }
   };
 
+  const handleResendVerification = async () => {
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Verification Email Sent",
+          description: "Please check your email for the verification link.",
+        });
+      } else {
+        const data = await response.json();
+        toast({
+          title: "Failed to Send Email",
+          description: data.message || "Could not send verification email.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send verification email.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <header className="bg-blue-600 shadow-sm fixed w-full top-0 z-50">
+    <>
+      {/* Email verification banner */}
+      {isAuthenticated && !user?.emailVerified && (
+        <div className="bg-yellow-500 text-black px-4 py-2 text-center text-sm fixed w-full top-0 z-50">
+          <div className="flex items-center justify-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            <span>Please verify your email to make purchases.</span>
+            <Button 
+              variant="link" 
+              size="sm" 
+              className="text-black underline h-auto p-0"
+              onClick={handleResendVerification}
+            >
+              Resend verification email
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      <header className={`bg-blue-600 shadow-sm fixed w-full z-40 ${isAuthenticated && !user?.emailVerified ? 'top-10' : 'top-0'}`}>
       <nav className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
         <div className="flex justify-between items-center h-16 lg:h-20">
           <div className="flex items-center min-w-0 flex-1">
@@ -238,5 +287,6 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
         </div>
       </nav>
     </header>
+    </>
   );
 }

@@ -26,6 +26,7 @@ import Careers from "@/pages/careers";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
+import VerifyEmail from "@/pages/verify-email";
 import Dashboard from "@/pages/dashboard";
 import ProfileSetup from "@/pages/profile-setup";
 import AccountSettings from "@/pages/account-settings";
@@ -70,6 +71,7 @@ function Router() {
           <Route path="/client-portal" component={() => <ClientPortal onOpenCalculator={() => setCalculatorOpen(true)} />} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
+          <Route path="/verify-email" component={VerifyEmail} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/profile-setup" component={ProfileSetup} />
           <Route path="/account-settings" component={AccountSettings} />
