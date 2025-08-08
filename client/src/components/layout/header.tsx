@@ -198,14 +198,6 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
               </Button>
             </ContactPopup>
             
-            <Button 
-              onClick={() => window.location.href = '/schedule-consultation'}
-              className="bg-white/20 text-white hover:bg-white/30 text-xs px-2 py-1 whitespace-nowrap ml-2 backdrop-blur-sm"
-              size="sm"
-            >
-              <span className="xl:hidden">Book Call</span>
-              <span className="hidden xl:inline">Schedule Call</span>
-            </Button>
             
             {isAuthenticated ? (
               <DropdownMenu>
@@ -293,15 +285,6 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
                     </Link>
                   ))}
                   
-                  <Button 
-                    onClick={() => {
-                      window.location.href = '/schedule-consultation';
-                      setIsOpen(false);
-                    }}
-                    className="bg-lime-primary text-white hover:bg-green-500 w-full"
-                  >
-                    Schedule Consultation
-                  </Button>
 
                   {isAuthenticated ? (
                     <div className="space-y-2 pt-4 border-t">

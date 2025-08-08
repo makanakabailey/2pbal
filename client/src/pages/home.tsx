@@ -7,6 +7,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import CountingNumbers from '@/components/ui/counting-numbers';
+import { Link } from 'wouter';
 
 interface HomeProps {
   onOpenCalculator: () => void;
@@ -821,18 +822,19 @@ export default function Home({ onOpenCalculator }: HomeProps) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Button 
-              onClick={onOpenCalculator}
-              size="lg"
-              className="bg-lime-primary text-white hover:bg-green-500 text-lg px-8 py-4 shadow-2xl relative overflow-hidden group"
-            >
-              <span className="relative z-10">Get Your Free Savings Estimate</span>
+            <Link href="/quote">
+              <Button 
+                size="lg"
+                className="bg-lime-primary text-white hover:bg-green-500 text-lg px-8 py-4 shadow-2xl relative overflow-hidden group"
+              >
+                <span className="relative z-10">Schedule Free Consultation</span>
               <motion.div
                 animate={{ x: ["-100%", "100%"] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 skew-x-12"
               />
-            </Button>
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </section>
