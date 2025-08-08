@@ -5,11 +5,12 @@ This project is a modern full-stack web application for 2Pbal, a digital service
 
 ## Recent Changes (January 2025)
 ✅ **Migration from Replit Agent to Replit Environment**: Successfully completed full project migration
-- Fixed missing dependencies (tsx package installation)
-- Configured PostgreSQL database connection with Neon cloud database
+- Fixed missing dependencies (tsx package installation)  
+- Configured PostgreSQL database connection with Neon cloud database (NEON_DATABASE_URL)
 - Set up all required API keys (Resend email service + Cloudinary storage)
 - Fixed JSX build errors and validated application functionality
 - Application now running successfully on port 5000
+- Connected to original Neon database: ep-raspy-feather-afz1ts7h-pooler.c-2.us-west-2.aws.neon.tech/2pal
 
 ✅ **Cinematic Homepage Transformation**: Successfully implemented comprehensive animation system with framer-motion
 - Hero section with staggered text animations and pulsing CTA buttons
