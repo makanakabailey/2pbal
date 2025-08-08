@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -148,7 +148,7 @@ export default function Quote() {
   const nextStep = () => {
     if (currentStep < totalSteps) {
       // Mark current step as completed
-      setCompletedSteps(prev => new Set([...prev, currentStep]));
+      setCompletedSteps(prev => new Set([...Array.from(prev), currentStep]));
       setCurrentStep(currentStep + 1);
       
       // Smooth scroll to top of form

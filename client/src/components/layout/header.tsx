@@ -25,7 +25,6 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
     { name: 'Home', href: '/', icon: 'home' },
     { name: 'Packages', href: '/packages', icon: 'package' },
     { name: 'Services', href: '/services', icon: 'grid' },
-    { name: 'Quote', href: '/quote', icon: 'clipboard' },
   ];
 
   // Smart CTA text based on current page
