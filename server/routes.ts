@@ -287,6 +287,144 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Check if email exists (for proactive validation)
+  app.get("/api/auth/check-email", async (req, res) => {
+    try {
+      const { email } = req.query;
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      res.json({ exists: !!user });
+    } catch (error) {
+      console.error("Check email error:", error);
+      res.status(500).json({ message: "Failed to check email" });
+    }
+  });
+
+  // Magic Link Authentication
+  app.post("/api/auth/magic-link", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Don't reveal if user exists for security
+        return res.json({ message: "If an account exists with this email, a magic link has been sent" });
+      }
+
+      // Generate magic link token (reuse email verification token structure)
+      const magicToken = await storage.createEmailVerificationToken(user.id, user.email);
+      
+      // Create magic link
+      const magicLink = `${req.protocol}://${req.get('host')}/auth/magic-login?token=${magicToken.token}`;
+      
+      // Send magic link email
+      const magicLinkHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Your Magic Login Link - 2Pbal</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #14b8a6, #0891b2); padding: 30px; text-align: center; color: white; }
+                .content { background: #f9fafb; padding: 30px; }
+                .button { display: inline-block; background: linear-gradient(135deg, #14b8a6, #0891b2); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+                .footer { text-align: center; color: #666; font-size: 12px; padding: 20px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🚀 Your Magic Login Link</h1>
+                    <p>Secure access to your 2Pbal account</p>
+                </div>
+                <div class="content">
+                    <p>Hi ${user.firstName || 'there'}!</p>
+                    <p>Click the button below to securely log in to your 2Pbal account. No password needed!</p>
+                    <p style="text-align: center;">
+                        <a href="${magicLink}" class="button">🔐 Log In Securely</a>
+                    </p>
+                    <p><strong>Important:</strong> This link expires in 10 minutes for your security.</p>
+                    <p>If you didn't request this login link, please ignore this email.</p>
+                </div>
+                <div class="footer">
+                    <p>© 2025 2Pbal - Precise Programming for Business Advancement</p>
+                    <p>If you have questions, contact us at hello@2pbal.com</p>
+                </div>
+            </div>
+        </body>
+        </html>
+      `;
+      
+      const emailSent = await sendEmail({
+        to: user.email,
+        subject: '🔐 Your Magic Login Link - 2Pbal',
+        html: magicLinkHTML
+      });
+
+      if (!emailSent) {
+        return res.status(500).json({ message: "Failed to send magic link" });
+      }
+
+      res.json({ message: "If an account exists with this email, a magic link has been sent" });
+    } catch (error) {
+      console.error("Magic link error:", error);
+      res.status(500).json({ message: "Failed to send magic link" });
+    }
+  });
+
+  // Magic Link Login Handler
+  app.get("/api/auth/magic-login", async (req, res) => {
+    try {
+      const { token } = req.query;
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({ message: "Invalid magic link" });
+      }
+
+      // Get the verification token first to get user info
+      const verificationToken = await storage.getEmailVerificationToken(token as string);
+      if (!verificationToken) {
+        return res.status(400).json({ message: "Invalid magic link" });
+      }
+
+      const user = await storage.getUser(verificationToken.userId);
+      if (!user) {
+        return res.status(400).json({ message: "User not found" });
+      }
+
+      // Verify and delete the token
+      const verified = await storage.verifyEmailToken(token as string);
+      if (!verified) {
+        return res.status(400).json({ message: "Magic link expired or invalid" });
+      }
+
+      // Create session
+      const session = await storage.createSession(user.id);
+
+      // Set session cookie
+      res.cookie('session', session.id, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        sameSite: 'lax'
+      });
+
+      // Redirect to dashboard
+      res.redirect('/dashboard');
+    } catch (error) {
+      console.error("Magic login error:", error);
+      res.redirect('/login?error=magic-link-failed');
+    }
+  });
+
   // Account Management Routes
   app.put("/api/users/profile", requireAuth, async (req: any, res) => {
     try {

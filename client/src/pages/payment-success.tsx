@@ -5,38 +5,56 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, ArrowRight, Calendar, FileText, Star, Trophy, Sparkles, Rocket } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Confetti component for celebration animation
+// Enhanced Confetti component using 2Pbal brand colors (Teal and Lime)
 const Confetti = () => {
-  const confettiColors = ['#22c55e', '#06b6d4', '#3b82f6', '#a855f7', '#f59e0b'];
+  const confettiColors = ['#06b6d4', '#14b8a6', '#22c55e', '#84cc16', '#3b82f6']; // Teal, Lime, and Blue brand colors
+  const confettiShapes = ['circle', 'square', 'triangle'];
   
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
-      {[...Array(50)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-2 h-2 rounded-full"
-          style={{
-            backgroundColor: confettiColors[Math.floor(Math.random() * confettiColors.length)],
-            left: `${Math.random() * 100}%`,
-          }}
-          initial={{
-            y: -100,
-            x: Math.random() * 20 - 10,
-            rotate: 0,
-            scale: 0
-          }}
-          animate={{
-            y: window.innerHeight + 100,
-            rotate: 360,
-            scale: [0, 1, 1, 0]
-          }}
-          transition={{
-            duration: 3,
-            delay: Math.random() * 2,
-            ease: "easeOut"
-          }}
-        />
-      ))}
+      {[...Array(80)].map((_, i) => {
+        const shape = confettiShapes[Math.floor(Math.random() * confettiShapes.length)];
+        const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        
+        return (
+          <motion.div
+            key={i}
+            className={`absolute ${shape === 'circle' ? 'rounded-full' : shape === 'square' ? 'rounded-sm' : ''}`}
+            style={{
+              backgroundColor: color,
+              left: `${Math.random() * 100}%`,
+              width: shape === 'triangle' ? 0 : `${Math.random() * 8 + 4}px`,
+              height: shape === 'triangle' ? 0 : `${Math.random() * 8 + 4}px`,
+              ...(shape === 'triangle' && {
+                borderLeft: '4px solid transparent',
+                borderRight: '4px solid transparent',
+                borderBottom: `8px solid ${color}`,
+                backgroundColor: 'transparent'
+              })
+            }}
+            initial={{
+              y: -100,
+              x: Math.random() * 40 - 20,
+              rotate: 0,
+              scale: 0,
+              opacity: 1
+            }}
+            animate={{
+              y: window.innerHeight + 100,
+              x: Math.random() * 40 - 20,
+              rotate: [0, 180, 360],
+              scale: [0, 1, 1, 0.8, 0],
+              opacity: [0, 1, 1, 0.6, 0]
+            }}
+            transition={{
+              duration: Math.random() * 2 + 3,
+              delay: Math.random() * 1.5,
+              ease: "easeOut",
+              rotate: { duration: Math.random() * 1 + 2, repeat: Infinity }
+            }}
+          />
+        );
+      })}
     </div>
   );
 };
