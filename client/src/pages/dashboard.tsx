@@ -7,9 +7,10 @@ import { Progress } from '@/components/ui/progress';
 import { useLocation, Link } from 'wouter';
 import { 
   User, Settings, LogOut, Plus, FileText, DollarSign,
-  Calendar, CheckCircle, Clock, ArrowRight, Target, BarChart3, CreditCard
+  Calendar, CheckCircle, Clock, ArrowRight, Target, BarChart3, CreditCard, Rocket, Star, Zap
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Dashboard() {
   const { user, logout, isLoading } = useAuth();
@@ -59,7 +60,7 @@ export default function Dashboard() {
     return null;
   }
 
-  const quotes = Array.isArray(quotesData?.quotes) ? quotesData.quotes : [];
+  const quotes = Array.isArray(quotesData?.quotes) ? quotesData.quotes : Array.isArray(quotesData) ? quotesData : [];
   const userProjects = Array.isArray(projects) ? projects : [];
   const activeProjects = userProjects.filter((p: any) => p.status === 'in-progress');
   const completedProjects = userProjects.filter((p: any) => p.status === 'completed');
@@ -197,17 +198,85 @@ export default function Dashboard() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8">
-                      <Target className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-dark mb-2">No active projects</h3>
-                      <p className="text-gray-medium mb-4">Start your first project with 2Pbal</p>
-                      <Link href="/services">
-                        <Button>
-                          <Plus className="h-4 w-4 mr-2" />
-                          Browse Services
-                        </Button>
-                      </Link>
-                    </div>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-center py-12"
+                    >
+                      <motion.div
+                        animate={{ 
+                          y: [0, -10, 0],
+                          rotate: [0, 5, -5, 0]
+                        }}
+                        transition={{ 
+                          duration: 4, 
+                          repeat: Infinity, 
+                          ease: "easeInOut" 
+                        }}
+                        className="mb-6"
+                      >
+                        <div className="relative mx-auto w-24 h-24 mb-4">
+                          <motion.div 
+                            className="absolute inset-0 bg-gradient-to-r from-teal-400 to-blue-500 rounded-full opacity-20"
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{ duration: 3, repeat: Infinity }}
+                          />
+                          <div className="absolute inset-2 bg-gradient-to-r from-teal-500 to-blue-600 rounded-full flex items-center justify-center">
+                            <Rocket className="h-8 w-8 text-white" />
+                          </div>
+                        </div>
+                      </motion.div>
+                      
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        <h3 className="text-xl font-bold text-gray-dark mb-2 bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
+                          Ready to Launch Your First Project?
+                        </h3>
+                        <p className="text-gray-medium mb-6 max-w-md mx-auto">
+                          Transform your business with professional digital solutions. Let's build something amazing together!
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                          <Link href="/quote">
+                            <Button className="bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white shadow-lg" withPulse>
+                              <Star className="h-4 w-4 mr-2" />
+                              Request Your First Quote
+                            </Button>
+                          </Link>
+                          <Link href="/services">
+                            <Button variant="outline" className="border-teal-300 text-teal-600 hover:bg-teal-50">
+                              <Zap className="h-4 w-4 mr-2" />
+                              Browse Services
+                            </Button>
+                          </Link>
+                        </div>
+                        
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.6 }}
+                          className="mt-6 p-4 bg-gradient-to-r from-lime-50 to-teal-50 rounded-lg border border-teal-200"
+                        >
+                          <div className="flex items-center justify-center space-x-6 text-sm text-teal-700">
+                            <div className="flex items-center">
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              <span>Expert Team</span>
+                            </div>
+                            <div className="flex items-center">
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              <span>24hr Response</span>
+                            </div>
+                            <div className="flex items-center">
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              <span>Guaranteed ROI</span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    </motion.div>
                   )}
                 </CardContent>
               </Card>
@@ -252,36 +321,62 @@ export default function Dashboard() {
                 <CardContent>
                   {quotes.length > 0 ? (
                     <div className="space-y-3">
-                      {quotes.slice(0, 2).map((quote: any) => (
-                        <div key={quote.id} className="border rounded p-3">
+                      {quotes.slice(0, 2).map((quote: any, index: number) => (
+                        <motion.div 
+                          key={quote.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="border rounded-lg p-3 hover:shadow-md transition-all duration-200 bg-gradient-to-r from-gray-50 to-blue-50"
+                        >
                           <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-medium text-sm">{quote.name}</p>
-                              <p className="text-xs text-gray-medium">
+                            <div className="flex-1">
+                              <p className="font-medium text-sm text-gray-800">{quote.name}</p>
+                              <p className="text-xs text-gray-500">
                                 {new Date(quote.createdAt).toLocaleDateString()}
                               </p>
                             </div>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${
+                                quote.status === 'completed' ? 'border-green-300 text-green-700 bg-green-50' :
+                                quote.status === 'in-progress' ? 'border-blue-300 text-blue-700 bg-blue-50' :
+                                'border-yellow-300 text-yellow-700 bg-yellow-50'
+                              }`}
+                            >
                               {quote.status}
                             </Badge>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                       <Link href="/quote">
-                        <Button size="sm" variant="outline" className="w-full">
+                        <Button size="sm" variant="outline" className="w-full hover:bg-teal-50 hover:border-teal-300">
+                          <Plus className="h-4 w-4 mr-2" />
                           New Quote Request
                         </Button>
                       </Link>
                     </div>
                   ) : (
-                    <div className="text-center">
-                      <p className="text-gray-medium text-sm mb-3">No quotes yet</p>
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="text-center py-6"
+                    >
+                      <motion.div
+                        animate={{ rotate: [0, 10, -10, 0] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        className="mb-4"
+                      >
+                        <FileText className="h-8 w-8 text-teal-400 mx-auto" />
+                      </motion.div>
+                      <p className="text-gray-medium text-sm mb-4">Ready to get started?</p>
                       <Link href="/quote">
-                        <Button size="sm" className="w-full">
-                          Request Quote
+                        <Button size="sm" className="w-full bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700">
+                          <Star className="h-4 w-4 mr-2" />
+                          Request Your First Quote
                         </Button>
                       </Link>
-                    </div>
+                    </motion.div>
                   )}
                 </CardContent>
               </Card>

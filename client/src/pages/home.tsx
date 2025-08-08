@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import CountingNumbers from '@/components/ui/counting-numbers';
 import { Link } from 'wouter';
+import { HesitationTooltip } from '@/components/ui/smart-tooltip';
 
 interface HomeProps {
   onOpenCalculator: () => void;

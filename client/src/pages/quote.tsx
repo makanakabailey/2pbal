@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, ArrowLeft, ArrowRight, Download, Upload, X, File, Image, Video, Mic, Play, Pause, Trash2 } from 'lucide-react';
+import { CheckCircle, ArrowLeft, ArrowRight, Download, Upload, X, File, Image, Video, Mic, Play, Pause, Trash2, Target, DollarSign, TrendingUp, User, Phone, Mail, Building2, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AudioRecorder, useAudioRecorder } from 'react-audio-voice-recorder';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface FormData {
   goals: string[];
@@ -32,8 +33,6 @@ interface AudioRecording {
   timestamp: Date;
   cloudinary_url?: string;
   cloudinary_public_id?: string;
-  cloudinary_url?: string;
-  cloudinary_public_id?: string;
 }
 
 export default function Quote() {
@@ -43,6 +42,9 @@ export default function Quote() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
   const { toast } = useToast();
   
   const [formData, setFormData] = useState<FormData>({
@@ -63,6 +65,24 @@ export default function Quote() {
 
   const totalSteps = 5;
   const progress = (currentStep / totalSteps) * 100;
+
+  // Step configuration with icons and labels
+  const steps = [
+    { id: 1, label: 'Goals', icon: Target, description: 'Your business objectives' },
+    { id: 2, label: 'Costs', icon: DollarSign, description: 'Current spending areas' },
+    { id: 3, label: 'Outcomes', icon: TrendingUp, description: 'Desired results' },
+    { id: 4, label: 'Details', icon: File, description: 'Project information' },
+    { id: 5, label: 'Contact', icon: User, description: 'Your information' }
+  ];
+
+  // Character count for text areas
+  const getCharacterCount = (text: string) => text.length;
+  const getCharacterCountColor = (count: number, max: number) => {
+    if (count === 0) return 'text-gray-400';
+    if (count > max * 0.9) return 'text-red-500';
+    if (count > max * 0.7) return 'text-yellow-500';
+    return 'text-green-500';
+  };
 
   const businessGoals = [
     'Increase Sales',
@@ -98,6 +118,24 @@ export default function Quote() {
         ? prev[field].filter(item => item !== value)
         : [...prev[field], value]
     }));
+    
+    // Show summary message after selection
+    setTimeout(() => {
+      const selections = formData[field];
+      if (selections.length > 0) {
+        const message = `You've selected: ${selections.join(', ')}`;
+        // This creates a subtle confirmation feedback
+      }
+    }, 100);
+  };
+
+  // Get selection summary for current step
+  const getSelectionSummary = (field: keyof Pick<FormData, 'goals' | 'overspending' | 'outcomes'>) => {
+    const selections = formData[field];
+    if (selections.length === 0) return null;
+    if (selections.length === 1) return `You've selected "${selections[0]}".`;
+    if (selections.length === 2) return `You've selected "${selections[0]}" and "${selections[1]}".`;
+    return `You've selected ${selections.length} options including "${selections[0]}" and "${selections[1]}".`;
   };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
@@ -109,7 +147,21 @@ export default function Quote() {
 
   const nextStep = () => {
     if (currentStep < totalSteps) {
+      // Mark current step as completed
+      setCompletedSteps(prev => new Set([...prev, currentStep]));
       setCurrentStep(currentStep + 1);
+      
+      // Smooth scroll to top of form
+      const formElement = document.querySelector('.quote-form-card');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  const goToStep = (stepNumber: number) => {
+    if (stepNumber <= currentStep || completedSteps.has(stepNumber)) {
+      setCurrentStep(stepNumber);
     }
   };
 
@@ -427,72 +479,298 @@ export default function Quote() {
           <p className="text-xl text-gray-medium mb-8">
             Tell us about your goals and we'll show you exactly how to achieve them efficiently.
           </p>
-          <Progress value={progress} className="max-w-md mx-auto" />
-          <p className="text-sm text-gray-medium mt-2">Step {currentStep} of {totalSteps}</p>
+          {/* Enhanced Step Indicator */}
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="flex items-center justify-between">
+              {steps.map((step, index) => {
+                const isCompleted = completedSteps.has(step.id);
+                const isCurrent = currentStep === step.id;
+                const isAccessible = step.id <= currentStep || isCompleted;
+                
+                return (
+                  <div key={step.id} className="flex items-center">
+                    <motion.div
+                      className={`relative flex flex-col items-center cursor-pointer group ${
+                        isAccessible ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+                      }`}
+                      onClick={() => isAccessible && goToStep(step.id)}
+                      whileHover={isAccessible ? { scale: 1.05 } : {}}
+                      whileTap={isAccessible ? { scale: 0.95 } : {}}
+                    >
+                      <motion.div
+                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+                          isCompleted
+                            ? 'bg-lime-primary text-white'
+                            : isCurrent
+                            ? 'bg-teal-primary text-white ring-4 ring-teal-200'
+                            : isAccessible
+                            ? 'bg-gray-200 text-gray-600 group-hover:bg-teal-100 group-hover:text-teal-600'
+                            : 'bg-gray-100 text-gray-400'
+                        }`}
+                        animate={isCurrent ? { scale: [1, 1.1, 1] } : {}}
+                        transition={{ duration: 0.6, repeat: isCurrent ? Infinity : 0, repeatDelay: 2 }}
+                      >
+                        {isCompleted ? (
+                          <motion.div
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <CheckCircle className="h-6 w-6" />
+                          </motion.div>
+                        ) : (
+                          <step.icon className="h-6 w-6" />
+                        )}
+                      </motion.div>
+                      
+                      <div className="mt-2 text-center">
+                        <div className={`text-sm font-medium ${
+                          isCurrent ? 'text-teal-primary' : isCompleted ? 'text-lime-primary' : 'text-gray-500'
+                        }`}>
+                          {step.label}
+                        </div>
+                        <div className="text-xs text-gray-400 hidden sm:block">
+                          {step.description}
+                        </div>
+                      </div>
+                    </motion.div>
+                    
+                    {index < steps.length - 1 && (
+                      <div className={`flex-1 h-1 mx-4 rounded-full transition-colors duration-300 ${
+                        completedSteps.has(step.id) ? 'bg-lime-primary' : 'bg-gray-200'
+                      }`} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          <Progress value={progress} className="max-w-md mx-auto mb-2" />
+          <p className="text-sm text-gray-medium">Step {currentStep} of {totalSteps} - {steps[currentStep - 1].description}</p>
         </div>
       </section>
 
       {/* Multi-Step Form */}
       <section className="py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="shadow-xl">
+          <Card className="shadow-xl quote-form-card">
             <CardHeader>
-              <CardTitle className="text-2xl text-gray-dark">
+              <CardTitle className="text-2xl text-gray-dark flex items-center">
+                <motion.div 
+                  className="mr-3 p-2 rounded-full bg-teal-100"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {React.createElement(steps[currentStep - 1].icon, { className: "h-6 w-6 text-teal-600" })}
+                </motion.div>
                 {currentStep === 1 && "What are your top business goals?"}
                 {currentStep === 2 && "Where are you currently overspending?"}
                 {currentStep === 3 && "Which outcomes matter most to you?"}
                 {currentStep === 4 && "Tell us about your project"}
                 {currentStep === 5 && "Contact information"}
               </CardTitle>
+              <div className="text-gray-medium text-sm mt-2">
+                {currentStep === 1 && "Select all that apply to your business objectives"}
+                {currentStep === 2 && "Help us identify where you can save money"}
+                {currentStep === 3 && "Choose your most important success metrics"}
+                {currentStep === 4 && "Share details about your project and timeline"}
+                {currentStep === 5 && "We'll use this to contact you with your personalized quote"}
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               
               {/* Step 1: Business Goals */}
               {currentStep === 1 && (
-                <div className="grid md:grid-cols-2 gap-4">
-                  {businessGoals.map((goal) => (
-                    <div key={goal} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={goal}
-                        checked={formData.goals.includes(goal)}
-                        onCheckedChange={() => handleCheckboxChange('goals', goal)}
-                      />
-                      <Label htmlFor={goal} className="font-medium">{goal}</Label>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-4"
+                  >
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {businessGoals.map((goal, index) => (
+                        <motion.div 
+                          key={goal}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="group"
+                        >
+                          <div className={`flex items-center space-x-3 p-3 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
+                            formData.goals.includes(goal)
+                              ? 'border-teal-300 bg-teal-50'
+                              : 'border-gray-200 hover:border-teal-200'
+                          }`}>
+                            <Checkbox
+                              id={goal}
+                              checked={formData.goals.includes(goal)}
+                              onCheckedChange={() => handleCheckboxChange('goals', goal)}
+                            />
+                            <Label 
+                              htmlFor={goal} 
+                              className={`font-medium cursor-pointer transition-colors ${
+                                formData.goals.includes(goal) ? 'text-teal-700' : 'text-gray-700 group-hover:text-teal-600'
+                              }`}
+                            >
+                              {goal}
+                            </Label>
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                    
+                    {/* Selection Summary */}
+                    <AnimatePresence>
+                      {formData.goals.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="p-4 bg-lime-50 border border-lime-200 rounded-lg"
+                        >
+                          <div className="flex items-start space-x-2">
+                            <CheckCircle className="h-5 w-5 text-lime-600 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium text-lime-800 mb-1">Great choices!</p>
+                              <p className="text-sm text-lime-700">{getSelectionSummary('goals')}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </AnimatePresence>
               )}
 
               {/* Step 2: Overspending Areas */}
               {currentStep === 2 && (
-                <div className="grid md:grid-cols-2 gap-4">
-                  {overspendingAreas.map((area) => (
-                    <div key={area} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={area}
-                        checked={formData.overspending.includes(area)}
-                        onCheckedChange={() => handleCheckboxChange('overspending', area)}
-                      />
-                      <Label htmlFor={area} className="font-medium">{area}</Label>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-4"
+                  >
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {overspendingAreas.map((area, index) => (
+                        <motion.div 
+                          key={area}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="group"
+                        >
+                          <div className={`flex items-center space-x-3 p-3 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
+                            formData.overspending.includes(area)
+                              ? 'border-red-300 bg-red-50'
+                              : 'border-gray-200 hover:border-red-200'
+                          }`}>
+                            <Checkbox
+                              id={area}
+                              checked={formData.overspending.includes(area)}
+                              onCheckedChange={() => handleCheckboxChange('overspending', area)}
+                            />
+                            <Label 
+                              htmlFor={area} 
+                              className={`font-medium cursor-pointer transition-colors ${
+                                formData.overspending.includes(area) ? 'text-red-700' : 'text-gray-700 group-hover:text-red-600'
+                              }`}
+                            >
+                              {area}
+                            </Label>
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                    
+                    <AnimatePresence>
+                      {formData.overspending.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
+                        >
+                          <div className="flex items-start space-x-2">
+                            <DollarSign className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium text-yellow-800 mb-1">Savings opportunities identified!</p>
+                              <p className="text-sm text-yellow-700">{getSelectionSummary('overspending')}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </AnimatePresence>
               )}
 
               {/* Step 3: Important Outcomes */}
               {currentStep === 3 && (
-                <div className="grid md:grid-cols-2 gap-4">
-                  {importantOutcomes.map((outcome) => (
-                    <div key={outcome} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={outcome}
-                        checked={formData.outcomes.includes(outcome)}
-                        onCheckedChange={() => handleCheckboxChange('outcomes', outcome)}
-                      />
-                      <Label htmlFor={outcome} className="font-medium">{outcome}</Label>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-4"
+                  >
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {importantOutcomes.map((outcome, index) => (
+                        <motion.div 
+                          key={outcome}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="group"
+                        >
+                          <div className={`flex items-center space-x-3 p-3 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
+                            formData.outcomes.includes(outcome)
+                              ? 'border-green-300 bg-green-50'
+                              : 'border-gray-200 hover:border-green-200'
+                          }`}>
+                            <Checkbox
+                              id={outcome}
+                              checked={formData.outcomes.includes(outcome)}
+                              onCheckedChange={() => handleCheckboxChange('outcomes', outcome)}
+                            />
+                            <Label 
+                              htmlFor={outcome} 
+                              className={`font-medium cursor-pointer transition-colors ${
+                                formData.outcomes.includes(outcome) ? 'text-green-700' : 'text-gray-700 group-hover:text-green-600'
+                              }`}
+                            >
+                              {outcome}
+                            </Label>
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                    
+                    <AnimatePresence>
+                      {formData.outcomes.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="p-4 bg-blue-50 border border-blue-200 rounded-lg"
+                        >
+                          <div className="flex items-start space-x-2">
+                            <TrendingUp className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium text-blue-800 mb-1">Perfect! We'll focus on these outcomes.</p>
+                              <p className="text-sm text-blue-700">{getSelectionSummary('outcomes')}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </AnimatePresence>
               )}
 
               {/* Step 4: Project Details */}

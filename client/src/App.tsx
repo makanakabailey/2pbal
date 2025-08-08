@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AccessibilityPanel } from "@/components/ui/accessibility-toggle";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import SavingsCalculator from "@/components/ui/savings-calculator";
@@ -89,6 +90,7 @@ function Router() {
         open={calculatorOpen} 
         onOpenChange={setCalculatorOpen} 
       />
+      <AccessibilityPanel />
     </>
   );
 }
