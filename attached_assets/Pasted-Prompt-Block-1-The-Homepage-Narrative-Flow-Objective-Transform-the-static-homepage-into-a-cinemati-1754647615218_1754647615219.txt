@@ -1,0 +1,93 @@
+Prompt Block 1: The Homepage Narrative Flow
+Objective: Transform the static homepage into a cinematic, persuasive journey that guides the user from a problem they recognize to a solution they desire.
+
+Hero Section Animation:
+
+Instead of a static hero image, implement a subtle, slow-panning video background of the "modern collaborative workspace." The pan should be almost imperceptible, creating a sense of life without being distracting.
+
+Animate the headline "Stop Overpaying for Digital Solutions. Start Scaling." to load with a staggered, fluid text effect (each word fading/sliding in sequentially).
+
+The primary CTA button, "See How Much You Can Save," should have a subtle, continuous lime-green glow or pulse to make it the undeniable focal point. On hover, it should expand slightly with a soft spring-like physical bounce.
+
+Trust Bar Transition:
+
+As the user scrolls past the hero section, have the "Trust Bar" slide in smoothly from the bottom or fade in, but with the logos appearing sequentially from left to right. This creates a "reveal" that feels premium. The "Avg. 3.5x ROI" badge should animate its numbers counting up rapidly to the final value upon becoming visible.
+
+Problem vs. Solution Interactive Reveal:
+
+Redesign the two-column "Problem & Solution" section to be scroll-triggered. As it enters the viewport, only the "Costs of Alternatives" (left column) is visible. Its bullet points fade in one by one, each with a red 'X' icon that animates as if being drawn.
+
+As the user continues to scroll, the "2Pbal Solution" (right column) slides in from the right, physically "pushing" the problem column away or overlaying it with a smooth mask transition. Its green checkmarks animate as if being ticked off in real-time.
+
+Impact: This transforms a static comparison into a powerful story of replacement and relief, creating an emotional "Aha!" moment.
+
+Layout Structure - The Bento Grid:
+
+For the "Key Benefits" section, replace the standard grid with a modern "Bento Box" layout. This is an asymmetrical grid of different-sized cards. One large card might highlight "Predictable Budgets," while two smaller ones sit beside it for "Faster Delivery" and "Expert Team."
+
+Impact: This breaks visual monotony, allows you to give visual weight to the most important value proposition, and makes the page look incredibly modern and organized.
+
+Prompt Block 2: Gamifying the Packages & Services Pages
+Objective: Shift the user's mindset from "comparing costs" to "building a solution." Make the selection process interactive, intuitive, and even enjoyable.
+
+Packages Page - Interactive Table:
+
+On desktop, when a user hovers over a package column in the "Comparison Table," that column should slightly expand and lift with a soft shadow, while the other columns dim. This focuses attention and reduces cognitive load.
+
+On mobile, convert the table into a swipeable card interface. Each package is a full-screen card, and users swipe left/right to compare. A "Compare Features" button on each card can pop up a modal showing a side-by-side view with one other selected package.
+
+Spending Calculator Visuals:
+
+Elevate the "Interactive Spending Calculator." As the user drags the "Current monthly digital spend" slider, have a background visualization change—perhaps a stack of coins that grows or shrinks, or a bar graph that animates in real time.
+
+When the "Savings Display" calculates the final numbers, have them "slot machine" animate before settling on the final value, adding a moment of satisfying feedback.
+
+Services Page - The "Bundle Builder" Experience:
+
+When a user clicks "Add to Bundle" on a service card, the card should animate. It should shrink and fly into the "Bundle Builder" sidebar, visually confirming the action.
+
+In the sidebar, represent each added service as a small, stacked block. As more are added, the stack grows taller. The "Total Cost" and "Bundle Savings" should animate their count-up with each addition.
+
+Impact: This makes building a custom service package feel tactile and constructive, like building with LEGOs, increasing engagement and the likelihood of completion.
+
+Prompt Block 3: The Frictionless Quote & Portal Experience
+Objective: Reduce user fatigue in forms and transform the client portal from a utility into a "mission control" that builds confidence and transparency.
+
+Quote Request Form Transitions:
+
+For the 5-step form, use cinematic transitions between steps. Instead of a jarring reload, have the current step's fields slide out to the left while the next step's fields slide in from the right, like turning a page in an app. The progress bar should animate smoothly to the next step.
+
+Impact: This makes the form feel like a single, seamless conversation rather than a series of demanding tasks, drastically reducing abandonment rates.
+
+Audio Recording UI:
+
+Design the audio recorder with a "neumorphic" or "glassmorphism" style to make it look sleek and futuristic.
+
+When recording, the button should morph into a square, and a pulsating waveform visualization of the user's voice should appear around it. This provides clear, modern feedback that the system is working.
+
+Client Portal Dashboard - Data Visualization:
+
+In the "Overview" tab, replace static text and numbers with dynamic, visually appealing charts. The "Project Status Card" should feature a radial progress bar (a circle that fills up) instead of just a percentage.
+
+The "Timeline" tab should not be a list. Make it a horizontal, scrollable Gantt chart-style timeline. Completed milestones should be filled in with the Teal Accent color, and upcoming ones should be clearly marked. Hovering over a milestone can reveal more details in a pop-up.
+
+Impact: This communicates progress and data instantly, makes the client feel in control, and reinforces the value 2Pbal is providing in a visually sophisticated way.
+
+Prompt Block 4: System-Wide Micro-interactions & Polish
+Objective: Infuse the entire platform with small, delightful animations and feedback mechanisms that signal quality, responsiveness, and attention to detail.
+
+Button & Interactive Element Physics:
+
+Implement "spring physics" for all major button interactions. When clicked, buttons should depress slightly and bounce back. This feels more natural and tactile than a simple color change.
+
+When modals or pop-ups (like the savings calculator) appear, they shouldn't just display: block. They should scale up from the center or slide down from the top with a slight overshoot and bounce, making them feel less intrusive.
+
+Loading States & Skeleton Screens:
+
+Implement beautiful skeleton screens for any content that needs to load (like the Services Grid or Case Studies). These screens should show grey, shimmer-animated placeholders that mimic the final layout.
+
+Impact: This tells the user that content is coming and makes the wait time feel shorter and more professional than a blank screen or a simple spinner.
+
+Icon Animation:
+
+Animate icons on hover or when they are part of a key action. The hamburger menu icon can morph smoothly into an 'X' when the menu is open. The social media icons in the footer can do a small jiggle or color-fill effect on hover. These small details contribute to a feeling of a "living" interface.
