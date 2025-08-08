@@ -47,7 +47,7 @@ git push -u origin main
 5. Select the repository containing your 2Pbal code
 
 ### 3. Configure Build Settings
-When importing, configure these settings:
+With the new separated structure, configure these settings:
 
 ```
 Framework Preset: Other
@@ -56,6 +56,8 @@ Output Directory: dist/public
 Install Command: npm install
 Root Directory: ./
 ```
+
+**Note**: The new structure separates frontend and backend into their own folders, providing better organization and deployment flexibility.
 
 ### 4. Environment Variables Setup
 In Vercel Dashboard → Your Project → Settings → Environment Variables, add all these:

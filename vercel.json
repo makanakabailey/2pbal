@@ -2,17 +2,24 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "../dist/public"
+      }
+    },
+    {
+      "src": "backend/package.json",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["dist/**", "shared/**"]
+        "includeFiles": ["backend/shared/**"]
       }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/dist/index.js"
+      "dest": "/backend/dist/index.js"
     },
     {
       "src": "/(.*)",
@@ -20,11 +27,8 @@
     }
   ],
   "functions": {
-    "dist/index.js": {
+    "backend/dist/index.js": {
       "maxDuration": 30
     }
-  },
-  "env": {
-    "NODE_ENV": "production"
   }
 }
