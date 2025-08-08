@@ -55,25 +55,30 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       props.onClick?.(e)
     }
     
-    const buttonProps = {
+    const { onDrag, onDragEnd, onDragStart, onAnimationStart, onAnimationEnd, onAnimationIteration, ...restProps } = props;
+    
+    const htmlProps = {
       className: cn(buttonVariants({ variant, size, className })),
       ref,
       onClick: handleClick,
-      ...props,
+      ...restProps
+    };
+    
+    const motionProps = {
       whileHover: { scale: 1.02 },
       whileTap: { scale: 0.98 },
       animate: withPulse ? { scale: [1, 1.05, 1] } : {},
       transition: withPulse 
         ? { duration: 2, repeat: Infinity, ease: "easeInOut" }
         : { duration: 0.15, ease: "easeOut" }
-    }
+    };
     
     if (asChild) {
-      return <Slot {...buttonProps} />
+      return <Slot {...htmlProps} />
     }
     
     return (
-      <motion.button {...buttonProps}>
+      <motion.button {...htmlProps} {...motionProps}>
         {withRipple && isClicked && (
           <motion.div
             className="absolute inset-0 bg-white/20 rounded-full"

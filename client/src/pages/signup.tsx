@@ -21,6 +21,20 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const form = useForm<SignupData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      firstName: '',
+      lastName: '',
+      company: '',
+      phone: '',
+      marketingConsent: false,
+    },
+  });
+
   // Password strength calculation
   const passwordStrength = useMemo(() => {
     const password = form.watch('password') || '';
@@ -62,20 +76,6 @@ export default function Signup() {
 
     return { score, strength, color, percentage, checks, hasPassword: password.length > 0 };
   }, [form.watch('password')]);
-
-  const form = useForm<SignupData>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      firstName: '',
-      lastName: '',
-      company: '',
-      phone: '',
-      marketingConsent: false,
-    },
-  });
 
   const onSubmit = async (data: SignupData) => {
     try {

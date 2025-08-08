@@ -17,6 +17,7 @@ interface HomeProps {
 export default function Home({ onOpenCalculator }: HomeProps) {
   const { user, isAuthenticated } = useAuth();
   const [roiVisible, setRoiVisible] = useState(false);
+  const [heroTransformed, setHeroTransformed] = useState(false);
   const problemRef = useRef(null);
   const solutionRef = useRef(null);
   const trustBarRef = useRef(null);
@@ -155,7 +156,10 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                   className="relative"
                 >
                   <Button 
-                    onClick={() => window.location.href = '/schedule-consultation'}
+                    onClick={() => {
+                      setHeroTransformed(true);
+                      setTimeout(() => onOpenCalculator(), 800);
+                    }}
                     size="lg"
                     className="bg-gradient-to-r from-lime-400 to-lime-600 hover:from-lime-500 hover:to-lime-700 text-white text-sm sm:text-base px-4 sm:px-6 py-3 w-full relative overflow-hidden group"
                   >

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { 
@@ -267,6 +267,9 @@ export default function FileManager({ files, summary, onRefresh, onDelete }: Fil
                     <DialogContent className="max-w-4xl">
                       <DialogHeader>
                         <DialogTitle>{file.filename}</DialogTitle>
+                        <DialogDescription>
+                          File preview and download options
+                        </DialogDescription>
                       </DialogHeader>
                       <FilePreview file={file} />
                     </DialogContent>
@@ -316,6 +319,9 @@ export default function FileManager({ files, summary, onRefresh, onDelete }: Fil
                       <DialogContent className="max-w-4xl">
                         <DialogHeader>
                           <DialogTitle>{file.filename}</DialogTitle>
+                          <DialogDescription>
+                            File preview and details
+                          </DialogDescription>
                         </DialogHeader>
                         <FilePreview file={file} />
                       </DialogContent>

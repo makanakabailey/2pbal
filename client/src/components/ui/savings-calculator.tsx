@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
@@ -67,6 +67,9 @@ export default function SavingsCalculator({ open, onOpenChange }: SavingsCalcula
               <X className="h-4 w-4" />
             </Button>
           </DialogTitle>
+          <DialogDescription>
+            Calculate your potential savings by selecting your current services and budget.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6 pt-4">
