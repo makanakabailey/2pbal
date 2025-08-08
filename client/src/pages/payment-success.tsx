@@ -332,7 +332,7 @@ export default function PaymentSuccess() {
             <strong>Direct Support Line:</strong> hello@2pbal.com • +1 (555) 123-4567<br />
             <em>Your success is our mission. We're here whenever you need us.</em>
           </motion.p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
