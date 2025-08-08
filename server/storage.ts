@@ -1484,25 +1484,7 @@ export class DatabaseStorage implements IStorage {
       ));
   }
 
-  // Email verification (legacy method)
-  async createEmailVerification(userId: number): Promise<EmailVerification> {
-    const token = randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    const verification: EmailVerification = {
-      id: Date.now(), // Simple ID for memory storage compatibility
-      userId,
-      token,
-      expiresAt,
-      createdAt: new Date(),
-    };
-    
-    return verification;
-  }
-
-  async verifyEmail(token: string): Promise<boolean> {
-    return await this.verifyEmailToken(token);
-  }
 }
 
 // Use database storage in production, memory storage for development/testing
