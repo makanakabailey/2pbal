@@ -1,0 +1,46 @@
+Prompt Block 9: The Hyper-Focused Hero Section & Smart Navigation
+Objective: To transform the homepage hero section and global navigation into a dynamic, intent-driven hub that immediately directs users to their desired outcome with zero friction.
+
+Homepage Hero & "The Value Stack"
+Dynamic Headline: The hero headline "Stop Overpaying for Digital Solutions. Start Scaling" is strong, but let's make it interactive. On page load, the headline should fade in and then, after a two-second delay, the subtext ("70% average savings") should slide in from the left, followed by the primary CTA animating into a "pulse" state to draw the eye.
+
+The "Value Stack" Position: Reposition the Savings Badge and ROI Statement from simple overlays to a prominent, vertically stacked module positioned directly beside the main headline. This "Value Stack" should feature a subtle parallax effect as the user scrolls, keeping these core value propositions in their peripheral vision.
+
+Smart Hero CTAs: The "Dashboard" and "Explore Packages" secondary CTAs are good, but we can make them smarter. If a user is new, show "Explore Packages." If they are a returning user who has already calculated savings, the secondary CTA should be "View My Savings Report."
+
+Intelligent Global Navigation
+The "Get Quote" CTA: This should be the single most prominent element in the header. Instead of a standard button, it will have a "liquid" fill animation on hover, and its text will subtly change based on the user's journey. If they're on a package page, it could say "Get a Quote for the Pro Package." This makes the CTA feel personally tailored.
+
+Search and Filters: On pages like Services and Packages, the search bar and category filters should be given prime real estate with a "sticky" scroll effect. As the user scrolls down, these filters should remain at the top of the viewport, ensuring that finding a specific service is always a single click or tap away.
+
+Expected Results: A reduction in bounce rate on the homepage and a significant increase in clicks on the primary hero CTA. By making the header navigation dynamic and the value propositions more prominent, the user's path to conversion will be clearer than ever.
+
+Prompt Block 10: The Interactive "Problem-Solution" & Benefits
+Objective: To visually articulate the client's pain points and the 2Pbal solution with a highly engaging, interactive storytelling module that builds a logical case for conversion.
+
+The Interactive Problem & Solution
+Redesign: Instead of a static two-column layout, this section should be redesigned as a horizontal, scrollable container on desktop, and a vertical "accordion" on mobile. The "Costs of Alternatives" column should have a red-hued, subtle, glitchy animation that visually represents "broken" processes. The "2Pbal Solution" side should feature smooth, flowing animations in the teal and lime colors, representing a seamless and efficient process.
+
+Micro-Interactions: When the user hovers over an item in the "Costs of Alternatives" list (e.g., "Agency premium pricing issues"), a corresponding, visually "fixed" version should animate in on the "2Pbal Solution" side. This visually connects the problem to its solution.
+
+Benefits Grid with "Motion-Driven" Icons
+Dynamic Icons: The "Key Benefits Grid" will be completely revitalized. Each benefit (e.g., "Faster delivery times," "Scalable solutions") will be represented by an icon that has a brief, elegant animation on hover. The "Faster delivery" icon could animate from a simple clock to a spinning stopwatch. This not only makes the page more engaging but also helps the user mentally associate the benefits with a tangible visual.
+
+Expected Results: Increased time on page, a higher click-through rate to the ROI Calculator and Packages pages, and a stronger perception of 2Pbal as a modern, forward-thinking solution.
+
+Prompt Block 11: The Immersive Services & Packages Experience
+Objective: To transform the "Packages" and "Services" pages into a highly visual, interactive, and personalized journey that makes complex information digestible and exciting.
+
+Package & Services Pages
+3D Package Cards: The package cards on the /packages page should have a subtle 3D parallax effect based on cursor movement. As the cursor moves across the card, it should tilt slightly, giving a sense of depth. This adds a "premium" feel and encourages engagement.
+
+Dynamic Price Display: When hovering over the savings badge on a package card, a tooltip should appear that not only shows the percentage but also explains the annual cost difference in a clear, compelling sentence: "That's a savings of over $X per year!"
+
+Services Grid Interaction: On the /services page, instead of a simple grid, each service card should expand into a full-width, multi-column view when clicked. This expanded view would contain a more detailed description, an animated graphic of the service in action, and a prominent "Add to Bundle" button.
+
+The "Bundle Builder"
+Visual Cart: The "Bundle Builder" is the key to conversion on this page. The running list of services should not just be text; it should be a visual "shopping cart" with small icons representing each selected service. When a service is added, it should "fly" to the bundle builder with a satisfying animation.
+
+Gamified Savings: The "Total Cost" and "Bundle Savings" will be constantly animated as items are added or removed. The savings number should grow with a fluid, digital-counter animation, making the user feel like they're "winning" as they build their bundle.
+
+Expected Results: Higher engagement with package and service details, a more confident user journey toward building their custom solution, and an increase in users completing the Get Proposal CTA. The gamification of the savings calculation will make the process feel less like a chore and more like an achievement.

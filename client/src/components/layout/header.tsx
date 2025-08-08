@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -8,6 +8,7 @@ import { Menu, User, LogOut, Settings, BarChart3, Home, Shield, Mail, AlertTrian
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { ContactPopup } from '@/components/ui/contact-popup';
+import { motion } from 'framer-motion';
 import logoPath from '@assets/logo_1753208911294.png';
 
 interface HeaderProps {
@@ -26,6 +27,26 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
     { name: 'Services', href: '/services', icon: 'grid' },
     { name: 'Quote', href: '/quote', icon: 'clipboard' },
   ];
+
+  // Smart CTA text based on current page
+  const smartQuoteText = useMemo(() => {
+    if (location.startsWith('/package/')) {
+      const packageName = location.includes('pro') ? 'Pro Package' : 
+                         location.includes('starter') ? 'Starter Package' :
+                         location.includes('enterprise') ? 'Enterprise Package' : 'Package';
+      return `Get Quote for ${packageName}`;
+    }
+    if (location.startsWith('/service/')) {
+      return 'Get Quote for This Service';
+    }
+    if (location === '/packages') {
+      return 'Get Custom Quote';
+    }
+    if (location === '/services') {
+      return 'Get Service Quote';
+    }
+    return 'Get Quote';
+  }, [location]);
 
   const handleLogout = async () => {
     try {
@@ -124,9 +145,51 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
                 <span className="hidden xl:inline">{item.name}</span>
               </Link>
             ))}
+            {/* Smart Get Quote CTA with Liquid Fill Animation */}
+            <motion.div className="relative ml-2">
+              <Link href="/quote">
+                <motion.div
+                  whileHover="hover"
+                  whileTap={{ scale: 0.95 }}
+                  className="relative overflow-hidden bg-lime-primary text-white rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer"
+                >
+                  {/* Liquid fill background */}
+                  <motion.div
+                    variants={{
+                      hover: {
+                        scaleX: 1,
+                        transition: { duration: 0.4, ease: "easeInOut" }
+                      }
+                    }}
+                    initial={{ scaleX: 0 }}
+                    className="absolute inset-0 bg-lime-600 origin-left"
+                  />
+                  
+                  {/* Button text */}
+                  <span className="relative z-10 whitespace-nowrap">
+                    {smartQuoteText}
+                  </span>
+                  
+                  {/* Shimmer effect */}
+                  <motion.div
+                    animate={{
+                      x: [-100, 200],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "linear",
+                      delay: Math.random() * 2
+                    }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-8 skew-x-12"
+                  />
+                </motion.div>
+              </Link>
+            </motion.div>
+            
             <ContactPopup>
               <Button 
-                className="bg-lime-primary text-white hover:bg-lime-600 text-xs px-2 py-1 whitespace-nowrap ml-2"
+                className="bg-white text-blue-600 hover:bg-gray-100 text-xs px-2 py-1 whitespace-nowrap ml-2"
                 size="sm"
               >
                 <Mail className="h-3 w-3 mr-1" />
@@ -137,7 +200,7 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
             
             <Button 
               onClick={onOpenCalculator}
-              className="bg-white text-blue-600 hover:bg-gray-100 text-xs px-2 py-1 whitespace-nowrap ml-2"
+              className="bg-white/20 text-white hover:bg-white/30 text-xs px-2 py-1 whitespace-nowrap ml-2 backdrop-blur-sm"
               size="sm"
             >
               <span className="xl:hidden">Save</span>

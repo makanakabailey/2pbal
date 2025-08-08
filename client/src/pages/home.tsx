@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import PackageCard from '@/components/ui/package-card';
-import { Check, X, MessageCircle, ClipboardList, Rocket, TrendingUp } from 'lucide-react';
+import { Check, X, MessageCircle, ClipboardList, Rocket, TrendingUp, Shield } from 'lucide-react';
 import { PACKAGES, CASE_STUDIES } from '@/lib/constants';
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,9 +19,9 @@ export default function Home({ onOpenCalculator }: HomeProps) {
   const solutionRef = useRef(null);
   const trustBarRef = useRef(null);
   
-  const problemInView = useInView(problemRef, { once: true, threshold: 0.3 });
-  const solutionInView = useInView(solutionRef, { once: true, threshold: 0.3 });
-  const trustBarInView = useInView(trustBarRef, { once: true, threshold: 0.5 });
+  const problemInView = useInView(problemRef, { once: true });
+  const solutionInView = useInView(solutionRef, { once: true });
+  const trustBarInView = useInView(trustBarRef, { once: true });
   
   const problemControls = useAnimation();
   const solutionControls = useAnimation();
@@ -73,37 +73,47 @@ export default function Home({ onOpenCalculator }: HomeProps) {
         </div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Main Content - 8 columns */}
             <motion.div 
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-gray-900 order-2 lg:order-1 lg:pr-8"
+              className="text-gray-900 order-2 lg:order-1 lg:col-span-8"
             >
-              {/* Staggered headline animation */}
+              {/* Dynamic Headline with staggered animation */}
               <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-                {["Stop", "Overpaying", "for", "Digital", "Solutions."].map((word, index) => (
-                  <motion.span
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: index * 0.1 + 0.3,
-                      ease: "easeOut" 
-                    }}
-                    className="inline-block mr-2 sm:mr-3"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-                <br />
+                {/* First part fades in immediately */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className="block"
+                >
+                  {["Stop", "Overpaying", "for", "Digital", "Solutions."].map((word, index) => (
+                    <motion.span
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        duration: 0.6, 
+                        delay: index * 0.1,
+                        ease: "easeOut" 
+                      }}
+                      className="inline-block mr-2 sm:mr-3"
+                    >
+                      {word}
+                    </motion.span>
+                  ))}
+                </motion.div>
+                
+                {/* Second part with delay and special animation */}
                 <motion.span
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, x: -30, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
                   transition={{ 
-                    duration: 0.8, 
-                    delay: 0.8,
+                    duration: 1, 
+                    delay: 2,
                     ease: "backOut"
                   }}
                   className="text-lime-primary inline-block"
@@ -112,13 +122,22 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                 </motion.span>
               </div>
               
+              {/* Subtext slides in from left after 2 second delay */}
               <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 1.2 }}
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 2.5 }}
                 className="text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 text-gray-600"
               >
-                Get a dedicated team of experts for less than the cost of one in-house hire. Save up to 70% vs. traditional agencies.
+                Get a dedicated team of experts for less than the cost of one in-house hire. 
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 3, duration: 0.6 }}
+                  className="font-semibold text-teal-600"
+                >
+                  {" "}Save up to 70% vs. traditional agencies.
+                </motion.span>
               </motion.p>
               
               <motion.div 
@@ -127,7 +146,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                 transition={{ duration: 0.6, delay: 1.4 }}
                 className="flex flex-col gap-3 max-w-xs sm:max-w-sm"
               >
-                {/* Pulsing CTA Button */}
+                {/* Enhanced Pulsing CTA Button with "pulse" state after 3 seconds */}
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -138,73 +157,201 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                     size="lg"
                     className="bg-gradient-to-r from-lime-400 to-lime-600 hover:from-lime-500 hover:to-lime-700 text-white text-sm sm:text-base px-4 sm:px-6 py-3 w-full relative overflow-hidden group"
                   >
-                    {/* Glow effect */}
+                    {/* Enhanced glow effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-lime-400 to-lime-600 opacity-75 blur-lg group-hover:opacity-100 transition-opacity duration-300" />
                     
                     {/* Button content */}
-                    <span className="relative z-10">
+                    <span className="relative z-10 font-semibold">
                       <span className="hidden sm:inline">See How Much You Can Save</span>
                       <span className="sm:hidden">Calculate Savings</span>
                     </span>
                     
-                    {/* Pulse animation */}
+                    {/* Enhanced pulse animation that starts after headline animation */}
                     <motion.div
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="absolute inset-0 bg-lime-400 opacity-20 rounded-lg"
+                      initial={{ scale: 1, opacity: 0 }}
+                      animate={{ 
+                        scale: [1, 1.15, 1], 
+                        opacity: [0.2, 0.4, 0.2] 
+                      }}
+                      transition={{ 
+                        duration: 2.5, 
+                        repeat: Infinity,
+                        delay: 3.5,  // Start pulsing after headline completes
+                        ease: "easeInOut"
+                      }}
+                      className="absolute inset-0 bg-lime-400 rounded-lg"
+                    />
+                    
+                    {/* Additional shimmer effect */}
+                    <motion.div
+                      animate={{
+                        x: [-200, 300],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear",
+                        delay: 4
+                      }}
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent w-16 skew-x-12 opacity-0 group-hover:opacity-100 transition-opacity"
                     />
                   </Button>
                 </motion.div>
+                {/* Smart Secondary CTAs */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.6 }}
                   className="flex gap-2"
                 >
-                  <Button 
-                    onClick={() => window.location.href = '/dashboard'}
-                    variant="outline"
-                    className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm px-3 py-2 flex-1"
-                  >
-                    Dashboard
-                  </Button>
-                  <Button 
-                    onClick={scrollToPackages}
-                    variant="ghost"
-                    className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-sm px-3 py-2 flex-1"
-                  >
-                    <span className="hidden sm:inline">Explore Packages</span>
-                    <span className="sm:hidden">Packages</span>
-                  </Button>
+                  {isAuthenticated ? (
+                    <>
+                      <Button 
+                        onClick={() => window.location.href = '/dashboard'}
+                        variant="outline"
+                        className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm px-3 py-2 flex-1"
+                      >
+                        View Dashboard
+                      </Button>
+                      <Button 
+                        onClick={() => window.location.href = '/client-portal'}
+                        variant="ghost"
+                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-sm px-3 py-2 flex-1"
+                      >
+                        <span className="hidden sm:inline">My Savings Report</span>
+                        <span className="sm:hidden">My Savings</span>
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button 
+                        onClick={scrollToPackages}
+                        variant="outline"
+                        className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm px-3 py-2 flex-1"
+                      >
+                        <span className="hidden sm:inline">Explore Packages</span>
+                        <span className="sm:hidden">Packages</span>
+                      </Button>
+                      <Button 
+                        onClick={() => window.location.href = '/services'}
+                        variant="ghost"
+                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-sm px-3 py-2 flex-1"
+                      >
+                        <span className="hidden sm:inline">View Services</span>
+                        <span className="sm:hidden">Services</span>
+                      </Button>
+                    </>
+                  )}
                 </motion.div>
               </motion.div>
             </motion.div>
+
+            {/* The Value Stack - 4 columns */}
             <motion.div 
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-              className="relative order-1 lg:order-2 lg:pl-8"
+              initial={{ opacity: 0, x: 50, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ duration: 1, delay: 1.5, ease: "backOut" }}
+              className="order-1 lg:order-2 lg:col-span-4 space-y-4"
             >
-              <motion.img 
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                alt="Modern collaborative workspace with diverse team" 
-                className="rounded-xl shadow-2xl w-full h-auto"
-              />
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.8 }}
-                className="absolute -bottom-3 sm:-bottom-6 -left-3 sm:-left-6 bg-white p-3 sm:p-6 rounded-lg shadow-lg"
+              {/* ROI Statement with parallax effect */}
+              <motion.div
+                whileInView={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                viewport={{ once: false }}
+                className="bg-gradient-to-br from-teal-50 to-lime-50 border border-teal-200 rounded-xl p-6 shadow-lg"
               >
-                <div className="text-teal-primary font-bold text-xl sm:text-2xl">
-                  <CountingNumbers end={70} suffix="%" trigger={true} />
+                <div className="text-center">
+                  <motion.div 
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="text-3xl font-bold text-teal-600 mb-2"
+                  >
+                    <CountingNumbers end={70} suffix="%" trigger={true} />
+                  </motion.div>
+                  <p className="text-sm text-gray-700 font-medium">Average Client Savings</p>
+                  <p className="text-xs text-gray-500 mt-1">vs. Traditional Agencies</p>
                 </div>
-                <div className="text-gray-medium text-xs sm:text-sm">Average Savings</div>
+              </motion.div>
+
+              {/* Savings Badge with enhanced animation */}
+              <motion.div
+                whileInView={{ y: [0, 5, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                viewport={{ once: false }}
+                className="bg-gradient-to-br from-lime-50 to-green-50 border border-lime-200 rounded-xl p-6 shadow-lg"
+              >
+                <div className="text-center">
+                  <motion.div
+                    animate={{ rotate: [0, 2, -2, 0] }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                    className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-600 rounded-full flex items-center justify-center mx-auto mb-3"
+                  >
+                    <span className="text-white font-bold text-lg">$</span>
+                  </motion.div>
+                  <h3 className="font-semibold text-gray-800">Cost-Effective Teams</h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Full team for less than one hire
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Trust Indicator */}
+              <motion.div
+                whileInView={{ y: [0, -5, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                viewport={{ once: false }}
+                className="bg-gradient-to-br from-blue-50 to-teal-50 border border-blue-200 rounded-xl p-6 shadow-lg"
+              >
+                <div className="text-center">
+                  <motion.div
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                    className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-3"
+                  >
+                    <Shield className="w-6 h-6 text-white" />
+                  </motion.div>
+                  <h3 className="font-semibold text-gray-800">Trusted by 200+</h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Growing businesses worldwide
+                  </p>
+                </div>
               </motion.div>
             </motion.div>
+
           </div>
+        </div>
+      </section>
+
+      {/* Hero Image Section */}
+      <section className="py-8 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+            className="relative"
+          >
+            <motion.img 
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.4 }}
+              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600" 
+              alt="Modern collaborative workspace with diverse team" 
+              className="rounded-2xl shadow-2xl w-full h-auto"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.8 }}
+              className="absolute -bottom-4 -right-4 bg-white p-4 sm:p-6 rounded-xl shadow-xl border border-gray-100"
+            >
+              <div className="text-center">
+                <div className="text-teal-600 font-bold text-xl sm:text-2xl">
+                  200+
+                </div>
+                <div className="text-gray-600 text-xs sm:text-sm">Happy Clients</div>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
