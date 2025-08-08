@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ArrowRight, CheckCircle, TrendingUp, Users, Zap, Target, ArrowLeft, DollarSign, Clock, Shield, Calculator } from 'lucide-react';
+import { ArrowRight, CheckCircle, TrendingUp, Users, Zap, Target, ArrowLeft, DollarSign, Clock, Shield, Calculator, Calendar } from 'lucide-react';
 import { PACKAGES } from '@/lib/constants';
 
 interface PackageDetailsProps {
@@ -461,9 +461,16 @@ export default function PackageDetails({ onOpenCalculator }: PackageDetailsProps
             </Button>
             <Dialog open={showSavingsCalculator} onOpenChange={setShowSavingsCalculator}>
               <DialogTrigger asChild>
-                <Button size="lg" variant="outline">
-                  <Calculator className="w-5 h-5 mr-2" />
-                  Calculate Savings
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  onClick={() => {
+                    setShowSavingsCalculator(false);
+                    window.location.href = '/schedule-consultation';
+                  }}
+                >
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Schedule Free Consultation
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">

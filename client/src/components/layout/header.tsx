@@ -199,12 +199,12 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
             </ContactPopup>
             
             <Button 
-              onClick={onOpenCalculator}
+              onClick={() => window.location.href = '/schedule-consultation'}
               className="bg-white/20 text-white hover:bg-white/30 text-xs px-2 py-1 whitespace-nowrap ml-2 backdrop-blur-sm"
               size="sm"
             >
-              <span className="xl:hidden">Save</span>
-              <span className="hidden xl:inline">Calculate</span>
+              <span className="xl:hidden">Book Call</span>
+              <span className="hidden xl:inline">Schedule Call</span>
             </Button>
             
             {isAuthenticated ? (
@@ -295,12 +295,12 @@ export default function Header({ onOpenCalculator }: HeaderProps) {
                   
                   <Button 
                     onClick={() => {
-                      onOpenCalculator();
+                      window.location.href = '/schedule-consultation';
                       setIsOpen(false);
                     }}
                     className="bg-lime-primary text-white hover:bg-green-500 w-full"
                   >
-                    Calculate Savings
+                    Schedule Consultation
                   </Button>
 
                   {isAuthenticated ? (

@@ -153,7 +153,7 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                   className="relative"
                 >
                   <Button 
-                    onClick={onOpenCalculator}
+                    onClick={() => window.location.href = '/schedule-consultation'}
                     size="lg"
                     className="bg-gradient-to-r from-lime-400 to-lime-600 hover:from-lime-500 hover:to-lime-700 text-white text-sm sm:text-base px-4 sm:px-6 py-3 w-full relative overflow-hidden group"
                   >
@@ -162,8 +162,8 @@ export default function Home({ onOpenCalculator }: HomeProps) {
                     
                     {/* Button content */}
                     <span className="relative z-10 font-semibold">
-                      <span className="hidden sm:inline">See How Much You Can Save</span>
-                      <span className="sm:hidden">Calculate Savings</span>
+                      <span className="hidden sm:inline">Schedule Free Consultation</span>
+                      <span className="sm:hidden">Free Consultation</span>
                     </span>
                     
                     {/* Enhanced pulse animation that starts after headline animation */}

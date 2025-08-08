@@ -57,7 +57,7 @@ export default function SavingsCalculator({ open, onOpenChange }: SavingsCalcula
       <DialogContent className="max-w-2xl max-h-screen overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-dark flex items-center justify-between">
-            Calculate Your Savings
+            Schedule Your Free Consultation
             <Button
               variant="ghost"
               size="icon"
@@ -127,11 +127,11 @@ export default function SavingsCalculator({ open, onOpenChange }: SavingsCalcula
           <Button 
             onClick={() => {
               onOpenChange(false);
-              window.location.href = '/recommendations';
+              window.location.href = '/schedule-consultation';
             }}
             className="w-full bg-teal-primary text-white hover:bg-teal-600"
           >
-            Get Personalized Package Recommendations
+            Schedule Free Consultation
           </Button>
         </div>
       </DialogContent>

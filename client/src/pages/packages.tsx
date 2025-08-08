@@ -148,13 +148,13 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
         </div>
       </section>
 
-      {/* Savings Calculator Widget */}
+      {/* Consultation Booking Widget */}
       <section className="py-16 bg-gray-light">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="shadow-xl">
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold text-gray-dark">
-                How Much Could You Save?
+                Ready to Get Started?
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -199,17 +199,17 @@ export default function Packages({ onOpenCalculator }: PackagesProps) {
                 </div>
               </div>
               
-              <div className="bg-gradient-glow p-6 rounded-lg text-white text-center">
-                <h3 className="text-xl font-bold mb-2">By switching to 2Pbal, you could save approximately:</h3>
-                <div className="text-4xl font-bold mb-2">${monthlySavings.toLocaleString()}/month</div>
-                <div className="text-2xl font-semibold">That's ${annualSavings.toLocaleString()}/year!</div>
+              <div className="bg-gradient-to-r from-blue-600 to-teal-600 p-6 rounded-lg text-white text-center">
+                <h3 className="text-xl font-bold mb-2">Ready to Transform Your Business?</h3>
+                <p className="text-lg mb-4">Get a personalized consultation to discuss your specific needs and see which package fits best.</p>
+                <div className="text-lg font-semibold">Free 30-minute strategy session • No commitment required</div>
               </div>
               
               <Button 
-                onClick={() => window.location.href = '/recommendations'}
+                onClick={() => window.location.href = '/schedule-consultation'}
                 className="w-full btn-gradient-glow text-lg py-6"
               >
-                See Personalized Package Recommendations
+                Schedule Free Consultation
               </Button>
             </CardContent>
           </Card>
