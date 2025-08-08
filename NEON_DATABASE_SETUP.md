@@ -89,12 +89,14 @@ When working on this project, follow these steps:
 - **Verification**: `verify-db.ts` - connection testing
 - **Migration**: `migrate-to-neon.ts` - Neon setup script
 
-### 🚨 CRITICAL REMINDERS
+### 🚨 CRITICAL REMINDERS - DO NOT USE REPLIT DATABASE
 1. **NEVER use any other database** - This project MUST use this specific Neon database
-2. **NEVER switch to Replit PostgreSQL** - All data is in Neon
-3. **ALWAYS verify connection** after setting environment variables
-4. **PRESERVE all existing data** - Admin account and project data are already established
-5. **Use NEON_DATABASE_URL** - This takes priority over DATABASE_URL in the configuration
+2. **NEVER switch to Replit PostgreSQL** - All production data is in Neon, using Replit DB will lose all data
+3. **DO NOT create new Replit PostgreSQL database** - Always ask for NEON_DATABASE_URL instead
+4. **ALWAYS verify connection** after setting environment variables shows "Using Neon PostgreSQL"
+5. **PRESERVE all existing data** - Admin account and project data are already established
+6. **USE NEON_DATABASE_URL** - This takes priority over DATABASE_URL in the configuration
+7. **MIGRATION RULE** - When migrating projects, NEVER use create_postgresql_database_tool, always use existing Neon
 
 ### Detection Logic
 The `server/db-config.ts` file automatically detects Neon connections by:
